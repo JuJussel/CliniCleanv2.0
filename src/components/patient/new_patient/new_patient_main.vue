@@ -201,11 +201,11 @@
                 </div>
                 <div>
                     <el-form :rules="rulesIns" ref="formIns" :model="formData.insurance" label-width="100px">
-                        <el-form-item label="記号" prop="kigo">
+                        <el-form-item @change="checkDoubleInsurance()" label="記号" prop="kigo">
                             <el-input v-model="formData.insurance.kigo" placeholder="入力"></el-input>
                         </el-form-item>
                         <el-form-item label="番号" prop="bangou">
-                            <el-input v-model="formData.insurance.bangou" placeholder="入力"></el-input>
+                            <el-input @change="checkDoubleInsurance()" v-model="formData.insurance.bangou" placeholder="入力"></el-input>
                         </el-form-item>
                         <el-form-item label="被保険者" required>
                             <el-col :span="13">
