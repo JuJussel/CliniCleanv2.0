@@ -202,7 +202,7 @@
                 <div>
                     <el-form :rules="rulesIns" ref="formIns" :model="formData.insurance" label-width="100px">
                         <el-form-item @change="checkDoubleInsurance()" label="記号" prop="kigo">
-                            <el-input v-model="formData.insurance.kigo" placeholder="入力"></el-input>
+                            <el-input v-model="formData.insurance.kigou" placeholder="入力"></el-input>
                         </el-form-item>
                         <el-form-item label="番号" prop="bangou">
                             <el-input @change="checkDoubleInsurance()" v-model="formData.insurance.bangou" placeholder="入力"></el-input>
@@ -498,8 +498,6 @@ export default {
             this.formData.dependent.registered.splice(index, 1)
         },
         checkDoublePatient() {
-            console.log('checking....');
-            
             if (
                 this.formData.basic.nameLastKanji !== '' &&
                 this.formData.basic.nameFirstKanji !== '' &&
@@ -524,7 +522,28 @@ export default {
             }
         },
         checkDoubleInsurance() {
-
+            if (
+                this.formData.insurance.kigou !== '' &&
+                this.formData.insurance.bangou !== ''
+            ) {
+                this.doRequest('patientDouble', this.formData.basic).then(result => {
+                    if (this.display.doubleNot) {
+                        this.display.doubleNot.close()
+                        this.display.doubleNot = false             
+                    } 
+                    if (result.exists) {
+                        this.display.doubleNot =  this.$notify({
+                            title: '患者の重複',
+                            message: '患者さんはすでに登録されている可能性があります。',
+                            type: 'warning',
+                            offset: 140,
+                            duration: 0,
+                            customClass: 'notific'
+                        }) 
+                    }
+                })
+            
+            }
         }
     }
 }
