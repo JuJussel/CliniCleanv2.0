@@ -15,7 +15,7 @@
                     <el-input readonly v-model="form.amount"><i slot="suffix" class="fas fa-yen-sign"></i></el-input>
                 </el-form-item>
                 <el-form-item label="入金額">
-                    <el-input type="number" v-model="form.received"><i slot="suffix" class="fas fa-yen-sign"></i></el-input>
+                    <el-input-number v-model="form.received"><i slot="suffix" class="fas fa-yen-sign"></i></el-input-number>
                                     <div>
                     <el-button style="width: 40px; padding: 7px" @click="form.received=1000" size="mini">１千</el-button>
                     <el-button style="width: 40px; padding: 7px" @click="form.received=5000" size="mini">５千</el-button>

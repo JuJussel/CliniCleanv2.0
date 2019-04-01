@@ -16,10 +16,12 @@
                         :key="item.patientID"
                         :label="item.name_last_kanji + item.name_first_kanji"
                         :value="item.patientID">
-                        <span style="float: left">{{ item.name_last_kanji + item.name_first_kanji }}</span>
-                        <span style="float: right; color: #8492a6; font-size: 13px">
-                        ID: {{ item.patientID}}
-                        {{ item.birthdate_year + "年" + item.birthdate_month + "月" + item.birthdate_day + "日"}}
+                        <span style="display: flex; justify-content: space-between; width: 280px">
+                            <span style="color: #8492a6; font-size: 13px">ID: {{ item.patientID}}</span>
+                            <span>{{ item.name_last_kanji + item.name_first_kanji }}</span>
+                            <span style="color: #8492a6; font-size: 13px">
+                                {{ item.birthdate_year + "年" + item.birthdate_month + "月" + item.birthdate_day + "日"}}
+                            </span>
                         </span>
                     </el-option>
                 </el-select>
@@ -46,7 +48,7 @@
             empty-text="患者を選択してください。"
             @current-change="selectInsurance"
             :data="newWalkin.insurance.valid.rows"
-            style="width: 100%; border-radius: 4px; border: solid 1px #dcdfe6;">
+            style="width: 100%; border-radius: 4px; border: solid 1px #dcdfe6">
             <el-table-column
                 prop="wholeName"
                 label="保険">

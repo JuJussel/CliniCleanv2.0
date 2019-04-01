@@ -148,8 +148,15 @@
                         <span style="margin-left: 5px">配偶者・保護者</span>
                     </span>
                     <span style="float: right">
-                        <el-button size="small">追加</el-button>
-                        <el-button size="small">新登録</el-button>
+                        <el-popover
+                            placement="left"
+                            width="500"
+                            popper-class="dep-pop"
+                            trigger="click"
+                            v-model="display.dependentOpen">
+                            <dependent v-if="display.dependentOpen" @close="display.dependentOpen = false" @add="registerDependent"></dependent>
+                            <el-button slot="reference">追加</el-button>               
+                        </el-popover>
                     </span>
                 </div>
                 <div>
@@ -157,13 +164,14 @@
                         size="mini"
                         empty-text="登録なし"
                         :data="formData.dependent.registered"
+                        row-key="patientID"
                         style="width: 100%; border-radius: 4px; border: solid 1px #dcdfe6;">
                         <el-table-column
                             prop="name"
                             label="名前">
                         </el-table-column>
                         <el-table-column
-                            prop="birthDate"
+                            prop="birthdateForm"
                             label="誕生日">
                         </el-table-column>
                         <el-table-column
@@ -200,21 +208,26 @@
                     <el-checkbox style="margin-left: 20px" v-model="display.regIns">登録</el-checkbox>
                 </div>
                 <div>
-                    <el-form :rules="rulesIns" ref="formIns" :model="formData.insurance" label-width="100px">
-                        <el-form-item @change="checkDoubleInsurance()" label="記号" prop="kigo">
-                            <el-input v-model="formData.insurance.kigou" placeholder="入力"></el-input>
+                    <el-form :disabled="!display.regIns" :rules="rulesIns" ref="formIns" :model="formData.insurance" label-width="100px">
+                        <el-form-item label="記号" prop="kigou">
+                            <el-input @change="checkDoubleInsurance()" v-model="formData.insurance.kigou" placeholder="入力"></el-input>
                         </el-form-item>
                         <el-form-item label="番号" prop="bangou">
                             <el-input @change="checkDoubleInsurance()" v-model="formData.insurance.bangou" placeholder="入力"></el-input>
                         </el-form-item>
                         <el-form-item label="被保険者" required>
                             <el-col :span="13">
-                                <el-form-item prop="name">
-                                    <el-input v-model="formData.insurance.name" placeholder="氏名"></el-input>
+                                <el-form-item v-if="formData.insurance.relation === '本人'" prop="name">
+                                    <el-input  v-model="formData.insurance.name" placeholder="氏名"></el-input>
+                                </el-form-item>
+                                <el-form-item v-else prop="name">
+                                    <el-select v-model="formData.insurance.name" placeholder="選択">
+                                        <el-option v-for="item in formData.dependent.registered" :label="item.name" :key="item.name" :value="item.name"></el-option>
+                                    </el-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="11">
-                                <el-radio-group v-model="formData.insurance.relation" style="margin-left: 30px">
+                                <el-radio-group @change="checkDoubleInsurance()" v-model="formData.insurance.relation" style="margin-left: 30px">
                                     <el-radio label="配偶者">配偶者</el-radio>
                                     <el-radio style="margin-left: -20px" label="本人">本人</el-radio>
                                 </el-radio-group>
@@ -223,7 +236,7 @@
                         <el-form-item label="保険者番号">
                             <el-col :span="11">
                                 <el-form-item prop="hokenshaNumber">
-                                    <el-input autocomplete="new-password" @change="getHokensha" v-model="formData.insurance.hokenshaNumber" placeholder="入力"></el-input>
+                                    <el-input autocomplete="new-password" @change="checkDoubleInsurance();getHokensha()" v-model="formData.insurance.hokenshaNumber" placeholder="入力"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
@@ -258,31 +271,37 @@
                         <span style="margin-left: 5px">公費負担医療</span>
                     </span>
                     <span style="float: right">
-                        <el-button size="small">追加</el-button>
+                        <el-popover
+                            placement="left"
+                            width="550"
+                            popper-class="dep-pop"
+                            trigger="click"
+                            v-model="display.kouhiOpen">
+                            <kouhi v-if="display.kouhiOpen" @close="display.kouhiOpen = false" @add="registerKouhi"></kouhi>
+                            <el-button slot="reference">追加</el-button>               
+                        </el-popover>
                     </span>
                 </div>
                 <div>
                     <el-table
                         size="mini"
                         empty-text="登録なし"
-                        :data="formData.dependent.registered"
+                        :data="formData.kouhi"
                         style="width: 100%; border-radius: 4px; border: solid 1px #dcdfe6;">
                         <el-table-column
-                            prop="name"
+                            prop="khFuSha"
                             label="公費負担者番号">
                         </el-table-column>
                         <el-table-column
-                            prop="birthDate"
+                            prop="khRecp"
                             label="公費受給者番号">
                         </el-table-column>
                         <el-table-column
-                            prop="birthDate"
+                            prop="validDisp"
                             label="有効期限">
                         </el-table-column>
-                        
                         <el-table-column
-                            width="80"
-                            label="証写">
+                            width="80">
                             <template slot-scope="scope">
                                 <el-button
                                 size="mini"
@@ -305,54 +324,65 @@
 </template>
 
 <script>
+import dependent from './dependent'
+import kouhi from './kouhi'
+
 export default {
+    components: {
+        'dependent' : dependent,
+        'kouhi': kouhi
+    },
     data() {
         return {
             rulesBasic: {
                 nameLastKanji: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ],
                 nameFirstKanji: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ],
                 nameLastKana: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ],
                 nameFirstKana: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ],
                 birthDate: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ]          
             },
             rulesCompany: {
                 name: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ]
             },
             rulesIns: {
                 name: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ],
-                kigo: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                kigou: [
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ],
                 bangou: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ],
                 hokenshaNumber: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ],
                 getDate: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ],
                 validDate: [
-                    { required: true, message: '入力してください', trigger: 'change' }
+                    { required: true, message: '入力してください', trigger: 'manual' }
                 ]
             },
             display: {
+                dependentOpen: false,
+                kouhiOpen: false,
                 hokenshaName: '',
                 doubleNot: false,
+                doubleNotIns: false,
+                insEx: false,
                 occupations: [{id: 1, label: '会社員'},{id: 2, label: '自営業'},{id: 3, label: '学生'},{id: 4, label: 'その他'}],
                 rels:[
                   {value:"母親", label:"母親"},
@@ -410,7 +440,7 @@ export default {
                     room: ""
                 },
                 dependent: {
-                    registered: [{name: 'test1', birthDate: '1985年01月23日', rel: '母親'},{name: 'test2', birthDate: '1985年01月23日', rel: '母親'}]
+                    registered: []
                 },
                 insurance: {
                     kouhiNomi: false,
@@ -423,26 +453,7 @@ export default {
                     validDate: [],
                     hokenshaNumber: ""
                 },
-                kouhi: {
-                    kouhi1: {
-                        tantouNumber: "",
-                        recepNumber: "",
-                        validStart: "",
-                        validUntil: ""
-                    },
-                    kouhi2: {
-                        tantouNumber: "",
-                        recepNumber: "",
-                        validStart: "",
-                        validUntil: ""
-                    },
-                    kouhi3: {
-                        tantouNumber: "",
-                        recepNumber: "",
-                        validStart: "",
-                        validUntil: ""
-                    }
-                }
+                kouhi: []
             }
         }
     },
@@ -473,7 +484,6 @@ export default {
             })
         },
         validate() {
-
             this.$notify({
                 title: 'Warning',
                 message: 'This is a warning message',
@@ -507,7 +517,7 @@ export default {
                     if (this.display.doubleNot) {
                         this.display.doubleNot.close()
                         this.display.doubleNot = false             
-                    } 
+                    }
                     if (result.exists) {
                         this.display.doubleNot =  this.$notify({
                             title: '患者の重複',
@@ -524,26 +534,48 @@ export default {
         checkDoubleInsurance() {
             if (
                 this.formData.insurance.kigou !== '' &&
-                this.formData.insurance.bangou !== ''
+                this.formData.insurance.bangou !== '' &&
+                this.formData.insurance.hokenshaNumber  !== ''
             ) {
-                this.doRequest('patientDouble', this.formData.basic).then(result => {
-                    if (this.display.doubleNot) {
-                        this.display.doubleNot.close()
-                        this.display.doubleNot = false             
-                    } 
+                let data = {
+                    kigou: this.formData.insurance.kigou, 
+                    bangou: this.formData.insurance.bangou,
+                    hokensha: this.formData.insurance.hokenshaNumber}
+                this.doRequest('getInsuranceCheck', data).then(result => {
+                    if (this.display.doubleNotIns) {
+                        this.display.doubleNotIns.close()
+                        this.display.doubleNotIns = false             
+                    }
+                    this.display.insEx = false
+                    let that = this
                     if (result.exists) {
-                        this.display.doubleNot =  this.$notify({
-                            title: '患者の重複',
-                            message: '患者さんはすでに登録されている可能性があります。',
-                            type: 'warning',
-                            offset: 140,
-                            duration: 0,
-                            customClass: 'notific'
-                        }) 
+                        this.display.insEx = result
+                        if (this.formData.insurance.relation === '本人') {
+                            this.display.doubleNotIns =  this.$notify({
+                                title: '保険の重複',
+                                dangerouslyUseHTMLString: true,
+                                message: '保険はすでに登録してます。<br><span style="color: #409eff; cursor: pointer">配偶者として登録？</span>',
+                                type: 'error',
+                                offset: 140,
+                                duration: 0,
+                                customClass: 'notific',
+                                onClick: function() {that.registerDependent('', true); that.display.doubleNotIns.close()}
+                            }) 
+                        }
+                        this.formData.insurance.relation = "配偶者"
                     }
                 })
-            
             }
+        },
+        registerDependent(data, noti) {
+            if (noti) {
+                data = this.display.insEx
+                this.formData.insurance.name = this.display.insEx.name
+            } 
+            this.formData.dependent.registered.push(data)
+        },
+        registerKouhi(data) {
+            this.formData.kouhi.push(data)
         }
     }
 }
@@ -554,6 +586,9 @@ export default {
     border-color: #dcdfe6
 }
 .notific {
-    width: 200px;
+    width: 220px;
+}
+.dep-pop {
+    padding: 0!important
 }
 </style>

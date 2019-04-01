@@ -98,6 +98,14 @@ export default {
           patientDouble: {
             url: 'get/patient/patientDouble',
             method: 'get'
+          },
+          getInsuranceCheck: {
+            url: 'get/patient/getInsuranceCheck',
+            method: 'get'
+          },
+          newDependent: {
+            url: 'insert/patient/newDependent',
+            method: 'post'
           }
 
         } // End types
