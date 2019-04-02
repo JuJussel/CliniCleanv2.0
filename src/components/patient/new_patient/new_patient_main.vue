@@ -39,7 +39,7 @@
                         value-format="yyyy/MM/dd"
                         placeholder="選択又は入力">
                     </el-date-picker>
-                    <span v-if="age !== ''">年齢：{{ age }}年</span>
+                    <span style="margin-left: 20px" v-if="age !== ''">年齢：{{ age }}年</span>
                 </el-form-item>
                 <el-form-item label="性別">
                     <el-radio-group v-model="formData.basic.gender">
@@ -218,7 +218,7 @@
                         <el-form-item label="被保険者" required>
                             <el-col :span="13">
                                 <el-form-item v-if="formData.insurance.relation === '本人'" prop="name">
-                                    <el-input  v-model="formData.insurance.name" placeholder="氏名"></el-input>
+                                    <el-input disabled :value="formData.basic.nameLastKanji + formData.basic.nameFirstKanji" placeholder="氏名"></el-input>
                                 </el-form-item>
                                 <el-form-item v-else prop="name">
                                     <el-select v-model="formData.insurance.name" placeholder="選択">
@@ -260,7 +260,20 @@
                                 start-placeholder="から"
                                 end-placeholder="まで">
                             </el-date-picker>
-                        </el-form-item>                        
+                        </el-form-item>
+                        <div style="display: flex; align-items: baseline">
+                            <span style="width: 88px; text-align: right; padding-right: 12px; font-size: 14px">
+                                証写
+                            </span>
+                            <el-upload
+                                action="222"
+                                multiple
+                                :limit="2"
+                                ref="files"
+                                :auto-upload="false">
+                                <el-button size="small" type="primary">ファイル選択</el-button>
+                            </el-upload>
+                        </div>                     
                     </el-form>
                 </div>
             </el-card>
@@ -314,7 +327,7 @@
         </div>
         <div style="margin-left: 10px; flex: 1; height: 20px">
             <div>
-                <el-button @click="validate()" type="primary" style="width: 112px">登録</el-button>
+                <el-button :disabled="ageWarn" @click="validate()" type="primary" style="width: 112px">登録</el-button>
             </div>
             <div style="margin-top: 10px">
                 <el-button type="danger" @click="cancel()">キャンセル</el-button>
@@ -342,10 +355,12 @@ export default {
                     { required: true, message: '入力してください', trigger: 'manual' }
                 ],
                 nameLastKana: [
-                    { required: true, message: '入力してください', trigger: 'manual' }
+                    { required: true, message: '入力してください', trigger: 'manual' },
+                    { pattern: '^[ァ-ン]+$', message: '全角カタカナで入力', trigger: 'manual' }
                 ],
                 nameFirstKana: [
-                    { required: true, message: '入力してください', trigger: 'manual' }
+                    { required: true, message: '入力してください', trigger: 'manual' },
+                    { pattern: '^[ァ-ン]+$', message: '全角カタカナで入力', trigger: 'manual' }
                 ],
                 birthDate: [
                     { required: true, message: '入力してください', trigger: 'manual' }
@@ -367,7 +382,8 @@ export default {
                     { required: true, message: '入力してください', trigger: 'manual' }
                 ],
                 hokenshaNumber: [
-                    { required: true, message: '入力してください', trigger: 'manual' }
+                    { required: true, message: '入力してください', trigger: 'manual' },
+                    { validator: this.validateHoken, trigger: 'manual' }
                 ],
                 getDate: [
                     { required: true, message: '入力してください', trigger: 'manual' }
@@ -381,6 +397,7 @@ export default {
                 kouhiOpen: false,
                 hokenshaName: '',
                 doubleNot: false,
+                ageNot: false,
                 doubleNotIns: false,
                 insEx: false,
                 occupations: [{id: 1, label: '会社員'},{id: 2, label: '自営業'},{id: 3, label: '学生'},{id: 4, label: 'その他'}],
@@ -468,6 +485,32 @@ export default {
             }
             return age;
         },
+        ageWarn() {
+            if (this.age !=='' && this.age < 20 && this.formData.dependent.registered.length < 1) {
+                return true
+            }
+            return false
+        }
+    },
+    watch: {
+        ageWarn() {
+            if (this.display.ageNot) {
+                    this.display.ageNot.close()
+                    this.display.ageNot = false
+            }
+            if (this.ageWarn) {
+                this.display.ageNot =  this.$notify({
+                    title: '未成年者',
+                    dangerouslyUseHTMLString: true,
+                    message: '患者が未成年者です。</ br>配偶者を登録してください。',
+                    type: 'error',
+                    offset: 140,
+                    duration: 0,
+                    showClose: false,
+                    customClass: 'notific'
+                }) 
+            }
+        }
     },
     methods: {
         getHokensha() {
@@ -484,28 +527,39 @@ export default {
             })
         },
         validate() {
-            this.$notify({
-                title: 'Warning',
-                message: 'This is a warning message',
-                type: 'warning',
-                offset: 140,
-                duration: 0,
-                customClass: 'notific'
-            })
+            let ok = true
             this.$refs['formBasic'].validate((valid) => {
                 if (!valid) {
-                    
+                    ok = false
                 }
             })
-            this.$refs['formCompany'].validate()
-            this.$refs['formIns'].validate()
-
+            if (this.display.regIns) {
+                this.$refs['formIns'].validate((valid) => {
+                    if (!valid) {
+                        ok = false
+                    }
+                })
+            }
+            this.$refs['formCompany'].validate((valid) => {
+                if (!valid) {
+                    ok = false
+                }
+            })
+            if (ok) {
+                this.submit()
+            }
+        },
+        submit() {
+            
         },
         cancel() {
 
         },
         removeDependent(index, row) {
             this.formData.dependent.registered.splice(index, 1)
+            if (this.formData.insurance.name === row.name) {
+                this.formData.insurance.name = ""
+            }
         },
         checkDoublePatient() {
             if (
@@ -538,7 +592,7 @@ export default {
                 this.formData.insurance.hokenshaNumber  !== ''
             ) {
                 let data = {
-                    kigou: this.formData.insurance.kigou, 
+                    kigou: this.formData.insurance.kigou,
                     bangou: this.formData.insurance.bangou,
                     hokensha: this.formData.insurance.hokenshaNumber}
                 this.doRequest('getInsuranceCheck', data).then(result => {
@@ -562,10 +616,13 @@ export default {
                                 onClick: function() {that.registerDependent('', true); that.display.doubleNotIns.close()}
                             }) 
                         }
+                        this.formData.insurance.name = ""
                         this.formData.insurance.relation = "配偶者"
+                        return
                     }
                 })
             }
+                this.formData.insurance.name = ''
         },
         registerDependent(data, noti) {
             if (noti) {
@@ -576,13 +633,61 @@ export default {
         },
         registerKouhi(data) {
             this.formData.kouhi.push(data)
+        },
+        validateHoken(rule, data, callback) {
+            if (data.length != 8 && data.length != 6) {
+                callback(new Error('6桁又は8桁を入力してください'))
+            }
+            var ns = data.toString(10);
+            if (ns.length == 6) {
+                ns = "00" + ns;
+            }
+            ns = ns.split('');
+            var x1 = ns[0]*2;
+            if (x1 > 9) {
+                x1 = (x1-9);
+            }
+            var x2 = ns[1];
+            var x3 = ns[2]*2;
+            if (x3 > 9) {
+                x3 = (x3-9);
+            }
+            var x4 = ns[3];
+            var x5 = ns[4]*2;
+            if (x5 > 9) {
+                x5 = (x5-9);
+            }
+            var x6 = ns[5];
+            var x7 = ns[6]*2;
+            if (x7 > 9) {
+                x7 = (x7-9);
+            }
+            var x8 = ns[7];
+            if (x8 !== "") {
+            var check = x1*1+x2*1+x3*1+x4*1+x5*1+x6*1+x7*1;
+            var check_str = check.toString();
+            var check_pos = check_str.length-1;
+            var check_number = 10 - check_str[check_pos];
+
+            if (check_str[check_pos] == 0) {
+                check_number = 0;
+            }
+            }
+            if (check_number != x8) {
+                callback(new Error('番号に誤りがあります'))
+            } else {
+                callback()
+            }
         }
     }
 }
 </script>
 
 <style>
-.el-form-item .is-success .el-input__inner {
+.el-form-item.is-success .el-input__inner {
+    border-color: #dcdfe6
+}
+.el-form-item.is-success .el-input__inner:focus {
     border-color: #dcdfe6
 }
 .notific {
