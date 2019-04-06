@@ -1,5 +1,5 @@
 <template>
-    <div style="display: flex">
+    <div v-loading="display.loading" style="display: flex">
         <el-card style="width: 580px">
             <div slot="header" style="display: flex; justify-content: start; align-items: baseline">
                 <i class="far fa-id-card"></i>
@@ -205,10 +205,10 @@
                 <div slot="header" style="display: flex; justify-content: start; align-items: baseline">
                     <i class="far fa-id-card"></i>
                     <span style="margin-left: 5px">保険</span>
-                    <el-checkbox style="margin-left: 20px" v-model="display.regIns">登録</el-checkbox>
+                    <el-checkbox style="margin-left: 20px" v-model="formData.regIns">登録</el-checkbox>
                 </div>
                 <div>
-                    <el-form :disabled="!display.regIns" :rules="rulesIns" ref="formIns" :model="formData.insurance" label-width="100px">
+                    <el-form :disabled="!formData.regIns" :rules="rulesIns" ref="formIns" :model="formData.insurance" label-width="100px">
                         <el-form-item label="記号" prop="kigou">
                             <el-input @change="checkDoubleInsurance()" v-model="formData.insurance.kigou" placeholder="入力"></el-input>
                         </el-form-item>
@@ -257,6 +257,7 @@
                                 v-model="formData.insurance.validDate"
                                 type="daterange"
                                 range-separator="~"
+                                value-format="yyyy/MM/dd"
                                 start-placeholder="から"
                                 end-placeholder="まで">
                             </el-date-picker>
@@ -333,6 +334,20 @@
                 <el-button type="danger" @click="cancel()">キャンセル</el-button>
             </div>
         </div>
+        <el-dialog
+            title="登録完了しました。"
+            :visible.sync="display.doneModal"
+            width="20%"
+            custom-class="ccmodal"
+            :close-on-click-modal="false"
+            :lock-scroll="true"
+            :show-close="false">
+            <div style="text-align: end">
+                <el-button @click="backToHome()" type="text">ホームへ</el-button>
+                <el-button @click="dialogVisible = false">要約する</el-button>
+                <el-button @click="gotToRec()" type="primary">受付する</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -347,6 +362,7 @@ export default {
     },
     data() {
         return {
+            transferData: {},
             rulesBasic: {
                 nameLastKanji: [
                     { required: true, message: '入力してください', trigger: 'manual' }
@@ -393,6 +409,8 @@ export default {
                 ]
             },
             display: {
+                doneModal: false,
+                loading: false,
                 dependentOpen: false,
                 kouhiOpen: false,
                 hokenshaName: '',
@@ -423,6 +441,7 @@ export default {
                 ]
             },
             formData: {
+                regIns: false,
                 basic: {
                     nameLastKana: "",
                     nameFirstKana: "",
@@ -468,7 +487,8 @@ export default {
                     relation: "配偶者",
                     bangou: "",
                     validDate: [],
-                    hokenshaNumber: ""
+                    hokenshaNumber: "",
+                    files: []
                 },
                 kouhi: []
             }
@@ -533,7 +553,7 @@ export default {
                     ok = false
                 }
             })
-            if (this.display.regIns) {
+            if (this.formData.regIns) {
                 this.$refs['formIns'].validate((valid) => {
                     if (!valid) {
                         ok = false
@@ -550,7 +570,28 @@ export default {
             }
         },
         submit() {
-            
+            this.display.loading = true
+            this.formData.basic.tel1 = this.formData.basic.tel1.replace(/\-/g, '')
+            this.formData.basic.tel2 = this.formData.basic.tel2.replace(/\-/g, '')
+            this.formData.company.tel = this.formData.company.tel.replace(/\-/g, '')
+            this.formData.basic.address.zip = this.formData.basic.address.zip.replace(/\-/g, '')
+            this.formData.company.address.zip = this.formData.company.address.zip.replace(/\-/g, '')
+            let files = this.$refs.files.uploadFiles
+            var that = this
+            files.forEach(element => {
+                var fr = new FileReader()
+                fr.onload = function () {
+                    that.formData.insurance.files.push(fr.result)
+                    if (files.length === that.formData.insurance.files.length) {
+                        that.doRequest('newPatient', that.formData).then(result => {
+                            that.transferData = result
+                            that.display.loading = false
+                            that.display.doneModal = true
+                        })
+                    }
+                }
+                fr.readAsDataURL(element.raw)
+            })
         },
         cancel() {
 
@@ -678,6 +719,12 @@ export default {
             } else {
                 callback()
             }
+        },
+        backToHome() {
+            this.$eventHub.$emit('homeTrigger', {mode: 'goToHome'})
+        },
+        gotToRec() {
+            this.$eventHub.$emit('homeTrigger', {mode: 'receivePat', data: this.transferData})
         }
     }
 }

@@ -9,6 +9,7 @@
                     remote
                     @change="getInsurance()"
                     placeholder="氏名又はIDで検索"
+                    v-if="mode !== 'ex'"
                     :remote-method="searchPatient"
                     :loading="searchLoading">
                     <el-option
@@ -25,6 +26,7 @@
                         </span>
                     </el-option>
                 </el-select>
+                <div v-else> {{ meta.name }} </div>
             </el-form-item> 
             <el-form-item label="診察内容">
                 <el-radio-group v-model="newWalkin.examType">
@@ -115,6 +117,9 @@ export default {
             this.newWalkin.examType = this.meta.exm
             this.newWalkin.comment = this.meta.comm
             this.newWalkin.insurance.selected = this.meta.ins
+            this.getInsurance()
+        } else if (this.mode === 'ex') {
+            this.newWalkin.patient.patientID = this.meta.patientID
             this.getInsurance()
         }
     },

@@ -14,6 +14,7 @@
                             v-model="khData.valid"
                             type="daterange"
                             range-separator="~"
+                            value-format="yyyy/MM/dd"
                             start-placeholder="から"
                             end-placeholder="まで">
                         </el-date-picker>

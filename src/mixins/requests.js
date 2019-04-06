@@ -106,6 +106,14 @@ export default {
           newDependent: {
             url: 'insert/patient/newDependent',
             method: 'post'
+          },
+          newPatient: {
+            url: 'insert/patient/newPatient',
+            method: 'post'
+          },
+          getPatientSearch: {
+            url: 'get/patient/getPatientSearch',
+            method: 'get'
           }
 
         } // End types

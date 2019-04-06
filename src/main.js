@@ -14,7 +14,7 @@ import moment from 'moment'
 import FullCalendar from 'vue-full-calendar'
 import 'fullcalendar/dist/fullcalendar.min.css'
 import 'fullcalendar/dist/locale/ja'
-
+import tablePag from './components/shared/table_pag'
 
 Vue.use(new VueSocketIO({
   connection: SocketIO('https://192.168.11.99:1337')
@@ -23,10 +23,12 @@ Vue.use(FullCalendar)
 
 Vue.component('dateDisplay', dateDisplay)
 Vue.component('draggable', draggable)
+Vue.component('el-table-pag', tablePag)
 
 Vue.config.productionTip = false
 Vue.prototype.$eventHub = new Vue() // Global event bus
 Vue.prototype.$moment = moment
+Vue.prototype.$_ = require('lodash/collection')
 
 // Requests Mixin
 Vue.mixin(requests)

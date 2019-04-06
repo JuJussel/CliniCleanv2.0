@@ -67,9 +67,18 @@
                         width="500"
                         trigger="click"
                         v-model="display.newWalkinOpen">
-                        <walkin v-if="display.newWalkinOpen" @submit="submitNewWalkin" @close="display.newWalkinOpen = false" :mode="'new'" :meta="meta"></walkin>
+                        <walkin v-if="display.newWalkinOpen" @submit="submitNewWalkin" @close="display.newWalkinOpen = false" :mode="'new'" :meta="false"></walkin>
                         <el-button slot="reference" size="small">受付</el-button>               
                     </el-popover>
+                    <el-popover
+                        placement="bottom"
+                        title="受付"
+                        width="500"
+                        trigger="click"
+                        v-model="display.exWalkinOpen">
+                        <walkin v-if="display.exWalkinOpen" @submit="submitNewWalkin" @close="display.exWalkinOpen = false" :mode="'ex'" :meta="display.exMeta"></walkin>
+                    </el-popover>
+
                 </div>
                 <div>
                     <draggable draggable=".ok"  @change="submitNewWalkinRes" v-model="data.waiting" :sort="false" group="drop" animation="200">
@@ -165,6 +174,7 @@ import calendar from '../../shared/calendar'
 import { log } from 'util';
 import { loadavg } from 'os';
 import loginVue from '../../../views/login.vue';
+import { setTimeout } from 'timers';
 
 export default {
     props: [
@@ -185,9 +195,6 @@ export default {
         this.doRequest('getShinsatsuType', '').then(result => {
            this.display.shinsatsuTypes = result.data 
         })
-        if (this.meta !== null && typeof this.meta === 'object') {
-            this.newWalkinFromSearch();
-        }
     },
     data() {
         return {
@@ -198,6 +205,8 @@ export default {
                 pay: []
             },
             display: {
+                exWalkinOpen: false,
+                exMeta: false,
                 newWalkinOpen: false,
                 reservationPop: false,
                 paymentOpen: false,
@@ -313,6 +322,10 @@ export default {
                 }
             ]
             this.doRequest('insertOrder', orderData)
+        },
+        receivePat(data) {
+            this.display.exMeta = data
+            this.display.exWalkinOpen = true
         }
     },
     sockets: {

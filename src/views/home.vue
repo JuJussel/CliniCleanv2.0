@@ -44,7 +44,7 @@
         </el-menu>
         <div class="main-cont">
             <transition name="el-fade-in-linear" >
-                <child-component @resetMeta="childMeta=''" @triggerParent="childTriggers" :is="currentView" :meta="childMeta"></child-component>
+                <child-component @resetMeta="childMeta=''" @triggerParent="childTriggers" :is="currentView" :meta="childMeta" ref="reception"></child-component>
             </transition>
         </div>
     </div>
@@ -54,12 +54,15 @@
 
 import receptionFlow from '../components/patient/reception_flow/reception_flow_main'
 import newPatient from '../components/patient/new_patient/new_patient_main'
+import patientSearch from '../components/patient/patient_search/patient_search_main'
+import { setTimeout } from 'timers';
 
 export default {
   name: 'home',
   components: {
       'receptionFlow': receptionFlow,
-      'newPatient': newPatient
+      'newPatient': newPatient,
+      'patientSearch': patientSearch
   },
   data() {
     return {
@@ -176,19 +179,20 @@ export default {
                 }
             });
         },
-        childTriggers(value, meta) {
-            if (value === "gotoHome") {
-                this.currentView='dashboard';
-            } else if (value === "gotoPatientDetails") {
-                this.currentView = 'patientDetails';
-                this.pageTitle = '患者詳細';
-            } else if (value === "uketsuke") {
-                this.childMeta = meta;
-                this.currentView = 'receptionFlow';
-                this.pageTitle = '患者受付';
-            } else if (value === "patientDetailsMedical") {
-                this.currentView = 'patientDetailsMedical';
-                this.pageTitle = '患者詳細';
+        childTriggers( meta) {
+            if (meta.mode === "goToHome") {
+                this.currentView='dashboard'
+            } else if (meta.mode === "gotoPatientDetails") {
+                this.currentView = 'patientDetails'
+                this.pageTitle = '患者詳細'
+            } else if (meta.mode === "receivePat") {
+                this.childMeta = meta
+                this.currentView = 'receptionFlow'
+                this.pageTitle = '患者受付'
+                setTimeout(function() {this.$refs.reception.receivePat(meta.data)}.bind(this), 100)
+            } else if (meta.mode === "patientDetailsMedical") {
+                this.currentView = 'patientDetailsMedical'
+                this.pageTitle = '患者詳細'
             }
         },
         logout() {
@@ -281,16 +285,28 @@ export default {
             this.$store.commit('SET_SHINSATSU_INFO', result.data)        
         })
         this.updateTaskCount();
-        this.$eventHub.$on('sessionInvalid', this.sessionTimeout);
-        this.$eventHub.$on('toast', this.openToast);
+        this.$eventHub.$on('sessionInvalid', this.sessionTimeout)
+        this.$eventHub.$on('toast', this.openToast)
+        this.$eventHub.$on('homeTrigger', this.childTriggers)
         setTimeout(function(){this.checkSession()}.bind(this), 1000)
     },
     beforeDestroy: function() {
-        this.$eventHub.$off('sessionInvalid');
-        this.$eventHub.$off('toast');
+        this.$eventHub.$off('sessionInvalid')
+        this.$eventHub.$off('toast')
+        this.$eventHub.$off('changeView')
     }
 }
 </script>
+
+<style>
+.ccmodal {
+    border-radius: 4px
+}
+.el-table--enable-row-hover .el-table__body tr:hover>td {
+    background-color: #e0f2f1
+}
+</style>
+
 
 <style scoped>
 .menu-icon {
