@@ -125,7 +125,7 @@ export default {
           },
           patientIDSearch: {
             url: 'get/patient/patientIDSearch',
-            method: 'get  '
+            method: 'get'
           }
 
         } // End types
