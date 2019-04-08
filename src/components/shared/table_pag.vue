@@ -13,7 +13,7 @@
             <slot></slot>
         </el-table>
         <el-pagination
-            :page-sizes="[20, 50, 100]"
+            :page-sizes="pageSizes"
             :page-size="pageSize"
             layout="sizes, prev, pager, next"
             style="text-align: center; margin-top: 10px"
@@ -26,15 +26,16 @@
 
 <script>
 export default {
-    props: [
-        'data',
-        'size',
-        'rowKey',
-        'maxHeight',
-        'height',
-        'stripe',
-        'emptyText'
-    ],
+    props: {
+        data: Array,
+        size: String,
+        rowKey: String,
+        maxHeight: Number,
+        height: Number,
+        stripe: String,
+        emptyText: String,
+        pageSizes: {default: function(){return [20,50,100]}}
+    },
     computed: {
         filteredData() {
             let start = this.pageSize*this.currentPage - this.pageSize
@@ -43,13 +44,16 @@ export default {
             return filtered
         },
         totalPages() {
-            return this.data.length
+            if (this.data) {
+                return this.data.length                
+            }
+            return 0
         }
     },
     data() {
         return {
             currentPage: 1,
-            pageSize: 20,
+            pageSize: this.pageSizes[0],
             dataCopy: []
         }
     },
@@ -65,7 +69,7 @@ export default {
                 direction = 'desc'
             }
             let copy = JSON.parse(JSON.stringify(this.data))
-            this.dataCopy = this.$_.orderBy(copy, val.prop, direction)
+            this.dataCopy = _.orderBy(copy, val.prop, direction)
         },
         select(data) {
             this.$emit('select', data)

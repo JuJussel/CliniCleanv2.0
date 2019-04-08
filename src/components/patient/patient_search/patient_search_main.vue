@@ -8,7 +8,7 @@
             <el-form label-width="130px">
                 <div>基本</div>
                 <el-form-item label="ID">
-                    <el-input autocomplete="new-password" v-model="searchInput.id"></el-input>
+                    <el-input @keyup.enter.native="enterSearch" autocomplete="new-password" v-model="searchInput.id"></el-input>
                 </el-form-item>
                 <el-form-item label="氏名">
                     <el-input autocomplete="new-password" v-model="searchInput.name"></el-input>
@@ -84,11 +84,11 @@
                 <span>{{ searchResults.length }}件見つかりました</span>
             </div>
             <el-table-pag
-                size="mini"
+                size="small"
                 empty-text="該当する項目は見つかりませんでした。"
                 :data="searchResults"
                 row-key="patientID"
-                height="730"
+                :height="730"
                 stripe
                 style="width: 100%">
                 <el-table-column
@@ -161,6 +161,16 @@ export default {
         }
     },
     methods: {
+        enterSearch() {
+            let id = this.searchInput.id
+            this.doRequest('patientIDSearch', id).then(result => {
+                if (result.ok) {
+                    this.patientAction(['show', {row: {patientID: id}}])
+                } else {
+                    this.$message.error({message: '該当の患者番号が存在しません', customClass: 'notification'})
+                }
+            })
+        },
         updateSearch() {
             if (
                 this.searchInput.id === "" &&
@@ -188,8 +198,11 @@ export default {
             }
         },
         patientAction(type) {
-            console.log(type);            
-            
+            if (type[0] === 'show') {
+                let patientID = type[1].row.patientID
+                this.$store.commit('SET_PATIENTDETAILS_PATIENT_ID',patientID)           
+                this.$eventHub.$emit('homeTrigger', {mode: 'gotoPatientDetails'})                
+            }
         }
     }
 }

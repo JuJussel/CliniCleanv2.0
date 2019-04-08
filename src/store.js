@@ -8,7 +8,6 @@ export default new Vuex.Store({
     lists: {},
     message: '',
     constants: {
-      apiUrl: 'https://192.168.11.99',
       mapUrl: 'https://192.168.11.99/MAPS/tileserver.php',
       mapName: 'CliniClean',
       userList: [],

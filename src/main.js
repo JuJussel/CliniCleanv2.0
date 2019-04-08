@@ -16,6 +16,8 @@ import 'fullcalendar/dist/fullcalendar.min.css'
 import 'fullcalendar/dist/locale/ja'
 import tablePag from './components/shared/table_pag'
 
+require('lodash')
+
 Vue.use(new VueSocketIO({
   connection: SocketIO('https://192.168.11.99:1337')
 }))
@@ -28,7 +30,6 @@ Vue.component('el-table-pag', tablePag)
 Vue.config.productionTip = false
 Vue.prototype.$eventHub = new Vue() // Global event bus
 Vue.prototype.$moment = moment
-Vue.prototype.$_ = require('lodash/collection')
 
 // Requests Mixin
 Vue.mixin(requests)

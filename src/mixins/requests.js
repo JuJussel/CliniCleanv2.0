@@ -114,6 +114,18 @@ export default {
           getPatientSearch: {
             url: 'get/patient/getPatientSearch',
             method: 'get'
+          },
+          getPatientDetails: {
+            url: 'get/patient/patientDetails/getPatientDetails',
+            method: 'get'
+          },
+          updatePatientData: {
+            url: 'update/patient/updatePatientData',
+            method: 'post'
+          },
+          patientIDSearch: {
+            url: 'get/patient/patientIDSearch',
+            method: 'get  '
           }
 
         } // End types

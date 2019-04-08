@@ -15,9 +15,9 @@
             <el-tooltip content="受付事務" placement="bottom" effect="light">
                 <el-submenu index="2">
                     <template slot="title"><i class="fa fa-users menu-icon"></i></template>
-                    <el-menu-item index="receptionFlow">受付</el-menu-item>
-                    <el-menu-item index="newPatient">患者登録</el-menu-item>
-                    <el-menu-item index="patientSearch">患者検索</el-menu-item>
+                    <el-menu-item index="receptionFlow"><i class="fa fa-users sub-menu-icon"></i>受付</el-menu-item>
+                    <el-menu-item index="patientSearch"><i class="fa fa-search sub-menu-icon"></i>患者検索</el-menu-item>
+                    <el-menu-item index="newPatient"><i class="fas fa-file-medical sub-menu-icon"></i>患者登録</el-menu-item>
                 </el-submenu>
             </el-tooltip>
             <el-tooltip content="診療事務" placement="bottom" effect="light">
@@ -55,14 +55,16 @@
 import receptionFlow from '../components/patient/reception_flow/reception_flow_main'
 import newPatient from '../components/patient/new_patient/new_patient_main'
 import patientSearch from '../components/patient/patient_search/patient_search_main'
-import { setTimeout } from 'timers';
+import patientDetails from '../components/patient/patient_details/patient_details_main'
+import { setTimeout } from 'timers'
 
 export default {
   name: 'home',
   components: {
       'receptionFlow': receptionFlow,
       'newPatient': newPatient,
-      'patientSearch': patientSearch
+      'patientSearch': patientSearch,
+      'patientDetails': patientDetails
   },
   data() {
     return {
@@ -293,7 +295,7 @@ export default {
     beforeDestroy: function() {
         this.$eventHub.$off('sessionInvalid')
         this.$eventHub.$off('toast')
-        this.$eventHub.$off('changeView')
+        this.$eventHub.$off('homeTrigger')
     }
 }
 </script>
@@ -305,10 +307,20 @@ export default {
 .el-table--enable-row-hover .el-table__body tr:hover>td {
     background-color: #e0f2f1
 }
+.el-table--mini td {
+    padding: 2px 0!important
+}
+.el-table--small td {
+    padding: 6px 0!important
+}
 </style>
 
 
 <style scoped>
+.sub-menu-icon {
+    margin-right: 5px;
+    color: white
+}
 .menu-icon {
   font-size: 25px!important;
   color: inherit!important;
@@ -343,7 +355,8 @@ export default {
     width: calc(100% - 20px);
     position: absolute;
     padding: 10px;
-    background-color: #f1f1f1
+    background-color: #f1f1f1;
+    overflow: hidden
 }
 </style>
 
