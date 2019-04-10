@@ -12,36 +12,23 @@
                 <el-radio-button label="month">月</el-radio-button>
             </el-radio-group>
         </div>
-        <full-calendar ref='calendar' :config="calConfig"></full-calendar>
+        <full-calendar ref='calendar' :config="config"></full-calendar>
     </div>
 
 </template>
 
 <script>
 export default {
+    props: [
+        'config',
+        'baseView'
+    ],
+    created() {
+        this.$refs.calendar.fireMethod('changeView', this.baseView)
+    },
     data() {
         return {
-            calConfig: {
-                header: "false",
-                firstDay: 1,
-                displayEventTime: false,
-                fixedWeekCount: false,
-                navLinks: true,
-                height: "auto",
-                minTime: "09:00:00",
-                maxTime: "20:00:00",
-                defaultView: "month",
-                allDaySlot: false,
-                editable: false,
-                locale: 'ja',
-                businessHours: [
-                    {dow: [ 1, 2, 3, 4, 5 ], start: '09:00', end: '12:00'},
-                    {dow: [ 1, 2, 3, 5 ], start: '16:00', end: '20:00'},
-                    {dow: [6], start: '09:00', end: '12:00'}
-                ],
-                events: this.$store.state.constants.apiUrl + "/api/get/patient/getReceptionHistory.php?session_id=" + (sessionStorage.getItem("session_id")==null?"":sessionStorage.getItem("session_id"))
-            },
-            view: 'month'
+            view: ""
         }
     },
     methods: {

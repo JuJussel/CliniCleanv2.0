@@ -159,7 +159,7 @@
                     <span style="margin-left: 5px">カレンダー</span>
                 </div>
                 <div>
-                    <calendar></calendar>
+                    <calendar :config="calConfig" :base-view="view"></calendar>
                 </div>
             </el-card>
         </div>
@@ -213,7 +213,28 @@ export default {
                 shinsatsuTypes: [],
                 cardStyle: "background-color: #eaf1f7; display: flex; justify-content: space-between; padding: 10px",
                 loadingInsurance: false
-            }
+            },
+            calConfig: {
+                header: "false",
+                firstDay: 1,
+                displayEventTime: false,
+                fixedWeekCount: false,
+                navLinks: true,
+                height: "auto",
+                minTime: "09:00:00",
+                maxTime: "20:00:00",
+                defaultView: "month",
+                allDaySlot: false,
+                editable: false,
+                locale: 'ja',
+                businessHours: [
+                    {dow: [ 1, 2, 3, 4, 5 ], start: '09:00', end: '12:00'},
+                    {dow: [ 1, 2, 3, 5 ], start: '16:00', end: '20:00'},
+                    {dow: [6], start: '09:00', end: '12:00'}
+                ],
+                events: this.$globals.apiURL + "/api/get/patient/getReceptionHistory.php?session_id=" + (sessionStorage.getItem("session_id")==null?"":sessionStorage.getItem("session_id"))
+            },
+            view: 'month'
         }
     },
     computed: {

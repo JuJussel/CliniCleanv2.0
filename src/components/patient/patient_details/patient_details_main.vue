@@ -1,6 +1,6 @@
 <template>
     <div style="height: 100%; display: flex; overflow-x: hidden; overflow-y: auto" v-loading="display.loading">
-        <el-card style="width: 540px; flex-shrink: 0">
+        <el-card style="width: 540px; flex-shrink: 0" v-bind:class="{edit: edit.basic}">
             <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
                 <span>
                     <i class="far fa-id-card"></i>
@@ -13,6 +13,11 @@
                     <el-button type="text" @click="closeEdit('basic')" size="small">キャンセル</el-button>
                     <el-button :disabled="!changebasic.change" type="primary" @click="saveEdit('basic')" size="small">保存</el-button>
                 </span>
+            </div>
+            <div 
+                class="avatar" 
+                v-bind:style="{ 'background-image': 'url('+ $globals.apiURL +'/profiles/' + patientData.orcaLink + '.png)' }" 
+                style="margin-left: 100px; margin-bottom: 20px">
             </div>
             <el-form v-if="edit.basic" :rules="rulesBasic" ref="basic" :model="clone.basic" label-width="100px">
                 <el-form-item label="名前" required>
@@ -125,13 +130,13 @@
                     <span v-if="patientData.basic.tel2 !==''" class="dataBox" style="margin-left: 20px">{{patientData.basic.tel2}}</span>
                 </div>
                 <div class="line"><span class="label"></span>
-                    <span v-if="patientData.basic.mail1 !==''" class="dataBox">{{patientData.basic.mail1}}</span>
-                    <span v-if="patientData.basic.mail2 !==''" class="dataBox" style="margin-left: 20px">{{patientData.basic.mail2}}</span>
+                    <a :href="'mailto:' + patientData.basic.mail1" v-if="patientData.basic.mail1 !==''" class="dataBox">{{patientData.basic.mail1}}</a>
+                    <a :href="'mailto:' + patientData.basic.mail2" v-if="patientData.basic.mail2 !==''" class="dataBox" style="margin-left: 20px">{{patientData.basic.mail2}}</a>
                 </div>
             </div>
         </el-card>
         <div style="margin-left: 10px; flex-shrink: 0">
-            <el-card style="width: 540px">
+            <el-card style="width: 530px" v-bind:class="{edit: edit.company}">
                 <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
                     <span>
                         <i class="far fa-id-card"></i>
@@ -195,7 +200,7 @@
                 </div>
 
             </el-card>
-            <el-card style="width: 540px; margin-top: 10px">
+            <el-card style="width: 530px; margin-top: 10px" v-bind:class="{edit: edit.dependents}">
                 <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
                     <span>
                         <i class="far fa-id-card"></i>
@@ -265,7 +270,7 @@
                 </div>
             </el-card>
         </div>
-        <div style="margin-left: 10px; flex: 1">
+        <div style="margin-left: 10px; flex: 1; overflow: auto">
             <el-card>
                 <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline">
                     <span>
@@ -285,6 +290,11 @@
                             width="50px"
                             prop="id"
                             label="番号">
+                        </el-table-column>
+                        <el-table-column
+                            width="50px"
+                            prop="insName"
+                            label="保険">
                         </el-table-column>
                         <el-table-column
                             prop="kh1"
@@ -340,7 +350,7 @@
                                 @close="display.insuranceOpen = false"
                                 @loading="display.loading = true"
                                 @noLoading="display.loading = false"
-                                @submit="display.loading = false; getpatientData()">
+                                @submited="submitIns">
                             </insurance>
                             <el-button size="small" slot="reference">追加</el-button>               
                         </el-popover>
@@ -360,7 +370,6 @@
                             label="保険">
                         </el-table-column>
                         <el-table-column
-                            width="80px"
                             prop="hokenShaBangou"
                             label="保険者番号">
                         </el-table-column>
@@ -413,7 +422,7 @@
                             trigger="click"
                             style="margin-left: 5px"
                             v-model="display.kouhiOpen">
-                            <dependent v-if="display.kouhiOpen" @close="display.kouhiOpen = false" @add="registerDependent"></dependent>
+                            <kouhi v-if="display.kouhiOpen" @close="display.kouhiOpen = false" @add="saveEdit('kouhi', ...arguments)"></kouhi>
                             <el-button size="small" slot="reference">追加</el-button>               
                         </el-popover>
                     </span>
@@ -422,7 +431,7 @@
                     <el-table-pag
                         size="mini"
                         empty-text="登録なし"
-                        :data="patientData.insurance.ins"
+                        :data="patientData.insurance.pub"
                         row-key="id"
                         :page-sizes="[4,10,20]"
                         style="border-radius: 4px; border: solid 1px #dcdfe6; margin-top: -10px">
@@ -466,11 +475,13 @@
 
 import dependent from '../new_patient/dependent'
 import insurance from './insurance'
+import kouhi from '../new_patient/kouhi'
 
 export default {
     components: {
         'dependent': dependent,
-        'insurance': insurance
+        'insurance': insurance,
+        'kouhi': kouhi
     },
     data() {
         return {
@@ -699,7 +710,7 @@ export default {
                 this.edit.dependentsChange.removed = []
             }
         },
-        saveEdit(mode) {
+        saveEdit(mode, data) {
             if (mode === 'basic' || mode === 'company') {
                 this.$refs[mode].validate((valid) => {
                     if (valid) {
@@ -708,7 +719,7 @@ export default {
                         let change = 'change' + mode
                         let sendData = {patientID: patientID, changes: this[change], changeData: this.clone[mode], mode: mode}
                         this.doRequest('updatePatientData', sendData).then(result => {
-                            if (!result.err1) {
+                            if (!result.err) {
                                 this.getpatientData(patientID)
                                 this.edit[mode] = false                        
                             }
@@ -733,6 +744,23 @@ export default {
                         this.edit[ident].removed = []
                         this.getpatientData(patientID)
                         this.edit[mode] = false                     
+                    }
+                })
+            } else if (mode === 'kouhi') {
+                this.display.loading = true
+                var patientID = this.$store.state.componentData.patientDetails.IDselected
+                let sendData = {
+                    changeData: data,
+                    changes: "none",
+                    patientID: patientID,
+                    mode: mode
+                }
+                this.doRequest('updatePatientData', sendData).then(result => {
+                    if (result.orcaErr) {
+                        this.display.loading = false
+                        this.$message.error({duration: 6000, message: result.msg, customClass: 'notification'})    
+                    } else if (!result.err) {
+                        this.getpatientData(patientID)
                     }
                 })
             }
@@ -777,6 +805,11 @@ export default {
                 this.clone.dependents.splice(index, 1)
             }
 
+        },
+        submitIns() {
+            let patientID = this.$store.state.componentData.patientDetails.IDselected
+            this.display.loading = false; 
+            this.getpatientData(patientID)
         }
     }
 }
@@ -804,6 +837,9 @@ export default {
         height: 38px;
         line-height: 38px;
         font-size: 14px
+    }
+    .edit {
+        box-shadow: inset 0 0 0px 2px #33b6a5;
     }
 </style>
 

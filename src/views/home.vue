@@ -301,6 +301,9 @@ export default {
 </script>
 
 <style>
+a {
+    color: #33b6a5
+}
 .ccmodal {
     border-radius: 4px
 }
@@ -312,6 +315,13 @@ export default {
 }
 .el-table--small td {
     padding: 6px 0!important
+}
+.avatar {
+    width: 100px;
+    height: 100px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 50px
 }
 </style>
 

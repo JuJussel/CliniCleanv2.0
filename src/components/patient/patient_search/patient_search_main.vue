@@ -202,6 +202,12 @@ export default {
                 let patientID = type[1].row.patientID
                 this.$store.commit('SET_PATIENTDETAILS_PATIENT_ID',patientID)           
                 this.$eventHub.$emit('homeTrigger', {mode: 'gotoPatientDetails'})                
+            } else if (type[0] === 'rec') {
+                let transferData = {
+                    patientID: type[1].row.patientID,
+                    name: type[1].row.name
+                }
+                this.$eventHub.$emit('homeTrigger', {mode: 'receivePat', data: transferData})
             }
         }
     }

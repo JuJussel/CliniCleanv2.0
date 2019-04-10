@@ -1,3 +1,4 @@
+import globals from './globals'
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -16,10 +17,11 @@ import 'fullcalendar/dist/fullcalendar.min.css'
 import 'fullcalendar/dist/locale/ja'
 import tablePag from './components/shared/table_pag'
 
+
 require('lodash')
 
 Vue.use(new VueSocketIO({
-  connection: SocketIO('https://192.168.11.99:1337')
+  connection: SocketIO(globals.socketIOIP)
 }))
 Vue.use(FullCalendar)
 
@@ -30,6 +32,7 @@ Vue.component('el-table-pag', tablePag)
 Vue.config.productionTip = false
 Vue.prototype.$eventHub = new Vue() // Global event bus
 Vue.prototype.$moment = moment
+Vue.prototype.$globals = globals
 
 // Requests Mixin
 Vue.mixin(requests)

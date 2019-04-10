@@ -66,11 +66,12 @@
                     :auto-upload="false">
                     <el-button size="small" type="primary">ファイル選択</el-button>
                 </el-upload>
+                <div v-if="display.noFiles" style="margin-left: 10px; color: #f56c6c">保険証の証写を登録してください。</div>
             </div>                     
         </el-form>
         <div style="margin-top: 10px; text-align: end">
             <el-button type="text" @click="close()" size="small">キャンセル</el-button>
-            <el-button type="primary" @click="submit()" size="small" style="margin-left: 5px">保存</el-button>
+            <el-button :disabled="!inputOK" type="primary" @click="validate()" size="small" style="margin-left: 5px">保存</el-button>
         </div>
     </div>
 </template>
@@ -85,7 +86,8 @@ export default {
         return {
             display: {
                 hokenshaName: "",
-                doubleNotIns: false
+                doubleNotIns: false,
+                noFiles: false
             },
             formData: {
                 insurance: {
@@ -124,7 +126,20 @@ export default {
             },
         }
     },
+    computed: {
+        inputOK() {
+            if (
+                this.formData.insurance.bangou !=='' &&
+                this.$refs.files.uploadFiles.length > 0) {
+                return true
+            }
+            return false
+        }
+    },
     methods: {
+        resetNoFile() {
+            this.display.noFiles = false
+        },
         checkDoubleInsurance() {
             if (
                 this.formData.insurance.kigou !== '' &&
@@ -174,6 +189,13 @@ export default {
             }
             this.$emit('close')
         },
+        validate() {
+            this.$refs.formIns.validate(result => {
+                if (result && !this.display.noFiles) {
+                    this.submit()
+                }
+            })
+        },
         submit() {
             this.$emit('loading')
             let files = this.$refs.files.uploadFiles
@@ -184,9 +206,7 @@ export default {
                     that.formData.insurance.files.push(fr.result)
                     if (files.length === that.formData.insurance.files.length) {
                         if (that.formData.insurance.relation === '本人') {
-                            that.formData.name = that.patientData.nameLastKanji + that.patientData.nameFirstKanji
-                            console.log("Name:" + that.formData.name);
-                            
+                            that.formData.insurance.name = that.patientData.nameLastKanji + that.patientData.nameFirstKanji                    
                         }
                         let sendData = {
                             patientID: that.$store.state.componentData.patientDetails.IDselected,
@@ -199,7 +219,7 @@ export default {
                                 that.$emit('noLoading')
                                 that.$message.error({duration: 6000, message: result.msg, customClass: 'notification'})    
                             } else {
-                                that.$emit('submitted')
+                                that.$emit('submited')
                             }
                         })
                     }

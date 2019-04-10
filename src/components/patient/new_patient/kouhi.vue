@@ -3,13 +3,13 @@
         <el-card class="box-card">
             <div>
                 <el-form :rules="rules" :model="khData" label-width="150px" ref="form">
-                    <el-form-item label="公費負担者番号" required prop="khFuSha">
+                    <el-form-item label="公費負担者番号" prop="khFuSha">
                         <el-input style="width: 200px" v-model="khData.khFuSha"></el-input>
                     </el-form-item>
-                    <el-form-item label="公費受給者番号" required prop="khRecp">
+                    <el-form-item label="公費受給者番号" prop="khRecp">
                         <el-input style="width: 200px" v-model="khData.khRecp"></el-input>
                     </el-form-item>
-                    <el-form-item label="有効期限" required>
+                    <el-form-item label="有効期限">
                         <el-date-picker
                             v-model="khData.valid"
                             type="daterange"
@@ -34,8 +34,8 @@
                     </el-upload>
                 </div>
                 <div style="margin-top: 10px;margin-bottom: 15px; float: right">
-                    <el-button @click="close()" type="text">キャンセル</el-button>
-                    <el-button @click="addNew" :disabled="!inputOK" type="primary">追加</el-button>
+                    <el-button size="small" @click="close()" type="text">キャンセル</el-button>
+                    <el-button size="small" @click="addNew" :disabled="!inputOK" type="primary">追加</el-button>
                 </div>
             </div>
         </el-card>
@@ -47,16 +47,18 @@ export default {
     data() {
         return {
             khData: {
-                khFuSha: '',
-                khRecp: '',
+                khFuSha: '11003316',
+                khRecp: '3322310',
                 valid: false,
                 images: []
             },
             rules: {
                 khFuSha: [
+                    { required: true, message: '入力してください', trigger: 'manual' },
                     { validator: this.validateKouhi1, trigger: 'manual' }
                 ],
                 khRecp : [
+                    { required: true, message: '入力してください', trigger: 'manual' },
                     { validator: this.validateKouhi2, trigger: 'manual' }
                 ]
             }
