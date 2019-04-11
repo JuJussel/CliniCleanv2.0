@@ -34,8 +34,8 @@
                     </el-upload>
                 </div>
                 <div style="margin-top: 10px;margin-bottom: 15px; float: right">
-                    <el-button size="small" @click="close()" type="text">キャンセル</el-button>
-                    <el-button size="small" @click="addNew" :disabled="!inputOK" type="primary">追加</el-button>
+                    <el-button @click="close()" type="text">キャンセル</el-button>
+                    <el-button @click="addNew" :disabled="!inputOK" type="primary">追加</el-button>
                 </div>
             </div>
         </el-card>

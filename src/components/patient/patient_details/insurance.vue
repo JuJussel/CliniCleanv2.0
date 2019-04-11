@@ -70,8 +70,8 @@
             </div>                     
         </el-form>
         <div style="margin-top: 10px; text-align: end">
-            <el-button type="text" @click="close()" size="small">キャンセル</el-button>
-            <el-button :disabled="!inputOK" type="primary" @click="validate()" size="small" style="margin-left: 5px">保存</el-button>
+            <el-button type="text" @click="close()">キャンセル</el-button>
+            <el-button :disabled="!inputOK" type="primary" @click="validate()" style="margin-left: 5px">保存</el-button>
         </div>
     </div>
 </template>

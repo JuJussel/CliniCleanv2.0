@@ -12,7 +12,7 @@
                 <el-radio-button label="month">月</el-radio-button>
             </el-radio-group>
         </div>
-        <full-calendar ref='calendar' :config="config"></full-calendar>
+        <full-calendar @event-selected="eventClick" ref='calendar' :config="config"></full-calendar>
     </div>
 
 </template>
@@ -24,7 +24,7 @@ export default {
         'baseView'
     ],
     created() {
-        this.$refs.calendar.fireMethod('changeView', this.baseView)
+        setTimeout(function() {this.$refs.calendar.fireMethod('changeView', this.baseView)}.bind(this), 10)       
     },
     data() {
         return {
@@ -34,6 +34,12 @@ export default {
     methods: {
         changeDate(mode) {
             this.$refs.calendar.fireMethod(mode)
+        },
+        eventClick(item, jsEvent, view) {
+            this.$emit("eventClick", [item, jsEvent, view])
+        },
+        refresh() {
+            this.$refs.calendar.$emit('refetch-events')
         }
     },
     watch: {

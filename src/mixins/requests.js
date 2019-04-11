@@ -126,6 +126,18 @@ export default {
           patientIDSearch: {
             url: 'get/patient/patientIDSearch',
             method: 'get'
+          },
+          updateEvent: {
+            url: 'update/schedule/updateEvent',
+            method: 'post'
+          },
+          insertNewEvent: {
+            url: 'insert/schedule/insertNewEvent',
+            method: 'post'
+          },
+          deleteEvent: {
+            url: 'update/schedule/deleteEvent',
+            method: 'post'
           }
 
         } // End types

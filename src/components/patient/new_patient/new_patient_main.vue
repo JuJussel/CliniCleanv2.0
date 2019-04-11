@@ -155,7 +155,7 @@
                             trigger="click"
                             v-model="display.dependentOpen">
                             <dependent v-if="display.dependentOpen" @close="display.dependentOpen = false" @add="registerDependent"></dependent>
-                            <el-button slot="reference">追加</el-button>               
+                            <el-button size="small" slot="reference">追加</el-button>               
                         </el-popover>
                     </span>
                 </div>
@@ -292,7 +292,7 @@
                             trigger="click"
                             v-model="display.kouhiOpen">
                             <kouhi v-if="display.kouhiOpen" @close="display.kouhiOpen = false" @add="registerKouhi"></kouhi>
-                            <el-button slot="reference">追加</el-button>               
+                            <el-button size="small" slot="reference">追加</el-button>               
                         </el-popover>
                     </span>
                 </div>

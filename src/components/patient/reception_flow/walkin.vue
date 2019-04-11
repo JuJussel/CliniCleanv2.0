@@ -73,7 +73,8 @@
         </el-table>
         <div style="margin-top: 20px; float: right">
             <el-button style="color: #606266" type="text" @click="closePop()">キャンセル</el-button>
-            <el-button :disabled="!newWalkin.insurance.selected || !newWalkin.examType" @click="submitNewWalkin" type="primary">受付する</el-button>
+            <el-button v-if="mode === 'res'" :disabled="!newWalkin.insurance.selected || !newWalkin.examType" @click="submitNewWalkin" type="primary">保存</el-button>
+            <el-button v-else :disabled="!newWalkin.insurance.selected || !newWalkin.examType" @click="submitNewWalkin" type="primary">受付する</el-button>
         </div>
     </div>
 </template>

@@ -56,6 +56,7 @@ import receptionFlow from '../components/patient/reception_flow/reception_flow_m
 import newPatient from '../components/patient/new_patient/new_patient_main'
 import patientSearch from '../components/patient/patient_search/patient_search_main'
 import patientDetails from '../components/patient/patient_details/patient_details_main'
+import schedule from '../components/schedule/schedule_main'
 import { setTimeout } from 'timers'
 
 export default {
@@ -64,7 +65,8 @@ export default {
       'receptionFlow': receptionFlow,
       'newPatient': newPatient,
       'patientSearch': patientSearch,
-      'patientDetails': patientDetails
+      'patientDetails': patientDetails,
+      'schedule': schedule
   },
   data() {
     return {
@@ -322,6 +324,9 @@ a {
     background-repeat: no-repeat;
     background-size: cover;
     border-radius: 50px
+}
+.el-popover {
+    border: solid 2px #33b6a5;
 }
 </style>
 

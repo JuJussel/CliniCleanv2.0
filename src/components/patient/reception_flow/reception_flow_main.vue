@@ -10,7 +10,7 @@
                     <span style="margin-left: 5px">予定</span>
                 </div>
                 <div>
-                    <draggable v-model="data.reservation" draggable=".ok" :sort="false" :group="{name: 'drop', put: false}" animation="200">
+                    <draggable v-model="data.reservation" draggable=".ok" :sort="false" :group="{name: 'drop', put: false}" animation="200" style="min-height:300px">
                         <el-card 
                             shadow="hover" 
                             v-for="element in data.reservation" 
@@ -66,22 +66,22 @@
                         title="受付"
                         width="500"
                         trigger="click"
-                        v-model="display.newWalkinOpen">
-                        <walkin v-if="display.newWalkinOpen" @submit="submitNewWalkin" @close="display.newWalkinOpen = false" :mode="'new'" :meta="false"></walkin>
-                        <el-button slot="reference" size="small">受付</el-button>               
+                        v-model="display.exWalkinOpen">
+                        <walkin v-if="display.exWalkinOpen" @submit="submitNewWalkin" @close="display.exWalkinOpen = false" :mode="'ex'" :meta="display.exMeta"></walkin>
                     </el-popover>
                     <el-popover
                         placement="bottom"
                         title="受付"
                         width="500"
                         trigger="click"
-                        v-model="display.exWalkinOpen">
-                        <walkin v-if="display.exWalkinOpen" @submit="submitNewWalkin" @close="display.exWalkinOpen = false" :mode="'ex'" :meta="display.exMeta"></walkin>
+                        v-model="display.newWalkinOpen">
+                        <walkin v-if="display.newWalkinOpen" @submit="submitNewWalkin" @close="display.newWalkinOpen = false" :mode="'new'" :meta="false"></walkin>
+                        <el-button slot="reference" size="small">受付</el-button>               
                     </el-popover>
 
                 </div>
                 <div>
-                    <draggable draggable=".ok"  @change="submitNewWalkinRes" v-model="data.waiting" :sort="false" group="drop" animation="200">
+                    <draggable draggable=".ok"  @change="submitNewWalkinRes" v-model="data.waiting" :sort="false" group="drop" animation="200" style="min-height:300px">
                         <el-card 
                             shadow="hover" 
                             v-for="element in data.waiting" 
@@ -232,7 +232,7 @@ export default {
                     {dow: [ 1, 2, 3, 5 ], start: '16:00', end: '20:00'},
                     {dow: [6], start: '09:00', end: '12:00'}
                 ],
-                events: this.$globals.apiURL + "/api/get/patient/getReceptionHistory.php?session_id=" + (sessionStorage.getItem("session_id")==null?"":sessionStorage.getItem("session_id"))
+                events: this.$globals.apiURL + "/ccapi/get/patient/getReceptionHistory.php?session_id=" + (sessionStorage.getItem("session_id")==null?"":sessionStorage.getItem("session_id"))
             },
             view: 'month'
         }
