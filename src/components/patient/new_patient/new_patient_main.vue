@@ -165,7 +165,7 @@
                         empty-text="登録なし"
                         :data="formData.dependent.registered"
                         row-key="patientID"
-                        style="width: 100%; border-radius: 4px; border: solid 1px #dcdfe6;">
+                        style="width: 100%; border-radius: 4px; border: solid 1px #dcdfe6">
                         <el-table-column
                             prop="name"
                             label="名前">

@@ -17,7 +17,6 @@ import 'fullcalendar/dist/fullcalendar.min.css'
 import 'fullcalendar/dist/locale/ja'
 import tablePag from './components/shared/table_pag'
 
-
 require('lodash')
 
 Vue.use(new VueSocketIO({

@@ -40,6 +40,21 @@
                 <el-menu-item index="settings">設定</el-menu-item>
                 <el-menu-item index="logout">ログアウト</el-menu-item>
             </el-submenu>
+            <span style="float: right; margin-right: 50px; margin-top: 4px">
+                <el-submenu v-if="currentView === 'shinsatsu'" index="shinsatsu">
+                    <template slot="title">
+                        <i class="fas fa-stethoscope menu-icon"></i>
+                        診察：{{ $store.state.componentData.karteDetails.patient.name }}    
+                    </template>
+                    <el-menu-item index="receptionFlow"><i class="fa fa-users sub-menu-icon"></i>受付</el-menu-item>
+                    <el-menu-item index="patientSearch"><i class="fa fa-search sub-menu-icon"></i>患者検索</el-menu-item>
+                    <el-menu-item index="newPatient"><i class="fas fa-file-medical sub-menu-icon"></i>患者登録</el-menu-item>
+                </el-submenu>
+                <el-menu-item index="shinsatsu" v-else-if="$store.state.componentData.home.shinsatsu !== ''">
+                    <i class="fas fa-stethoscope menu-icon"></i>
+                    診察：{{ $store.state.componentData.karteDetails.patient.name }}
+                </el-menu-item>
+            </span>
             <span class="location-title">{{pageTitle}}</span>
         </el-menu>
         <div class="main-cont">
@@ -57,6 +72,7 @@ import newPatient from '../components/patient/new_patient/new_patient_main'
 import patientSearch from '../components/patient/patient_search/patient_search_main'
 import patientDetails from '../components/patient/patient_details/patient_details_main'
 import schedule from '../components/schedule/schedule_main'
+import shinsatsu from '../components/karte/shinsatsu/shinsatsu_main'
 import { setTimeout } from 'timers'
 
 export default {
@@ -66,7 +82,8 @@ export default {
       'newPatient': newPatient,
       'patientSearch': patientSearch,
       'patientDetails': patientDetails,
-      'schedule': schedule
+      'schedule': schedule,
+      'shinsatsu': shinsatsu
   },
   data() {
     return {
@@ -83,7 +100,8 @@ export default {
             patientSearchMedical: "患者検索",
             kensaInput: "検索結果入力",
             karteTasks: "タスク",
-            schedule: "スケジュール"
+            schedule: "スケジュール",
+            shinsatsu: "カルテ"
         },
         msgOpen: false
     }
@@ -94,8 +112,8 @@ export default {
         let backgroundColor = '#353c44'
         let color = "#e3e4e5"
         let highlight = "#33b6a5"
-        if (this.currentView === 'karteDetails') {
-            if (this.$store.state.componentData.karteDetails.jihi == 1) {
+        if (this.currentView === 'shinsatsu') {
+            if (this.$store.state.componentData.karteDetails.jihi) {
                 //string = "url(/static/img/toolbar_blue.jpg)";
                 backgroundColor = '#03a9f4'
                 color = "#e3e4e5"
@@ -260,7 +278,7 @@ export default {
             if (data.action === 'updateTask' && data.target.includes(this.$store.state.constants.userID)) {
                 if (this.currentView !=='karteTasks' ) {
                     this.snackbarCont = "新しいタスク情報：" + this.$store.state.componentData.karteDetails.patient.name;
-                    this.$refs.snackbar.open();
+                    this.$message({message: '新しいタスク', type: 'info'})
                     this.newTask = true;
                 }
                 this.updateTaskCount();
@@ -303,6 +321,15 @@ export default {
 </script>
 
 <style>
+.el-input-group__append {
+    padding: 0 5px
+}
+.el-checkbox {
+    margin-right: 0
+}
+.el-submenu__title {
+    padding: 0 10px
+}
 a {
     color: #33b6a5
 }
@@ -328,10 +355,46 @@ a {
 .el-popover {
     border: solid 2px #33b6a5;
 }
+.el-message--success {
+    background-color: #e7efee;
+    border: solid 2px #33b6a5;
+    color: white!important
+}
+.el-message--success * {
+    color: #33b6a5!important
+}
+.el-message--info {
+    background-color: #F5F5F5;
+    border: solid 2px #607D8B;
+}
+.el-message--info * {
+    color: #607D8B!important
+}
+.ql-active, 
+.ql-active *, 
+.ql-snow.ql-toolbar button:hover, 
+.ql-snow.ql-toolbar button:hover *,
+.ql-snow.ql-toolbar .ql-picker-label:hover, 
+.ql-snow.ql-toolbar .ql-picker-label:hover *  {
+    color: #33b6a5!important;
+    stroke: #33b6a5!important
+}
+.ql-container.ql-snow {
+    border: 1px solid #f1f3f8;
+    border-radius: 4px;
+    margin: 5px
+}
+.ql-toolbar.ql-snow {
+    border: none!important
+}
 </style>
 
 
 <style scoped>
+.active {
+    background-color: #f1f1f1!important;
+    color: #353c44!important
+}
 .sub-menu-icon {
     margin-right: 5px;
     color: white

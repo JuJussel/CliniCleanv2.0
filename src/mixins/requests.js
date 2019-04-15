@@ -138,6 +138,26 @@ export default {
           deleteEvent: {
             url: 'update/schedule/deleteEvent',
             method: 'post'
+          },
+          getKouiState: {
+            url: 'get/karte/getKouiState',
+            method: 'get'
+          },
+          shohou_timing: {
+            url: 'get/karte/lists/shohou_timing',
+            method: 'get'
+          },
+          tempSaveKouiState: {
+            url: 'insert/karte/tempSaveKouiState',
+            method: 'post'
+          },
+          uploadImage: {
+            url: 'insert/common/uploadImage',
+            method: 'post'
+          },
+          getSchemas: {
+            url: 'get/karte/lists/schema',
+            method: 'get'
           }
 
         } // End types
