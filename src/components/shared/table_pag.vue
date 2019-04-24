@@ -5,16 +5,20 @@
             :emptyText="emptyText"
             :data="filteredData"
             :row-key="rowKey"
+            :show-header="showHeader"
             @sort-change="sort"
             @select="select"
+            @row-click="rowClick"
             :height="height"
             :stripe="stripe"
-            style="width: 100%">
+            style="width: 100%"
+            v-bind:style="{'max-height': maxHeight, 'cursor': cursor}">
             <slot></slot>
         </el-table>
         <el-pagination
             :page-sizes="pageSizes"
             :page-size="pageSize"
+            :pager-count="5"
             layout="sizes, prev, pager, next"
             style="text-align: center; margin-top: 10px"
             @size-change="sizeChange"
@@ -29,11 +33,13 @@ export default {
     props: {
         data: Array,
         size: String,
+        showHeader: Boolean,
         rowKey: String,
         maxHeight: Number,
         height: Number,
         stripe: String,
         emptyText: String,
+        cursor: {default: 'default'},
         pageSizes: {default: function(){return [20,50,100]}}
     },
     computed: {
@@ -60,6 +66,7 @@ export default {
     watch: {
         data() {
             this.dataCopy = JSON.parse(JSON.stringify(this.data))
+            this.currentPage = 1
         }
     },
     methods: {
@@ -79,6 +86,9 @@ export default {
         },
         currentChange(val) {
             this.currentPage = val
+        },
+        rowClick(data) {
+            this.$emit('row-click', data)
         }
     }
 }

@@ -37,7 +37,7 @@
                             <el-table
                                 v-if="item.gai"
                                 highlight-current-row
-                                :data="display.insurances"
+                                :data="insurances"
                                 size="mini"
                                 @current-change="selectIns"
                                 style="margin-top: 10px; width: 100%; border-radius: 4px; border: solid 1px #dcdfe6">
@@ -192,7 +192,8 @@
 <script>
 export default {
     props: {
-        item: Object
+        item: Object,
+        insurances: Array
     },
     created() {
         if (this.item.kouiType === "sh") {
@@ -201,11 +202,6 @@ export default {
                 this.display.shohouData = result.list
             })
         }
-        let patientID = this.$store.state.componentData.karteDetails.patient.id
-        this.doRequest('getReceptionInsurance', patientID).then(result => {
-            let array = result.data.filter(item => item.wholeName !== '自費')
-            this.display.insurances = array
-        })
     },
     data() {
         return {
@@ -242,8 +238,7 @@ export default {
                     '5': ['外用',''],
                     '6': ['浸煎',''],
                     '7': ['湯','']
-                },
-                insurances: []
+                }
             },
         }
     },

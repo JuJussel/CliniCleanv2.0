@@ -3,7 +3,13 @@
         <div v-for="(cat, catIndex) in items" :key="catIndex">
             {{ cat.cat }} 
             <div style="display: flex; flex-wrap: wrap"> 
-                <el-card shadow="hover" v-for="(rowImg, rowIndex) in cat.img" :key="rowIndex" style="width: 100px; margin: 2px" :body-style="{ padding: '0px' }">
+                <el-card
+                    shadow="hover" 
+                    v-for="(rowImg, rowIndex) in cat.img" 
+                    @click.native="selectImg(rowImg.filename)" 
+                    :key="rowIndex" 
+                    style="width: 100px; margin: 2px; cursor: pointer" 
+                    :body-style="{ padding: '0px' }">
                     <div v-bind:style="{'background-image': 'url(' + $globals.apiURL + '/ASSETS/SCHEMA/' + rowImg.filename + 'S.png)'}" class="itemImage"></div>
                     <div style="padding: 14px;">
                         <span> {{ rowImg.title }} </span>
@@ -24,6 +30,11 @@ export default {
     data() {
         return {
             items: []
+        }
+    },
+    methods: {
+        selectImg(img) {
+            this.$emit('select',img)
         }
     }
 }

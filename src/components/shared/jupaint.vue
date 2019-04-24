@@ -354,8 +354,7 @@ export default {
     addImage: function(file) {
       var img = document.createElement("img");
       img.setAttribute("crossOrigin", "anonymous");
-      img.src =
-        this.$store.state.constants.apiUrl + "/ASSETS/SCHEMA/" + file + ".png";
+      img.src = this.$globals.apiURL + "/ASSETS/SCHEMA/" + file + ".png";
       img.onload = function() {
         var ratio = this.canvasSize.ha / 1400;
         var w = img.width * ratio;
@@ -438,7 +437,7 @@ export default {
     this.mainCanvas.ctx.translate(0.5, 0.5);
     this.mainCanvas.ctx.imageSmoothingEnabled = false;
   }
-}
+};
 </script>
 
 <style scoped>

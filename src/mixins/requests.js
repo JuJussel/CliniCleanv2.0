@@ -143,6 +143,10 @@ export default {
             url: 'get/karte/getKouiState',
             method: 'get'
           },
+          getShinsatsuState: {
+            url: 'get/karte/getShinsatsuState',
+            method: 'get'
+          },
           shohou_timing: {
             url: 'get/karte/lists/shohou_timing',
             method: 'get'
@@ -151,12 +155,24 @@ export default {
             url: 'insert/karte/tempSaveKouiState',
             method: 'post'
           },
+          tempSaveShinsatsuState: {
+            url: 'insert/karte/tempSaveShinsatsuState',
+            method: 'post'
+          },
           uploadImage: {
             url: 'insert/common/uploadImage',
             method: 'post'
           },
           getSchemas: {
             url: 'get/karte/lists/schema',
+            method: 'get'
+          },
+          schemaUpload: {
+            url: 'insert/common/schemaUpload',
+            method: 'post'
+          },
+          getKouiList: {
+            url: 'get/karte/lists/getKouiList',
             method: 'get'
           }
 

@@ -12,19 +12,18 @@
                 trigger="click"
                 v-model="display.schemaOpen">
                 <span style="display: flex">
-                    <schemaSelect style="width: 220px; overflow: auto; height: 500px"></schemaSelect>
-                    <jupaint v-if="display.schemaOpen" :parentWidth="800" :parentHeight="500"></jupaint>
+                    <schemaSelect @select="addImg" style="width: 330px; overflow: auto; height: 500px"></schemaSelect>
+                    <jupaint ref="schemaPainter" v-if="display.schemaOpen" :parentWidth="800" :parentHeight="500"></jupaint>
                 </span>
                 <span style="float: right">
                     <el-button type="text" @click="display.schemaOpen = false">キャンセル</el-button>
-                    <el-button type="primary">追加</el-button>
+                    <el-button type="primary" @click="addSchema">追加</el-button>
                 </span>
                 <button style="width: 82px" slot="reference" class="ql-customBtn"><i class="fas fa-pencil-alt"> シェーマ</i></button>
             </el-popover>
-
-              
         </div>
         <vue-editor
+            ref="editor"
             useCustomImageHandler
             @imageAdded="imageAdd"
             :customModules="editorModules"
@@ -46,6 +45,18 @@ export default {
         jupaint,
         schemaSelect
     },
+    created() {
+        this.$emit('loading', {type: 'loading', el: 'soap'})
+        this.$eventHub.$on('updateTask', this.addKensaResult)
+        let shinsatsuID = this.$store.state.componentData.home.shinsatsu
+        this.doRequest('getShinsatsuState', shinsatsuID).then(result => {
+            this.soapContent = result.data
+            this.$emit('loading', {type: 'loadingDone', el: 'soap'})
+        })
+    },
+    beforeDestroy() {
+        this.$eventHub.$off('updateTask')
+    },
     data() {
         return {
             display: {
@@ -62,7 +73,6 @@ export default {
                         container: "#customToolbar",
                         handlers: {
                         customBtn: () => {
-                            console.log("custom button was clicked");
                         }
                         }
                     }
@@ -82,6 +92,30 @@ export default {
             })
             }
             fr.readAsDataURL(file)                
+        },
+        addImg(img) {
+            this.$refs.schemaPainter.addImage(img);
+        },
+        addSchema() {
+            let cursorLocation = this.$refs.editor.quill.getSelection()
+            let img = this.$refs.schemaPainter.getPainting()
+            this.doRequest('schemaUpload', img).then(result => {
+                let url = result.url
+                this.$refs.editor.quill.insertEmbed(cursorLocation, 'image', url)
+                this.display.schemaOpen = false
+            })
+        },
+        addKensaResult(data) {
+            if (data.status) {
+                if (data.subTask === "0") {
+                let text = "<p>　</p><p><strong>" + data.name + "</strong></p>";
+                for (var i = 0; i < data.results_raw.length; i++) {
+                    text = text + "<p>" + data.results_raw[i].name + "：" + data.results_raw[i].value;
+                }
+                text = text + "<p></p>";
+                this.soapContent = this.soapContent + text
+                }
+            }
         }
     }
 }

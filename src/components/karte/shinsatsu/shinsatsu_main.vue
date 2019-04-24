@@ -1,5 +1,5 @@
 <template>
-    <div style="display: flex" v-loading="loading">
+    <div style="display: flex; height: 100%" v-loading="loading">
         <span style="width: 32%" class="contentCard">
             <el-card>
                 <div slot="header">
@@ -13,7 +13,7 @@
                 <div slot="header">
                     <span>診察内容</span>
                 </div>
-                <soap></soap>
+                <soap ref="soap"></soap>
             </el-card>
         </span>
         <span style="width: 28%" class="contentCard">
@@ -24,12 +24,9 @@
                 <kouiList ref="kouiList" @loading="handleLoading"></kouiList>
             </el-card>
         </span>
-        <span style="width: 20%" class="contentCard">
-            <el-card>
-                <div slot="header">
-                    <span>診療行為</span>
-                </div>
-                <koui @loading="handleLoading"></koui>
+        <span style="width: 20%; min-width:378px; height: 100%; flex-grow: 0" class="contentCard">
+            <el-card bodyStyle="padding: 0; height: 100%" style="height: 100%">
+                <koui @loading="handleLoading" @addItem="addKoui"></koui>
             </el-card>
         </span>
     </div>
@@ -53,16 +50,22 @@ export default {
     beforeDestroy() {
         if (!this.karteDone) {
             let kouiData = this.$refs.kouiList.items
+            let shinsatsuID = this.$store.state.componentData.home.shinsatsu
             this.doRequest('tempSaveKouiState', {
                 kouiString: JSON.stringify(kouiData),
-                shinsatsuID: this.$store.state.componentData.home.shinsatsu,
+                shinsatsuID: shinsatsuID,
                 kouiArray: kouiData
+            })
+            let soapData = this.$refs.soap.soapContent
+            this.doRequest('tempSaveShinsatsuState', {
+                shinsatsuString: soapData,
+                shinsatsuID: shinsatsuID
             })
         }
     },
     computed:{
         loading() {
-            if(this.display.loading.info || this.display.loading.content || this.display.loading.koui) {
+            if(this.display.loading.info || this.display.loading.kouiList || this.display.loading.soap) {
                 return true
             }
             return false
@@ -88,6 +91,9 @@ export default {
             else if (trans.type === 'loadingDone') {
                 this.display.loading[trans.el] = false
             }
+        },
+        addKoui(item) {
+            this.$refs.kouiList.items.push(item)
         }
     }
 }

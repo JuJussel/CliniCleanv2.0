@@ -1,6 +1,13 @@
 <template>
     <div class="content">
-        <kouiItems @delete="deleteItem(index)" class="koui" v-for="(item, index) in items" :key="index" :item="item"></kouiItems>
+        <kouiItems 
+            @delete="deleteItem(index)" 
+            class="koui" 
+            v-for="(item, index) in items" 
+            :key="index" 
+            :item="item" 
+            :insurances="display.insurances">
+        </kouiItems>
     </div>
 </template>
 
@@ -13,11 +20,16 @@ export default {
         'kouiItems': kouiItems
     },
     created() {
-        this.$emit('loading', {type: 'loading', el: 'content'})
+        this.$emit('loading', {type: 'loading', el: 'kouiList'})
         let shinsatsuID = this.$store.state.componentData.home.shinsatsu
         this.doRequest('getKouiState', shinsatsuID).then(result => {
             this.items = JSON.parse(result.data)
-            this.$emit('loading', {type: 'loadingDone', el: 'content'})
+            this.$emit('loading', {type: 'loadingDone', el: 'kouiList'})
+        })
+        let patientID = this.$store.state.componentData.karteDetails.patient.id
+        this.doRequest('getReceptionInsurance', patientID).then(result => {
+            let array = result.data.filter(item => item.wholeName !== '自費')
+            this.display.insurances = array
         })
         this.$eventHub.$on('updateTask', this.updateTask)
     },
@@ -26,8 +38,10 @@ export default {
     },
     data() {
         return {
-            items: []
-            
+            items: [],
+            display: {
+                insurances: []
+            }
         }
     },
     methods: {
