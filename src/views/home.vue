@@ -44,7 +44,7 @@
                 <el-submenu v-if="currentView === 'shinsatsu'" index="shinsatsu">
                     <template slot="title">
                         <i class="fas fa-stethoscope menu-icon"></i>
-                        診察：{{ $store.state.componentData.karteDetails.patient.name }}    
+                        診察：{{ $store.state.componentData.karteDetails.patient.name }}
                     </template>
                     <el-menu-item index="receptionFlow"><i class="fa fa-users sub-menu-icon"></i>受付</el-menu-item>
                     <el-menu-item index="patientSearch"><i class="fa fa-search sub-menu-icon"></i>患者検索</el-menu-item>
@@ -360,6 +360,9 @@ a {
     border-radius: 50px
 }
 .el-popover {
+    border: solid 2px #33b6a5;
+}
+.el-dialog {
     border: solid 2px #33b6a5;
 }
 .el-message--success {

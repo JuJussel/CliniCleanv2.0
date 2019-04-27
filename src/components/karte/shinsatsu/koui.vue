@@ -22,8 +22,49 @@
                 v-model="searchInput">
             </el-input>
         </div>
+        <!-- History ------------------------->
+        <div v-if="list.length <1">
+            <div style="padding: 10px; height: 50px; border-bottom: solid 1px #ebeef5">
+                <span>履歴</span>
+            </div>
+            <div>
+                <el-table-pag
+                    :data="history"
+                    :height="display.tableHeight"
+                    :show-header="false"
+                    cursor="pointer"
+                    v-loading="display.loading"
+                    size="small"
+                    @row-click = "rowClick"
+                    style="width: 100%">
+                    <el-table-column
+                        prop="name"
+                        label="name">
+                        <template slot-scope="scope">
+                            <span style="display: flex; align-items: baseline">
+                                <i :class="kouiTypes[scope.row.kouiType].icon" style="width: 20px"></i>
+                                <span>{{ scope.row.name }}</span>
+
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        width="100"
+                        label="name">
+                        <template slot-scope="scope">
+                            <span v-for="prov in scope.row.provs" :key="prov">
+                                <el-button @click.stop="addItem(scope.row, true)" size="mini">
+                                    <img v-if="prov === 'SRL'" src="../../../assets/img/SRL.png" alt="SRL">
+                                </el-button>
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column width="60" prop="cost"></el-table-column>
+                </el-table-pag>
+            </div>
+        </div>
         <!-- Kensa --------------------------->
-        <div v-if="display.activeTab === '60'">
+        <div v-else-if="display.activeTab === '60'">
             <div style="padding: 10px; height: 50px; border-bottom: solid 1px #ebeef5">
                     <i class="fas fa-microscope" style="color: #606266; margin-right: 5px"></i>
                     <span @click="changeTab('60')" class="link">トップ</span>
@@ -174,17 +215,16 @@
                                 trigger="hover"
                                 content="this is content, this is content, this is content">
                                 <span v-for="(item, index) in scope.row.content" :key="index">
-                                    {{ item.name }} {{ item.med_name }}
+                                    <kouiDisplay :item="item"></kouiDisplay>
                                 </span>
                                 <span slot="reference">
-                                   {{ scope.row.name }}
+                                   <span style="width: 150px; display: flex">{{ scope.row.name }}</span>
                                 </span>
                             </el-popover>
-                            <span v-else slot="reference">
-                                    <i v-if="scope.row.folder" class="far fa-folder"></i>
-                                   {{ scope.row.name }}
-                                </span>
-
+                            <span v-else>
+                                <i v-if="scope.row.folder" class="far fa-folder"></i>
+                                {{ scope.row.name }}
+                            </span>
                     </template>
                 </el-table-column>
             </el-table-pag>
@@ -216,8 +256,12 @@
 </template>
 
 <script>
-import { setTimeout } from 'timers';
+import kouiDisplay from './comps/koui_item_display'
+
 export default {
+    components: {
+        'kouiDisplay': kouiDisplay
+    },
     data(){
         return {
             tabs: [
@@ -236,18 +280,29 @@ export default {
                 ]                
             ],
             display: {
-                activeTab: 1,
+                activeTab: 'fav',
                 nav: [],
                 loading: false,
                 tableHeight: 0
             },
             searchInput: "",
-            list: []
+            list: [],
+            history: [],
+            kouiTypes: {
+                'sh': {title: '処方', icon: 'fas fa-capsules'},
+                '30': {title:'注射', icon: 'fas fa-syringe'},
+                '60': {title:'検査', icon: 'fas fa-microscope'},
+                '71': {title:'健康診断', icon: 'fas fa-file-medical-alt'},
+                '30_prev': {title:'予防接種', icon: 'fas fa-syringe'},
+                '40': {title:'手術', icon: 'fas fa-procedures'},
+                '50': {title:'処置', icon: 'fas fa-band-aid'}
+            }
         }
     },
     mounted() {
         let contHeight = this.$refs.cont.clientHeight
         this.$nextTick(function() {this.display.tableHeight = contHeight -250})
+        this.getData({type: 'fav', mode: 'listMain'})
     },
     watch: {
         searchInput() {
@@ -263,13 +318,21 @@ export default {
         getData(data) {
             this.display.loading = true
             this.doRequest('getKouiList', data).then(result => {
-                if (this.display.activeTab === 'set' && result.data[0].action === 'addItem') {
+                if (this.display.activeTab === 'set' && result.data[0].action === 'addSet') {
                     result.data.forEach(function(item) {
                         item.content = JSON.parse(item.content)
                     })
                 }
+                this.history = []
+                var arr = []
+                result.hist.forEach(item => {                    
+                    let k = JSON.parse(item.cont)
+                    k.kouiType = item.type
+                    arr.push(k)
+                })
                 this.list = result.data
-                this.display.loading = false                
+                this.history = arr
+                this.display.loading = false
             }) 
         },
         changeTab(type) {
@@ -278,7 +341,6 @@ export default {
             this.display.activeTab = type
             let patientID = this.$store.state.componentData.karteDetails.patient.id
             this.getData({type: type, mode: 'listMain', patientID: patientID})
-            
         },
         rowClick(row) {
             if (row.action === 'getSub') {
@@ -296,12 +358,16 @@ export default {
                 this.getData({type: this.display.activeTab, mode: row.action, searchKey: searchKey})
             } else if (row.action === "addItem") {
                 this.addItem(row)
+            } else if (row.action === 'addSet') {
+                this.addSet(row)
             }
         },
-        addItem(item, srl) {
-            console.log(item);
+        async addItem(item, srl, set) {
             event.stopPropagation()
             let kouiType = this.display.activeTab
+            if (set) {
+                kouiType = item.kouiType
+            }
             let kouiArray = {
                 id:"",
                 comment: {
@@ -334,11 +400,11 @@ export default {
                     med_timing : ""
                 }
             } else if (kouiType === "60") {
-                console.log(srl);
-                
                 if (srl) {
-                   kouiArray.type = "SRL"
-                   kouiArray.spec = [{name: item.specimen}]
+                    kouiArray.type = "SRL"
+                    let specs = await this.doRequest('getKensaSpec', item.analyte)
+                    kouiArray.spec = specs.data
+                    kouiArray.specSelected = specs.data[0].id
                 } else {
                     kouiArray.type = "院内"
                 }
@@ -347,8 +413,7 @@ export default {
                     ident: [],
                     identSelected: "",
                     met: [],
-                    metSelected: "",
-                    specSelected: ""
+                    metSelected: ""
                 }
             } else if (kouiType === "30_prev") {
                 var addArray = {
@@ -366,9 +431,20 @@ export default {
             }
             Object.assign(kouiArray, item)
             Object.assign(kouiArray, addArray)
-            console.log(kouiArray);
-            this.$emit('addItem', kouiArray)            
-        }
+            this.$emit('addItem', kouiArray)
+            if (kouiType !== 'fav') {
+                this.doRequest('addKouiHistory', {'item': item, type: kouiType})                     
+            }
+        },
+        addSet(item) {
+            item.content.forEach(function(koui) {
+                if (koui.kouiType === '60' && koui.type === 'SRL') {
+                    this.addItem(koui, true, true)
+                } else {
+                    this.addItem(koui, false, true)
+                }
+            }.bind(this))
+        },
     }
 }
 </script>

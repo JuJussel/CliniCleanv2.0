@@ -1,5 +1,5 @@
 <template>
-    <div style="display: flex; height: 100%" v-loading="loading">
+    <div style="display: flex; height: 100%" v-loading="display.loading">
         <span style="width: 32%" class="contentCard">
             <el-card>
                 <div slot="header">
@@ -13,7 +13,7 @@
                 <div slot="header">
                     <span>診察内容</span>
                 </div>
-                <soap ref="soap"></soap>
+                <soap :soapContent="soapContent" ref="soap"></soap>
             </el-card>
         </span>
         <span style="width: 28%" class="contentCard">
@@ -21,7 +21,7 @@
                 <div slot="header">
                     <span>行為・処方</span>
                 </div>
-                <kouiList ref="kouiList" @loading="handleLoading"></kouiList>
+                <kouiList :insCombNr="insCombNr" :insSet="insCombNrSet" :kouiItems="kouiListItems" @loading="handleLoading" ref="kouiList"></kouiList>
             </el-card>
         </span>
         <span style="width: 20%; min-width:378px; height: 100%; flex-grow: 0" class="contentCard">
@@ -47,40 +47,35 @@ export default {
         'kouiList': kouiList,
         'koui': koui
     },
+    created() {
+        this.getData()
+    },
     beforeDestroy() {
         if (!this.karteDone) {
-            let kouiData = this.$refs.kouiList.items
             let shinsatsuID = this.$store.state.componentData.home.shinsatsu
             this.doRequest('tempSaveKouiState', {
-                kouiString: JSON.stringify(kouiData),
+                kouiString: JSON.stringify(this.$refs.kouiList.items),
                 shinsatsuID: shinsatsuID,
-                kouiArray: kouiData
+                kouiArray: this.$refs.kouiList.items
             })
-            let soapData = this.$refs.soap.soapContent
             this.doRequest('tempSaveShinsatsuState', {
-                shinsatsuString: soapData,
+                shinsatsuString: this.$refs.soap.text,
                 shinsatsuID: shinsatsuID
             })
-        }
-    },
-    computed:{
-        loading() {
-            if(this.display.loading.info || this.display.loading.kouiList || this.display.loading.soap) {
-                return true
-            }
-            return false
         }
     },
     data() {
         return {
             display: {
-                loading: {
-                    info: false,
-                    content: false,
-                    koui: false
-                }
+                loading: false
             },
-            karteDone: false
+            karteDone: false,
+            indexNr: 0,
+            kouiListItems: [],
+            soapContent: "",
+            detailsData: {},
+            insCombNr: "",
+            insCombNrSet: ""
         }
     },
     methods: {
@@ -92,8 +87,29 @@ export default {
                 this.display.loading[trans.el] = false
             }
         },
-        addKoui(item) {
-            this.$refs.kouiList.items.push(item)
+        addKoui(item) {           
+            this.$refs.kouiList.addKoui(item)
+        },
+        async getData() {
+            this.display.loading = true
+            let shinsatsuID = this.$store.state.componentData.home.shinsatsu
+            let patientID = this.$store.state.componentData.karteDetails.patient.id
+            let karteID = this.$store.state.componentData.karteDetails.shinsatsu.karteID
+            // Koui State
+            await this.doRequest('getKouiState', shinsatsuID).then(result => {
+                this.kouiListItems = JSON.parse(result.data)
+            })
+            // Shinsatsu State
+            await this.doRequest('getShinsatsuState', shinsatsuID).then(result => {
+              this.soapContent = result.data
+            })
+            // Patient and General data
+            await this.doRequest('patientDetailsKarte', {patientID: patientID, karteID: karteID}).then(result => {
+                this.detailsData = result.data
+                this.insCombNr = result.insCombNr
+                this.insCombNrSet = result.insCombNrSet
+            })
+            this.display.loading = false
         }
     }
 }

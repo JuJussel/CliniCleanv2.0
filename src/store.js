@@ -35,7 +35,6 @@ export default new Vuex.Store({
           id: '',
           name: ''
         },
-        content: {},
         shinsatsu: {
           karteID: '',
           historyTemp: [],

@@ -174,6 +174,22 @@ export default {
           getKouiList: {
             url: 'get/karte/lists/getKouiList',
             method: 'get'
+          },
+          getKensaSpec: {
+            url: 'get/karte/lists/getKensaSpec',
+            method: 'get'
+          },
+          checkKoui: {
+            url: 'get/karte/checkKoui',
+            method: 'post'
+          },
+          patientDetailsKarte: {
+            url: 'get/karte/patientDetailsKarte',
+            method: 'get'
+          },
+          addKouiHistory: {
+            url: 'insert/karte/addKouiHistory',
+            method: 'post'
           }
 
         } // End types

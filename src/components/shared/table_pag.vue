@@ -54,18 +54,22 @@ export default {
                 return this.data.length                
             }
             return 0
+        },
+        dataCopy() {
+            if (this.data.length > 0) {
+                return JSON.parse(JSON.stringify(this.data))                 
+            }
+            return []
         }
     },
     data() {
         return {
             currentPage: 1,
-            pageSize: this.pageSizes[0],
-            dataCopy: []
+            pageSize: this.pageSizes[0]
         }
     },
     watch: {
         data() {
-            this.dataCopy = JSON.parse(JSON.stringify(this.data))
             this.currentPage = 1
         }
     },

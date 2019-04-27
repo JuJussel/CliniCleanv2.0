@@ -150,7 +150,14 @@
                     <div v-else-if="item.kouiType === '60'">
                         <el-form :inline="true" size="mini" label-width="70px">
                             <el-form-item v-if="item.type === 'SRL'" label="材料">
-                                <el-input v-if="item.type === 'SRL'" readonly v-model="item.spec[0].name" style="width: 100px"></el-input>
+                                <el-select v-model="item.specSelected" :disabled="item.spec.length < 2">
+                                    <el-option 
+                                        v-for="spec in item.spec"
+                                        :key="spec.id"
+                                        :value="spec.id"
+                                        :label="spec.name">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-form> 
                     </div>
@@ -290,8 +297,7 @@ export default {
                 this.item.gai = false
                 this.display.calcOpen = false
             } else if (type === 'gai') {
-                this.item.jihi = false
-                this.item.noCalc = false
+                this.$emit('changeCalc', type)
             }
         },
         selectIns(item) {
@@ -335,7 +341,7 @@ export default {
     opacity: 0;
     transition: all .2s ease
 }
-.kouiItemHeader:hover > .ops {
+.hasHover:hover .ops {
     opacity: 1;
 }
 .kouiItemBody {

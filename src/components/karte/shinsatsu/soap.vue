@@ -28,7 +28,7 @@
             @imageAdded="imageAdd"
             :customModules="editorModules"
             :editorOptions="editorOptions"
-            v-model="soapContent">
+            v-model="text">
         </vue-editor>
     </div>
 </template>
@@ -40,6 +40,9 @@ import jupaint from '../../shared/jupaint'
 import schemaSelect from './comps/schema_select'
 
 export default {
+    props: [
+        'soapContent'
+    ],
     components: {
         VueEditor,
         jupaint,
@@ -47,22 +50,22 @@ export default {
     },
     created() {
         this.$emit('loading', {type: 'loading', el: 'soap'})
-        this.$eventHub.$on('updateTask', this.addKensaResult)
-        let shinsatsuID = this.$store.state.componentData.home.shinsatsu
-        this.doRequest('getShinsatsuState', shinsatsuID).then(result => {
-            this.soapContent = result.data
-            this.$emit('loading', {type: 'loadingDone', el: 'soap'})
-        })
+        this.$eventHub.$on('updateTask', this.addKensaResult)        
     },
     beforeDestroy() {
         this.$eventHub.$off('updateTask')
+    },
+    watch: {
+        soapContent() {
+            this.text = this.soapContent
+        }
     },
     data() {
         return {
             display: {
                 schemaOpen: false
             },
-            soapContent: "",
+            text: "",
             editorModules: [
                 {alias: 'imageResize', module: ImageResize}
             ],
