@@ -44,7 +44,6 @@
                             <span style="display: flex; align-items: baseline">
                                 <i :class="kouiTypes[scope.row.kouiType].icon" style="width: 20px"></i>
                                 <span>{{ scope.row.name }}</span>
-
                             </span>
                         </template>
                     </el-table-column>

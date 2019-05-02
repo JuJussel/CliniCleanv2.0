@@ -1,9 +1,11 @@
+import globals from '../globals'
+
 export default {
   methods: {
     doRequest (type, data) {
       let self = this
       var promise = new Promise(function (resolve, reject) {
-        const server = 'https://192.168.11.99/ccapi/'
+        const server = globals.apiURL + '/ccapi/'
         const sessionID = sessionStorage.getItem('session_id') == null ? '' : sessionStorage.getItem('session_id')
         var $ = require('jquery')
         var types = {
@@ -189,6 +191,14 @@ export default {
           },
           addKouiHistory: {
             url: 'insert/karte/addKouiHistory',
+            method: 'post'
+          },
+          patientSupData: {
+            url: 'insert/karte/patientSupData',
+            method: 'post'
+          },
+          patientNote: {
+            url: 'insert/karte/patientNote',
             method: 'post'
           }
 

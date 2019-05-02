@@ -1,11 +1,8 @@
 <template>
     <div style="display: flex; height: 100%" v-loading="display.loading">
         <span style="width: 32%" class="contentCard">
-            <el-card>
-                <div slot="header">
-                    <span>患者情報</span>
-                </div>
-                <patientInfo @loading="handleLoading"></patientInfo>
+            <el-card bodyStyle="padding: 0; height: 100%" style="height: 100%">
+                <patientInfo @dataUpdate="updatePatientData" v-if="!display.loading" :data="detailsData" @loading="handleLoading"></patientInfo>
             </el-card>
         </span>
         <span style="width: 20%" class="contentCard">
@@ -49,8 +46,10 @@ export default {
     },
     created() {
         this.getData()
+        this.$eventHub.$on('kartePatientDataUpdate', this.updatePatientData)
     },
     beforeDestroy() {
+        this.$eventHub.$off('kartePatientDataUpdate')
         if (!this.karteDone) {
             let shinsatsuID = this.$store.state.componentData.home.shinsatsu
             this.doRequest('tempSaveKouiState', {
@@ -67,7 +66,7 @@ export default {
     data() {
         return {
             display: {
-                loading: false
+                loading: true
             },
             karteDone: false,
             indexNr: 0,
@@ -110,6 +109,17 @@ export default {
                 this.insCombNrSet = result.insCombNrSet
             })
             this.display.loading = false
+        },
+        updatePatientData() {
+            this.$message({
+                message: 'データ保存しました。',
+                type: 'success'
+            })
+            let patientID = this.$store.state.componentData.karteDetails.patient.id
+            let karteID = this.$store.state.componentData.karteDetails.shinsatsu.karteID
+            this.doRequest('patientDetailsKarte', {patientID: patientID, karteID: karteID}).then(result => {
+                this.detailsData = result.data
+            })
         }
     }
 }
