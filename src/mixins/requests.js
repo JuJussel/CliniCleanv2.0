@@ -200,9 +200,29 @@ export default {
           patientNote: {
             url: 'insert/karte/patientNote',
             method: 'post'
+          },
+          insertVital: {
+            url: 'insert/karte/insertVitals',
+            method: 'post'
+          },
+          insertTeikiShohou: {
+            url: 'insert/karte/insertTeikiShohou',
+            method: 'post'
+          },
+          getByoumeiList: {
+            url: 'get/karte/lists/getByoumeiList',
+            method: 'get'
+          },
+          insertByoumei: {
+            url: 'insert/karte/insertByoumei',
+            method: 'post'
+          },
+          updateByoumei: {
+            url: 'update/karte/updateByoumei',
+            method: 'post'
           }
-
-        } // End types
+        }
+        // End types
         // Request function
         if (types[type].method === 'get') {
           $.get(server + types[type].url + '.php',

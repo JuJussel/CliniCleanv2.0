@@ -1,6 +1,6 @@
 <template>
     <div style="display: flex; height: 100%" v-loading="display.loading">
-        <span style="width: 32%" class="contentCard">
+        <span style="width: 36%; flex-shrink: 0" class="contentCard">
             <el-card bodyStyle="padding: 0; height: 100%" style="height: 100%">
                 <patientInfo @dataUpdate="updatePatientData" v-if="!display.loading" :data="detailsData" @loading="handleLoading"></patientInfo>
             </el-card>
@@ -13,7 +13,7 @@
                 <soap :soapContent="soapContent" ref="soap"></soap>
             </el-card>
         </span>
-        <span style="width: 28%" class="contentCard">
+        <span style="width: 24%" class="contentCard">
             <el-card body-style="padding: 0">
                 <div slot="header">
                     <span>行為・処方</span>

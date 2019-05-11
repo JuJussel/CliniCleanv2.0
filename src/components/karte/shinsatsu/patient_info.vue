@@ -15,6 +15,14 @@
         </div>
         <div style="margin-top: 10px; padding:10px; height: calc(100% - 65px); overflow: auto">
             <info v-if="activeTab === 'info'" :data="data"></info>
+            <vital v-if="activeTab === 'vital'" :data="data.vital"></vital>
+            <kensa v-if="activeTab === 'kensa'" :data="data.kensa"></kensa>
+            <meds v-if="activeTab === 'meds'" :data="{meds: data.shohou, shots: data.shot}"></meds>
+            <prevVac v-if="activeTab === 'prevVac'" :data="data.prevVac"></prevVac>
+            <op v-if="activeTab === 'op'" :data="{treat: data.treat, oper: data.oper}"></op>
+            <teiki v-if="activeTab === 'teiki'" :data="data.teikiShohou"></teiki>
+            <files v-if="activeTab === 'files'" :data="data.files"></files>
+            <byoumei v-if="activeTab === 'byoumei'" :data="data.byoumei"></byoumei>
         </div>
     </div>
 </template>
@@ -22,13 +30,29 @@
 <script>
 
 import info from './comps/patient_info/info'
+import vital from './comps/patient_info/vital'
+import kensa from './comps/patient_info/kensa'
+import meds from './comps/patient_info/meds'
+import prevVac from './comps/patient_info/prevVac'
+import byoumei from './comps/patient_info/byoumei'
+import op from './comps/patient_info/op'
+import files from './comps/patient_info/files'
+import teiki from './comps/patient_info/teiki'
 
 export default {
     props: [
         'data'
     ],
     components: {
-        info
+        info,
+        vital,
+        kensa,
+        meds,
+        prevVac,
+        op,
+        teiki,
+        files,
+        byoumei
     },
     data() {
         return {
@@ -38,15 +62,16 @@ export default {
                     {name: '患者情報', id: 'info'},
                     {name: 'カルテ', id: 'karte'},
                     {name: 'バイタル', id: 'vital'},
+                    {name: '病名', id: 'byoumei'},
+                    {name: 'アレルギー・プロブレム', id: 'alpr'},
                     {name: '検査結果', id: 'kensa'},
-                    {name: '投薬履歴', id: 'meds'}
                 ], 
                 [
-                    {name: '病名・アレルギー・プロブレム', id: 'byoumei'},
-                    {name: '手術', id: 'op'},
-                    {name: '処置', id: 'treat'},
-                    {name: 'ファイル', id: 'file'},
-                    {name: '定期処方', id: 'tei'}
+                    {name: '投薬履歴', id: 'meds'},
+                    {name: '予防接種', id: 'prevVac'},
+                    {name: '手術・処置', id: 'op'},
+                    {name: 'ファイル', id: 'files'},
+                    {name: '定期', id: 'teiki'}
                 ]                
             ]
         }

@@ -9,6 +9,7 @@
             @sort-change="sort"
             @select="select"
             @row-click="rowClick"
+            @filter-change="filterHandler"
             :height="height"
             :stripe="stripe"
             style="width: 100%"
@@ -74,6 +75,9 @@ export default {
         }
     },
     methods: {
+        filterHandler(val) {
+            this.$emit('filter-change', val)
+        },
         sort(val) {
             let direction = 'asc'
             if (val.order === 'descending') {

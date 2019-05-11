@@ -164,6 +164,7 @@ export default {
                 } else {
                     let timeRemaining = result.timeRemaining
                     let timeRemainigDisp = timeRemaining/60
+                    timeRemainigDisp = Math.floor(timeRemainigDisp)
                     let deadline = setTimeout(function(){this.checkSession()}.bind(this), 10000)
                     if (this.msgOpen) {
                     this.$msgbox.close()                
@@ -321,6 +322,25 @@ export default {
 </script>
 
 <style>
+div {
+    color: rgb(96, 98, 102)
+}
+.hoverButtonTable tr button {
+    transition: all .2s ease;
+    float: right;
+    opacity: 0;
+    margin: 0
+}
+.hoverButtonTable tr button i {
+    color: #606266
+}
+.hoverButtonTable tr:hover  button {
+    opacity: 1!important
+}
+.cctable {
+    border-radius: 4px;
+    border: 1px solid #dcdfe6
+}
 .link {
     cursor: pointer;
     color: #606266;

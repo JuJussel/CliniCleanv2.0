@@ -80,7 +80,11 @@
         </div>
         <div style="margin-bottom: 20px">
             <h4 style="margin: 0" class="link1">病名</h4>
-            <el-table :data="activeByoumei" size="mini" :show-header="false" class="tableItem">
+            <el-table 
+                :data="data.byoumei.disp" 
+                size="mini"
+                :show-header="false"
+                class="tableItem">
                 <el-table-column
                     label="病名"
                     prop="name">
@@ -186,9 +190,6 @@ export default {
         }
     },
     computed: {
-        activeByoumei() {
-            return this.data.byoumei.filter(item => item.done !== '1')
-        },
         activeAllergy() {
             return this.data.allergy.filter(item => item.done !== '0')
         },
@@ -224,7 +225,6 @@ export default {
                 this.loading = true
                 this.$eventHub.$emit('kartePatientDataUpdate')
             })
-
         },
         toggleBasicEdit() {
             this.editBasicData = true

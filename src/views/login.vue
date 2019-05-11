@@ -2,7 +2,7 @@
     <div class="back">
         <div class="header"></div>
         <div class="login">
-            <el-card class="box-card login-box" body-style="display: flex; flex-direction: column; align-items: center">
+            <el-card v-loading="loading" class="box-card login-box" body-style="display: flex; flex-direction: column; align-items: center">
                 <span class="logo"></span>
                 <div class="form">
                     <el-input @keyup.enter.native="login" placeholder="ユーザー名"  v-model="userData.user" style="margin-bottom: 10px"></el-input>
@@ -22,6 +22,7 @@ export default {
     name: 'login',
     data() {
         return {
+            loading: false,
             userData: {
                 user: "",
                 pass: ""
@@ -31,11 +32,13 @@ export default {
     },
     methods: {
         login() {
+            this.loading = true
             this.doRequest('login', this.userData).then(result => {
                 if (result.OK) {
                     sessionStorage.setItem("session_id", result.sessionID)
                     this.$router.push(result.location)
                 } else {
+                    this.loading = false
                     this.$message.error({message: 'ユーザー名又はパスワードが違います。確認してください。', customClass: 'notification'})
                 }
             })

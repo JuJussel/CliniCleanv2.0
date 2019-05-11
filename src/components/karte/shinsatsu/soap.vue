@@ -50,10 +50,16 @@ export default {
     },
     created() {
         this.$emit('loading', {type: 'loading', el: 'soap'})
-        this.$eventHub.$on('updateTask', this.addKensaResult)        
+        this.$eventHub.$on('updateTask', this.addKensaResult)
+        this.$eventHub.$on('recordVitals', this.recordVitals)
+        this.$eventHub.$on('addVital', this.addVital)
+        this.$eventHub.$on('addText', this.addText)
     },
     beforeDestroy() {
         this.$eventHub.$off('updateTask')
+        this.$eventHub.$off('recordVitals')
+        this.$eventHub.$off('addVital')
+        this.$eventHub.$off('addText')
     },
     watch: {
         soapContent() {
@@ -84,6 +90,25 @@ export default {
         }
     },
     methods: {
+        addText(text) {
+            this.text = this.text + text + '</br>'
+        },
+        addVital(vital) {
+            let string = vital[0] + ": " + vital[1] + " " + vital[2] + vital[3]
+            this.text = this.text + string + '</br>'
+        },
+        recordVitals(cont) {
+            let string = ""
+            cont.forEach(element => {
+                string = string + 
+                    "<strong>" + 
+                    element.nameShort + 
+                    "：</strong>" + 
+                    element.value +
+                    element.unit
+            });
+            this.text = this.text + string + '</br>'
+        },
         imageAdd(file, Editor, cursorLocation, resetUploader) {
             var that = this
             var fr = new FileReader()
