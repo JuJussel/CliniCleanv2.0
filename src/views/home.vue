@@ -88,7 +88,7 @@ export default {
   data() {
     return {
         childMeta: '', 
-        avatarUrl: "url('https://192.168.11.99/profiles/eri.png')",
+        avatarUrl: "url('" + this.$globals.apiURL + "/profiles/eri.png')",
         currentView: 'dashboard',
         pageTitle: 'クリニクリンホーム',
         taskCount: "",

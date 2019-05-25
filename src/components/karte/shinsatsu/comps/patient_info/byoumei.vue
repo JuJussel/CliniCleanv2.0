@@ -5,7 +5,7 @@
             <el-popover v-model="newBM.opem">
                 <div>
                     <el-form label-width="100px">
-                        <el-form-item label="薬剤名">
+                        <el-form-item label="病名">
                             <el-autocomplete
                                 style="width: 350px"
                                 v-model="newBM.item"

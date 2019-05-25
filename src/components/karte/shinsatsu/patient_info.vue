@@ -23,6 +23,9 @@
             <teiki v-if="activeTab === 'teiki'" :data="data.teikiShohou"></teiki>
             <files v-if="activeTab === 'files'" :data="data.files"></files>
             <byoumei v-if="activeTab === 'byoumei'" :data="data.byoumei"></byoumei>
+            <apro v-if="activeTab === 'apro'" :data="{allergy: data.allergy, problem: data.problem}"></apro>
+            <karte v-if="activeTab === 'karte'" :data="data.kartes"></karte>
+            <shindan v-if="activeTab === 'shindan'" :data="data.kenkoushindan"></shindan>
         </div>
     </div>
 </template>
@@ -38,6 +41,9 @@ import byoumei from './comps/patient_info/byoumei'
 import op from './comps/patient_info/op'
 import files from './comps/patient_info/files'
 import teiki from './comps/patient_info/teiki'
+import apro from './comps/patient_info/apro'
+import karte from './comps/patient_info/karte'
+import shindan from './comps/patient_info/kenkoushindan'
 
 export default {
     props: [
@@ -52,7 +58,10 @@ export default {
         op,
         teiki,
         files,
-        byoumei
+        byoumei,
+        apro,
+        karte,
+        shindan
     },
     data() {
         return {
@@ -61,12 +70,13 @@ export default {
                 [
                     {name: '患者情報', id: 'info'},
                     {name: 'カルテ', id: 'karte'},
+                    {name: '健康診断', id: 'shindan'},
                     {name: 'バイタル', id: 'vital'},
                     {name: '病名', id: 'byoumei'},
-                    {name: 'アレルギー・プロブレム', id: 'alpr'},
-                    {name: '検査結果', id: 'kensa'},
+                    {name: 'アレルギー・プロブレム', id: 'apro'}
                 ], 
                 [
+                    {name: '検査結果', id: 'kensa'},
                     {name: '投薬履歴', id: 'meds'},
                     {name: '予防接種', id: 'prevVac'},
                     {name: '手術・処置', id: 'op'},

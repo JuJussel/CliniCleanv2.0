@@ -25,7 +25,7 @@
                     <div style="display: flex; justify-content: flex-end; margin-bottom: 10px">
                         <el-popover
                             placement="bottom"
-                            title="受付"
+                            title="算定"
                             width="100px"
                             trigger="click"
                             v-model="display.calcOpen">

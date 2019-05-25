@@ -1,5 +1,5 @@
 <template>
-    <div ref="cont" style="height: 100%">
+    <div ref="cont" style="height: 100%" v-loading="display.loading">
         <div>
             <div v-for="(row, index) in tabs" :key="index" class="tab-header">
                 <div 
@@ -192,6 +192,34 @@
                     <i class="el-icon-arrow-right" style="color: #33b6a5; font-weight: bold"></i>
                     <span class="link"> {{ display.nav[1].name }} </span>
                 </span>
+                <el-popover style="float: right; margin-top; -5px" v-model="display.set.open" @show="openNewSet" width="250">
+                    <div>
+                        <el-form label-width="100px">
+                            <el-form-item label="セット名">
+                                <el-input v-model="display.set.title" maxlength="100" style="width: 150px"></el-input>
+                            </el-form-item>
+                            <el-form-item label="フォルダー">
+                                <el-autocomplete 
+                                    v-model="display.set.folder"
+                                    :fetch-suggestions="querySetFolders"
+                                    clearable
+                                    style="width: 150px">
+                                </el-autocomplete>
+                            </el-form-item>
+                            <div style="margin-top: 10px">
+                                <el-button 
+                                    @click="saveNewSet"
+                                    style="float: right"
+                                    type="primary"
+                                    :disabled="display.set.title === '' || display.set.folder === ''">
+                                    保存
+                                </el-button>
+                                <el-button @click="display.set.open = false" style="float: right; margin-right: 5px" type="text">キャンセル</el-button>
+                            </div>
+                        </el-form>
+                    </div>
+                    <el-button slot="reference" size="small">登録</el-button>
+                </el-popover>
             </div>
             <el-table-pag
                 :data="list"
@@ -282,7 +310,13 @@ export default {
                 activeTab: 'fav',
                 nav: [],
                 loading: false,
-                tableHeight: 0
+                tableHeight: 0,
+                set: {
+                    open: false,
+                    title: "",
+                    folder: "",
+                    folders: false
+                }
             },
             searchInput: "",
             list: [],
@@ -443,6 +477,22 @@ export default {
                     this.addItem(koui, false, true)
                 }
             }.bind(this))
+        },
+        openNewSet() {
+            this.display.set.title = ''
+            this.display.set.folder = ''
+            this.doRequest('getSetFolders').then(result => {
+                this.display.set.folders = result.data
+            })
+        },
+        querySetFolders(queryString, cb) {
+            var results = queryString ? this.display.set.folders.filter(item => item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.display.set.folders
+            cb(results)
+        },
+        saveNewSet() {
+            this.display.set.open = false
+            this.display.loading = true
+            this.$emit('saveNewSet', this.display.set)
         },
     }
 }

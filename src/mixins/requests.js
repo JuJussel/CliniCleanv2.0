@@ -220,6 +220,42 @@ export default {
           updateByoumei: {
             url: 'update/karte/updateByoumei',
             method: 'post'
+          },
+          insertAllergy: {
+            url: 'insert/karte/insertAllergy',
+            method: 'post'
+          },
+          updateAllergy: {
+            url: 'update/karte/updateAllergy',
+            method: 'post'
+          },
+          insertProblem: {
+            url: 'insert/karte/insertProblem',
+            method: 'post'
+          },
+          updateProblem: {
+            url: 'update/karte/updateProblem',
+            method: 'post'
+          },
+          karteDisplay: {
+            url: 'get/karte/karteDisplay',
+            method: 'get'
+          },
+          kenkoushindanDisplay: {
+            url: 'get/karte/kenkoushindanDisplay',
+            method: 'get'
+          },
+          getECGTypes: {
+            url: 'get/karte/lists/ecg_cats',
+            method: 'get'
+          },
+          getSetFolders: {
+            url: 'get/karte/lists/getSetFolders',
+            method: 'get'
+          },
+          newSet: {
+            url: 'insert/karte/newSet',
+            method: 'post'
           }
         }
         // End types

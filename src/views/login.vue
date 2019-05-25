@@ -36,6 +36,7 @@ export default {
             this.doRequest('login', this.userData).then(result => {
                 if (result.OK) {
                     sessionStorage.setItem("session_id", result.sessionID)
+                    document.cookie = "PHPSESSID=" + result.sessionID
                     this.$router.push(result.location)
                 } else {
                     this.loading = false

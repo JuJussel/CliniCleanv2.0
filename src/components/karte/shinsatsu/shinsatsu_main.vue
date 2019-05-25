@@ -23,7 +23,7 @@
         </span>
         <span style="width: 20%; min-width:378px; height: 100%; flex-grow: 0" class="contentCard">
             <el-card bodyStyle="padding: 0; height: 100%" style="height: 100%">
-                <koui @loading="handleLoading" @addItem="addKoui"></koui>
+                <koui @loading="handleLoading" @addItem="addKoui" @saveNewSet="saveNewSet" ref="koui"></koui>
             </el-card>
         </span>
     </div>
@@ -119,6 +119,25 @@ export default {
             let karteID = this.$store.state.componentData.karteDetails.shinsatsu.karteID
             this.doRequest('patientDetailsKarte', {patientID: patientID, karteID: karteID}).then(result => {
                 this.detailsData = result.data
+            })
+        },
+        saveNewSet(data) {
+            let folderID = data.folders.find(function(elm){
+                return elm.name === data.folder
+            })
+            if (folderID === undefined) {
+                folderID = 'new'
+            }else {
+                folderID = folderID.ID
+            }
+            this.doRequest('newSet', {
+                data: JSON.stringify(this.kouiListItems),
+                patientID: this.$store.state.componentData.karteDetails.patient.id,
+                folder: folderID,
+                folderName: data.folder,
+                name: data.title
+            }).then(result => {
+                this.$refs.koui.getData({type: 'set', mode: 'listMain', patientID: this.$store.state.componentData.karteDetails.patient.id})
             })
         }
     }

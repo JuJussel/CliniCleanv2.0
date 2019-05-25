@@ -101,10 +101,25 @@
         </div>
         <div style="margin-bottom: 20px">
             <h4 style="margin: 0" class="link1">アレルギー</h4>
-            <el-table :data="activeAllergy" size="mini" :show-header="false" class="tableItem">
+            <el-table :data="data.allergy" size="mini" :show-header="false" class="tableItem">
                 <el-table-column
-                    label="病名"
+                    label="アレルギー物質"
                     prop="name">
+                </el-table-column>
+                <el-table-column
+                    sortable
+                    label="重症度">
+                    <template slot-scope="scope">
+                        <el-rate
+                            v-model="scope.row.grade"
+                            :texts="gradeTexts"
+                            show-text
+                            disabled
+                            :icon-classes="gradeIcons"
+                            void-icon-class="el-icon-warning"
+                            :colors="gradeColors">
+                        </el-rate>
+                    </template>
                 </el-table-column>
             </el-table>
         </div>
@@ -170,6 +185,9 @@ export default {
     ],
     data() {
         return {
+            gradeIcons: ['el-icon-warning','el-icon-warning','el-icon-warning'],
+            gradeTexts: ['軽症','軽症', '中等症','重症', '重症'],
+            gradeColors: ['#607d8b', '#F7BA2A', '#e53935'],
             newNoteOpen: false,
             newNote: '',
             loading: false,
