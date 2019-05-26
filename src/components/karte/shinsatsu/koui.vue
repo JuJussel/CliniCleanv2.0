@@ -283,7 +283,7 @@
 </template>
 
 <script>
-import kouiDisplay from './comps/koui_item_display'
+import kouiDisplay from './comps/kouiItemDisplay'
 
 export default {
     components: {

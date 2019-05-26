@@ -46,9 +46,8 @@
                         <i class="fas fa-stethoscope menu-icon"></i>
                         診察：{{ $store.state.componentData.karteDetails.patient.name }}
                     </template>
-                    <el-menu-item index="receptionFlow"><i class="fa fa-users sub-menu-icon"></i>受付</el-menu-item>
-                    <el-menu-item index="patientSearch"><i class="fa fa-search sub-menu-icon"></i>患者検索</el-menu-item>
-                    <el-menu-item index="newPatient"><i class="fas fa-file-medical sub-menu-icon"></i>患者登録</el-menu-item>
+                    <el-menu-item index="shinsatsuPause"><i class="fas fa-pause sub-menu-icon"></i>診察一時停止</el-menu-item>
+                    <el-menu-item index="shinsatsuEnd"><i class="fas fa-save sub-menu-icon"></i>診察終了</el-menu-item>
                 </el-submenu>
                 <el-menu-item index="shinsatsu" v-else-if="$store.state.componentData.home.shinsatsu !== ''">
                     <i class="fas fa-stethoscope menu-icon"></i>
@@ -59,7 +58,7 @@
         </el-menu>
         <div class="main-cont">
             <transition name="el-fade-in-linear" >
-                <child-component @resetMeta="childMeta=''" @triggerParent="childTriggers" :is="currentView" :meta="childMeta" ref="reception"></child-component>
+                <child-component @resetMeta="childMeta=''" @triggerParent="childTriggers" :is="currentView" :meta="childMeta" ref="childComp"></child-component>
             </transition>
         </div>
     </div>
@@ -139,56 +138,64 @@ export default {
   },
     methods: {
         handleSelect(key) {
-        if (key === 'logout') {
-            this.logout()
-        }
-        this.currentView = key
-        this.pageTitle = this.pageTitles[key]
+            if (key === 'logout') {
+                this.logout()
+            }
+            else if (key === 'shinsatsuEnd') {
+                this.endShinsatsu()
+                return
+            }
+            else if (key === 'shinsatsuPause') {
+                this.pauseShinsatsu()
+                return
+            }
+            this.currentView = key
+            this.pageTitle = this.pageTitles[key]
         },
         openToast(cont) {
-        this.$message(cont);
+            this.$message(cont);
         },
-        checkSession() {      
-        let warningThreshold = 300 //in sec
-        this.doRequest('sessionCheck','').then(result => {
-            if (!result.err) {
-                if(result.timeRemaining < 1) {
-                if (this.msgOpen) {
-                    this.$msgbox.close()                
-                }
-                this.logout()
-                } else {
-                if (result.timeRemaining > warningThreshold) {
-                    let timeout = (result.timeRemaining * 1000) - (warningThreshold*1000)
-                    setTimeout(function(timeout) {this.checkSession()}.bind(this), timeout)
-                } else {
-                    let timeRemaining = result.timeRemaining
-                    let timeRemainigDisp = timeRemaining/60
-                    timeRemainigDisp = Math.floor(timeRemainigDisp)
-                    let deadline = setTimeout(function(){this.checkSession()}.bind(this), 10000)
+        checkSession() {
+            let warningThreshold = 300 //in sec
+            this.doRequest('sessionCheck','').then(result => {
+                if (!result.err) {
+                    if(result.timeRemaining < 1) {
                     if (this.msgOpen) {
-                    this.$msgbox.close()                
+                        this.$msgbox.close()                
                     }
-                    this.msgOpen = true
-                    this.$confirm('セッションが'+ timeRemainigDisp + '分後無効にります。< /br>セッションを延長しますか？', 'セッションタイムアウト', {
-                    confirmButtonText: '延長する',
-                    cancelButtonText: 'ログアウト',
-                    type: 'warning'
-                    }).then(() => {
-                    clearTimeout(deadline)
-                    this.updateTaskCount()
-                    this.checkSession()   
-                    this.msgOpen = false          
-                    }).catch(() => {
-                    clearTimeout(deadline)
-                    this.logout()                
-                    });
+                    this.logout()
+                    } else {
+                        if (result.timeRemaining > warningThreshold) {
+                            let timeout = (result.timeRemaining * 1000) - (warningThreshold*1000)
+                            setTimeout(function(timeout) {this.checkSession()}.bind(this), timeout)
+                        } else {
+                            let timeRemaining = result.timeRemaining
+                            let timeRemainigDisp = timeRemaining/60
+                            timeRemainigDisp = Math.floor(timeRemainigDisp)
+                            let deadline = setTimeout(function(){this.checkSession()}.bind(this), 10000)
+                            if (this.msgOpen) {
+                            this.$msgbox.close()                
+                            }
+                            this.msgOpen = true
+                            this.$confirm('セッションが'+ timeRemainigDisp + '分後無効にります。< /br>セッションを延長しますか？', 'セッションタイムアウト', {
+                            confirmButtonText: '延長する',
+                            cancelButtonText: 'ログアウト',
+                            type: 'warning'
+                            }).then(() => {
+                            clearTimeout(deadline)
+                            this.updateTaskCount()
+                            this.checkSession()   
+                            this.msgOpen = false          
+                            }).catch(() => {
+                            clearTimeout(deadline)
+                            this.logout()                
+                            });
+                        }
+                    }
+                } else {
+                    alert(result.msg);
                 }
-                }
-            } else {
-                alert(result.msg);
-            }
-        })
+            })
         },
         sessionTimeout() {
             if (this.msgOpen) {
@@ -212,7 +219,7 @@ export default {
                 this.childMeta = meta
                 this.currentView = 'receptionFlow'
                 this.pageTitle = '患者受付'
-                setTimeout(function() {this.$refs.reception.receivePat(meta.data)}.bind(this), 100)
+                setTimeout(function() {this.$refs.childComp.receivePat(meta.data)}.bind(this), 100)
             } else if (meta.mode === "patientDetailsMedical") {
                 this.currentView = 'patientDetailsMedical'
                 this.pageTitle = '患者詳細'
@@ -235,6 +242,12 @@ export default {
             this.doRequest('getTaskNumber','').then(result => {
                 this.taskCount = result.count        
             })
+        },
+        endShinsatsu() {
+             this.$refs.childComp.openSubmit()
+        },
+        pauseShinsatsu() {
+            this.$refs.childComp.openPause()
         }
     },
     sockets: {

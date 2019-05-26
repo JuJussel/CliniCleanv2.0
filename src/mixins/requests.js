@@ -256,6 +256,10 @@ export default {
           newSet: {
             url: 'insert/karte/newSet',
             method: 'post'
+          },
+          pauseShinsatsu: {
+            url: 'insert/karte/pauseShinsatsu',
+            method: 'post'
           }
         }
         // End types

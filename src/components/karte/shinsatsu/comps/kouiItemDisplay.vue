@@ -1,6 +1,6 @@
 <template>
     <div class="item">
-        <i :class="kouiTypes[item.kouiType].icon" style="width: 25px; flex-shrink: 0"></i>
+        <i :class="kouiTypes[item.kouiType].icon" style="width: 25px; flex-shrink: 0; margin-top: 3px"></i>
         {{ item.name }}{{ item.med_name }}
     </div>
 </template>

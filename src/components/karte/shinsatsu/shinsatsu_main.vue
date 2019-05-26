@@ -26,6 +26,12 @@
                 <koui @loading="handleLoading" @addItem="addKoui" @saveNewSet="saveNewSet" ref="koui"></koui>
             </el-card>
         </span>
+        <el-dialog title="診察一時停止" :visible.sync="display.pasueConfrim">
+            <waitConfirm :koui="kouiListItems" v-if="display.pasueConfrim" @confirm="pauseShinsatsu" @close="display.pasueConfrim = false"></waitConfirm>
+        </el-dialog>
+        <el-dialog title="診察終了" :visible.sync="display.submitConfirm">
+            <submitConfirm :koui="kouiListItems" v-if="display.submitConfirm" @confirm="submitShinsatsu" @close="display.submitConfirm = false"></submitConfirm>
+        </el-dialog>
     </div>
 </template>
 
@@ -35,14 +41,18 @@ import patientInfo from './patient_info'
 import soap from './soap'
 import kouiList from './koui_list'
 import koui from './koui'
-import { log } from 'util';
+import { log } from 'util'
+import waitConfirm from './comps/waitConfirm'
+import submitConfirm from './comps/submitConfirm'
 
 export default {
     components: {
         'patientInfo': patientInfo,
         'soap': soap,
         'kouiList': kouiList,
-        'koui': koui
+        'koui': koui,
+        'waitConfirm': waitConfirm,
+        'submitConfirm': submitConfirm
     },
     created() {
         this.getData()
@@ -66,7 +76,9 @@ export default {
     data() {
         return {
             display: {
-                loading: true
+                loading: true,
+                pasueConfrim: false,
+                submitConfirm: false
             },
             karteDone: false,
             indexNr: 0,
@@ -139,6 +151,29 @@ export default {
             }).then(result => {
                 this.$refs.koui.getData({type: 'set', mode: 'listMain', patientID: this.$store.state.componentData.karteDetails.patient.id})
             })
+        },
+        openPause() {
+            this.display.pasueConfrim = true
+        },
+        pauseShinsatsu(waitItems) {
+            this.display.loading = true
+            this.display.pasueConfrim = false
+            this.doRequest('pauseShinsatsu', {
+                shinsatsuData: this.soapContent,
+                kouiData: JSON.stringify(this.kouiListItems),
+                ordersToWait: waitItems,
+                karteData: {
+                    karteID: this.$store.state.componentData.karteDetails.shinsatsu.karteID,
+                    patientID: this.$store.state.componentData.karteDetails.patient.id,
+                    shinsatsuID: this.$store.state.componentData.home.shinsatsu
+                }
+            })
+        },
+        openSubmit() {
+            this.display.submitConfirm = true
+        },
+        submitShinsatsu() {
+
         }
     }
 }
