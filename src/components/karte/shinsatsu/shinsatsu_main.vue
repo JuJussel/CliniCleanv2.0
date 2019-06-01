@@ -14,7 +14,7 @@
             </el-card>
         </span>
         <span style="width: 24%" class="contentCard">
-            <el-card body-style="padding: 0">
+            <el-card body-style="padding: 0; height: calc(100% - 60px); overflow: auto" style="height: 100%">
                 <div slot="header">
                     <span>行為・処方</span>
                 </div>
@@ -172,8 +172,21 @@ export default {
         openSubmit() {
             this.display.submitConfirm = true
         },
-        submitShinsatsu() {
-
+        submitShinsatsu(ordersToWait) {
+            this.display.loading = true
+            this.doRequest('insertShinsatsuData', {
+                shinsatsuData: this.soapContent,
+                kouiData: this.kouiListItems,
+                waitItemsArr: ordersToWait,
+                karteData: {
+                    karteID: this.$store.state.componentData.karteDetails.shinsatsu.karteID,
+                    patientID: this.$store.state.componentData.karteDetails.patient.id,
+                    shinsatsuID: this.$store.state.componentData.home.shinsatsu,
+                    jihi: this.$store.state.componentData.karteDetails.jihi
+                }
+            }).then(result => {
+                
+            })
         }
     }
 }

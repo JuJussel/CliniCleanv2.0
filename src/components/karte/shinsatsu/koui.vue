@@ -401,6 +401,9 @@ export default {
             if (set) {
                 kouiType = item.kouiType
             }
+            if (this.display.activeTab === "fav") {
+                kouiType = item.kouiType
+            }
             let kouiArray = {
                 id:"",
                 comment: {
@@ -433,14 +436,15 @@ export default {
                     med_timing : ""
                 }
             } else if (kouiType === "60") {
+                kouiArray.results = []
                 if (srl) {
                     kouiArray.type = "SRL"
-                    let specs = await this.doRequest('getKensaSpec', item.analyte)
-                    kouiArray.spec = specs.data
-                    kouiArray.specSelected = specs.data[0].id
                 } else {
                     kouiArray.type = "院内"
                 }
+                let specs = await this.doRequest('getKensaSpec', item.analyte)
+                kouiArray.spec = specs.data
+                kouiArray.specSelected = specs.data[0].id
                 var addArray = {
                     values: [],
                     ident: [],
@@ -449,6 +453,7 @@ export default {
                     metSelected: ""
                 }
             } else if (kouiType === "30_prev") {
+                kouiArray.id = item.meds_ID
                 var addArray = {
                     amount: "",
                     location: "右上腕",
@@ -465,7 +470,7 @@ export default {
             Object.assign(kouiArray, item)
             Object.assign(kouiArray, addArray)
             this.$emit('addItem', kouiArray)
-            if (kouiType !== 'fav') {
+            if (kouiType !== 'fav' && !set) {
                 this.doRequest('addKouiHistory', {'item': item, type: kouiType})                     
             }
         },

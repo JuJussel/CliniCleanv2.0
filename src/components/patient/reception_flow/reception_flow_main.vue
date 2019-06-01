@@ -140,7 +140,9 @@
                                 <div v-if="display.shinsatsuTypes.length > 0" style="font-size: 12px">{{ getType(element.type) }}</div>
                             </span>
                             <span style="text-align: end">
+                                <span v-if="element.status === '41'" style="font-size: 12px">オーダー待ち</span>
                                 <el-popover
+                                    v-else
                                     placement="bottom"
                                     title="会計"
                                     width="300"

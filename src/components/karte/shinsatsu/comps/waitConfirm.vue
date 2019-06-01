@@ -3,7 +3,7 @@
         <div>診察一時的に停止しますか？</div>
         <div style="margin: 10px 0">
             <span>タイマー追加　　</span>
-            <el-checkbox v-model="addOrderTimer">オーダータイマー追加</el-checkbox>
+            <el-checkbox v-if="orderKoui.length > 0" v-model="addOrderTimer">オーダータイマー追加</el-checkbox>
             <el-checkbox v-model="addTimeTimer" disabled>時間タイマー追加</el-checkbox>
         </div>
         <div v-if="addOrderTimer">

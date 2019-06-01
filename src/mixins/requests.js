@@ -260,6 +260,14 @@ export default {
           pauseShinsatsu: {
             url: 'insert/karte/pauseShinsatsu',
             method: 'post'
+          },
+          kensaResults: {
+            url: 'get/karte/lists/kensaResults',
+            method: 'get'
+          },
+          insertShinsatsuData: {
+            url: 'insert/karte/insertShinsatsuData',
+            method: 'post'
           }
         }
         // End types

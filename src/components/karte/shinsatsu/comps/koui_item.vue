@@ -149,9 +149,9 @@
                     <!-- Kensa -->
                     <div v-else-if="item.kouiType === '60'">
                         <el-form :inline="true" size="mini" label-width="70px">
-                            <el-form-item v-if="item.type === 'SRL'" label="材料">
+                            <el-form-item label="材料">
                                 <el-select v-model="item.specSelected" :disabled="item.spec.length < 2">
-                                    <el-option 
+                                    <el-option
                                         v-for="spec in item.spec"
                                         :key="spec.id"
                                         :value="spec.id"
@@ -159,6 +159,29 @@
                                     </el-option>
                                 </el-select>
                             </el-form-item>
+                            <div v-if="item.done">
+                                <el-dropdown
+                                    trigger="click"
+                                    @visible-change="fetchResults"
+                                    @command="addResult"
+                                    :disabled="resultsFiltered.length < 1">
+                                    <el-button size="small">結果追加</el-button>
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item
+                                            v-for="result in resultsFiltered"
+                                            :key="result.ID"
+                                            :command="result"> {{ result.name }} </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                    </el-dropdown>
+                                <div style="margin-top: 10px">
+                                    <el-form-item v-for="result in item.results" :key="result.JLAC" :label="result.name">
+                                        <el-input v-model="result.value" style="width: 150px">
+                                            <template slot="append"> {{ result.unit }} </template>
+                                        </el-input>
+                                        <el-button @click="removeResult(result)" type="text" style="margin-left: 10px">削除</el-button>
+                                    </el-form-item>
+                                </div>
+                            </div>
                         </el-form> 
                     </div>
                     <!-- Shot / PrevVac -->
@@ -245,8 +268,9 @@ export default {
                     '5': ['外用',''],
                     '6': ['浸煎',''],
                     '7': ['湯','']
-                }
+                },
             },
+            resultsFull: false
         }
     },
     computed: {
@@ -260,6 +284,9 @@ export default {
             } else {
                 return 'white'
             }
+        },
+        resultsFiltered() { 
+            return _.differenceWith(this.resultsFull, this.item.results, _.isEqual);
         }
     },
     methods: {
@@ -313,6 +340,19 @@ export default {
                 this.item.orderID = result.orderID
                 this.display.orderOpen = false
             })
+        },
+        fetchResults(open) {
+            if (!this.resultsFull) {
+                this.doRequest('kensaResults', this.item.analyte).then(result => {
+                    this.resultsFull = result.data
+                })
+            }
+        },
+        addResult(result) {
+            this.item.results.push(result)
+        },
+        removeResult(result) {
+            this.item.results = this.item.results.filter(item => item !== result)
         }
     }
 }

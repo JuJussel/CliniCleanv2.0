@@ -318,7 +318,9 @@ export default {
             this.$store.commit('SET_DATE', result.date)        
         })
         this.doRequest('getTasksShinsatsu','').then(result => {
-            this.$store.commit('SET_SHINSATSU_INFO', result.data)        
+            if (result.data) {
+                this.$store.commit('SET_SHINSATSU_INFO', result.data)                
+            }
         })
         this.updateTaskCount();
         this.$eventHub.$on('sessionInvalid', this.sessionTimeout)

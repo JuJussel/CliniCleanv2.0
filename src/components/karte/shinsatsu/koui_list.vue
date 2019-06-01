@@ -97,6 +97,7 @@ export default {
     data() {
         return {
             items: [],
+            indexNr: 0,
             display: {
                 insurances: [],
                 confOpen: false

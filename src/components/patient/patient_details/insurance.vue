@@ -10,7 +10,7 @@
             <el-form-item label="被保険者" required>
                 <el-col :span="13">
                     <el-form-item v-if="formData.insurance.relation === '本人'" prop="name">
-                        <el-input disabled :value="patientData.nameLastKanji + patientData.nameFirstKanji" placeholder="氏名"></el-input>
+                        <el-input disabled v-model="formData.insurance.name" placeholder="氏名"></el-input>
                     </el-form-item>
                     <el-form-item v-else prop="name">
                         <el-select v-model="formData.insurance.name" placeholder="選択">
@@ -174,7 +174,11 @@ export default {
                     }
                 })
             }
+            if (this.formData.insurance.relation === '本人') {
+                this.formData.insurance.name = this.patientData.nameLastKanji + this.patientData.nameFirstKanji
+            } else {
                 this.formData.insurance.name = ''
+            }
         },
         getHokensha() {
             let hks = this.formData.insurance.hokenshaNumber
