@@ -25,7 +25,7 @@
                     <template slot="title"><i class="fa fa-notes-medical menu-icon"></i></template>
                     <el-menu-item index="patientSearchMedical">患者検索</el-menu-item>
                     <el-menu-item index="kensaInput">検査結果入力</el-menu-item>
-                    <el-menu-item index="karteTasks">タスク</el-menu-item>
+                    <el-menu-item index="order">タスク</el-menu-item>
                 </el-submenu>
             </el-tooltip>
             <el-tooltip content="カレンダー" placement="bottom" effect="light">
@@ -54,6 +54,12 @@
                     診察：{{ $store.state.componentData.karteDetails.patient.name }}
                 </el-menu-item>
             </span>
+            <span style="float: right; margin-right: 50px; margin-top: 4px">
+                <el-menu-item index="order" v-if="taskCount > 0">
+                    <i class="fas fa-tasks menu-icon"></i>
+                    未済タスク数：{{ taskCount }}
+                </el-menu-item>
+            </span>
             <span class="location-title">{{pageTitle}}</span>
         </el-menu>
         <div class="main-cont">
@@ -72,6 +78,7 @@ import patientSearch from '../components/patient/patient_search/patient_search_m
 import patientDetails from '../components/patient/patient_details/patient_details_main'
 import schedule from '../components/schedule/schedule_main'
 import shinsatsu from '../components/karte/shinsatsu/shinsatsu_main'
+import order from '../components/karte/order/order_main'
 import { setTimeout } from 'timers'
 
 export default {
@@ -82,7 +89,8 @@ export default {
       'patientSearch': patientSearch,
       'patientDetails': patientDetails,
       'schedule': schedule,
-      'shinsatsu': shinsatsu
+      'shinsatsu': shinsatsu,
+      'order': order
   },
   data() {
     return {

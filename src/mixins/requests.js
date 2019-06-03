@@ -268,6 +268,18 @@ export default {
           insertShinsatsuData: {
             url: 'insert/karte/insertShinsatsuData',
             method: 'post'
+          },
+          getTasks: {
+            url: 'get/karte/tasks/getTasks',
+            method: 'get'
+          },
+          assignTask: {
+            url: 'update/task/assignTask',
+            method: 'post'
+          },
+          getTaskDetails: {
+            url: 'get/karte/tasks/getTaskDetails',
+            method: 'get'
           }
         }
         // End types

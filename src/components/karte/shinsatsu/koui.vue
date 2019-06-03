@@ -437,12 +437,23 @@ export default {
                 }
             } else if (kouiType === "60") {
                 kouiArray.results = []
+                let sendData = {
+                    analyte: "",
+                    type: "IN"
+                }
                 if (srl) {
                     kouiArray.type = "SRL"
+                    if (item.code) {
+                        sendData.analyte = item.code
+                    } else {
+                        sendData.analyte = item.analyte
+                    }
+                    sendData.type = "SRL"
                 } else {
                     kouiArray.type = "院内"
+                    sendData.analyte = item.analyte
                 }
-                let specs = await this.doRequest('getKensaSpec', item.analyte)
+                let specs = await this.doRequest('getKensaSpec', sendData)
                 kouiArray.spec = specs.data
                 kouiArray.specSelected = specs.data[0].id
                 var addArray = {
