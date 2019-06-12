@@ -79,6 +79,7 @@ import patientDetails from '../components/patient/patient_details/patient_detail
 import schedule from '../components/schedule/schedule_main'
 import shinsatsu from '../components/karte/shinsatsu/shinsatsu_main'
 import order from '../components/karte/order/order_main'
+import dashboard from '../components/dashboard/dashboard_main'
 import { setTimeout } from 'timers'
 
 export default {
@@ -90,7 +91,8 @@ export default {
       'patientDetails': patientDetails,
       'schedule': schedule,
       'shinsatsu': shinsatsu,
-      'order': order
+      'order': order,
+      'dashboard': dashboard
   },
   data() {
     return {

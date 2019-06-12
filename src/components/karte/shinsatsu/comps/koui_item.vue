@@ -150,7 +150,7 @@
                     <div v-else-if="item.kouiType === '60'">
                         <el-form :inline="true" size="mini" label-width="70px">
                             <el-form-item label="材料">
-                                <el-select v-model="item.specSelected" :disabled="item.spec.length < 2">
+                                <el-select v-model="item.specSelected" :disabled="item.spec.length < 2 || item.orderSent">
                                     <el-option
                                         v-for="spec in item.spec"
                                         :key="spec.id"

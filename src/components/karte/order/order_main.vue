@@ -1,6 +1,6 @@
 <template>
     <div style="display: flex; height: 100%">
-        <el-card class="card" style="width: 400px" v-loading="loading">
+        <el-card class="card" style="width: 300px" v-loading="loading">
             <div slot="header">
                 <span>オープンタスク</span>
             </div>
@@ -15,7 +15,7 @@
                 </el-table>
             </div>
         </el-card>
-        <el-card class="card" style="width: 400px" v-loading="loading">
+        <el-card class="card" style="width: 350px" v-loading="loading">
             <div slot="header">
                 <span>マイタスク・患者</span>
             </div>
@@ -38,26 +38,84 @@
                 </el-table>
             </div>
         </el-card>
-        <el-card class="card" style="width: 600px" v-loading="detailsLoading">
+        <el-card class="card" style="width: 500px" v-loading="detailsLoading">
             <div slot="header">
                 <span>タスク詳細</span>
             </div>
+            <div v-if="type === 1">
+                <el-table :data="specs" class="cctable" size="mini">
+                    <el-table-column prop="name" label="検体物"></el-table-column>
+                    <el-table-column prop="amount" label="検体量(ml)"></el-table-column>
+                    <el-table-column prop="cont" label="容器"></el-table-column>
+                </el-table>
+            </div>
+            <div class="content">
+                <taskView @showSRL="showSRLCard" :task="task" v-for="task in tasks.details" :key="task.ID"></taskView>
+            </div>
+        </el-card>
+        <el-card v-if="showSRL" style="flex: 1" :body-style="{height: '100%', width: '100%'}" class="card">
+            <iframe :src="srlLink" style="width: calc(100% - 50px); height: calc(100% - 50px); border: none"></iframe>
         </el-card>
     </div>
 </template>
 
 <script>
+import taskView from './comps/task_view'
+
 export default {
+    components: {
+        'taskView': taskView
+    },
     created() {
         this.taskUpdate()
     },
+    computed: {
+        specs() {            
+            if (this.type === 1) {                
+                let result = {}
+                this.tasks.details.forEach(element => {
+                    if (result[element.sub_2]) {
+                        if (isNaN(element.srlData.specimen_amount)) {
+                            result[element.sub_2].amount++
+                        } else {
+                            result[element.sub_2].amount = result[element.sub_2].amount + parseFloat(element.srlData.specimen_amount)
+                        }
+                    } else {
+                        if (isNaN(element.srlData.specimen_amount)) {
+                            result[element.sub_2] = {
+                                name: element.specName + " " + element.srlData.specimen_amount,
+                                amount: 1,
+                                code: element.sub_2,
+                                cont: element.srlData.container_1
+                            }
+                        } else {
+                            result[element.sub_2] = {
+                                name: element.specName,
+                                amount: parseFloat(element.srlData.specimen_amount),
+                                code: element.sub_2,
+                                cont: element.srlData.container_1
+                            }
+                        }
+                        
+                    }
+                })
+                return Object.values(result)                
+            } else {
+                return []
+            }
+        }
+    },
     data() {
         return {
+            type: "",
+            showSRL: false,
+            srlLink: "",
             loading: true,
             detailsLoading: false,
             tasks: {
                 my: [],
-                open: []
+                open: [],
+                details: []
             }
         }
     },
@@ -76,14 +134,21 @@ export default {
             })
         },
         openTask(task) {
+            this.showSRL = false
             this.detailsLoading = true,
             this.doRequest('getTaskDetails',{
                 type: task.type,
                 patientID: task.patientID
             }).then(result => {
+                this.type = task.type
+                this.tasks.details = result.data
                 this.detailsLoading = false
             })
-        }
+        },
+        showSRLCard(link) {
+            this.srlLink = "https://test-guide.srl.info/hachioji/test/detail/" + link
+            this.showSRL = true
+        },
     },
     sockets: {
         broadcast(data) {
@@ -109,3 +174,12 @@ export default {
     margin: 5px;
 }
 </style>
+
+<style scoped>
+.content {
+    margin-top: 30px;
+    border: solid 1px #ebeef5;
+    border-radius: 4px;
+}
+</style>
+

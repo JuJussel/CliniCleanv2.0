@@ -280,6 +280,10 @@ export default {
           getTaskDetails: {
             url: 'get/karte/tasks/getTaskDetails',
             method: 'get'
+          },
+          updateTask: {
+            url: 'update/task/updateTask',
+            method: 'post'
           }
         }
         // End types
