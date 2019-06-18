@@ -38,7 +38,7 @@
                 </el-table>
             </div>
         </el-card>
-        <el-card class="card" style="width: 500px" v-loading="detailsLoading">
+        <el-card class="card" style="width: 500px" :body-style="{height: 'calc(100% - 100px)'}" v-loading="detailsLoading">
             <div slot="header">
                 <span>タスク詳細</span>
             </div>
@@ -49,8 +49,8 @@
                     <el-table-column prop="cont" label="容器"></el-table-column>
                 </el-table>
             </div>
-            <div class="content">
-                <taskView @showSRL="showSRLCard" :task="task" v-for="task in tasks.details" :key="task.ID"></taskView>
+            <div v-if="tasks.details.length > 0" class="content">
+                <taskView @done="closeTask" @showSRL="showSRLCard" :task="task" v-for="task in tasks.details" :key="task.ID"></taskView>
             </div>
         </el-card>
         <el-card v-if="showSRL" style="flex: 1" :body-style="{height: '100%', width: '100%'}" class="card">
@@ -120,7 +120,12 @@ export default {
         }
     },
     methods: {
+        closeTask(ID){
+            this.tasks.details = this.tasks.details.filter(item => item.ID !== ID)
+            this.taskUpdate
+        },
         taskUpdate() {
+            this.loading = true
             this.doRequest('getTasks').then(result => {
                 this.tasks.my = result.data.my
                 this.tasks.open = result.data.open
@@ -154,12 +159,7 @@ export default {
         broadcast(data) {
             //Notification for updated Tasks////////////////////////////////////////
             if (data.action === 'updateTask') {
-                this.showSpinner = true;
                 this.taskUpdate();
-                this.taskData = [];
-                if (this.activeTask.index) {
-                this.selectPatientTasks(this.activeTask.index, this.activeTask.patientID);
-                }
             }
             if (data.action === 'assignTask') {
                 this.taskUpdate();
@@ -180,6 +180,8 @@ export default {
     margin-top: 30px;
     border: solid 1px #ebeef5;
     border-radius: 4px;
+    height: calc(100% - 110px);
+    overflow: auto;
 }
 </style>
 

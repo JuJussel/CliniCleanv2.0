@@ -98,7 +98,7 @@ export default {
                 this.display.loading[trans.el] = false
             }
         },
-        addKoui(item) {           
+        addKoui(item) {
             this.$refs.kouiList.addKoui(item)
         },
         async getData() {
@@ -108,7 +108,9 @@ export default {
             let karteID = this.$store.state.componentData.karteDetails.shinsatsu.karteID
             // Koui State
             await this.doRequest('getKouiState', shinsatsuID).then(result => {
-                this.kouiListItems = JSON.parse(result.data)
+                if (result.haveData) {
+                    this.kouiListItems = JSON.parse(result.data)                    
+                }
             })
             // Shinsatsu State
             await this.doRequest('getShinsatsuState', shinsatsuID).then(result => {
@@ -174,6 +176,7 @@ export default {
         },
         submitShinsatsu(ordersToWait) {
             this.display.loading = true
+            this.display.submitConfirm = false
             this.doRequest('insertShinsatsuData', {
                 shinsatsuData: this.soapContent,
                 kouiData: this.kouiListItems,

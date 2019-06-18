@@ -167,10 +167,17 @@
                                     :disabled="resultsFiltered.length < 1">
                                     <el-button size="small">結果追加</el-button>
                                     <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item
-                                            v-for="result in resultsFiltered"
-                                            :key="result.ID"
-                                            :command="result"> {{ result.name }} </el-dropdown-item>
+                                        <div style="padding: 0 10px" v-if="resultsFull.length >10">
+                                            <el-input v-model="resultsFilter" prefix-icon="el-icon-search" size="small"></el-input>
+                                        </div>
+                                        <div style="max-height: 200px; overflow: auto">
+                                            <el-dropdown-item
+                                                v-for="result in resultsFiltered"
+                                                :key="result.ID"
+                                                :command="result"> 
+                                                {{ result.name }}
+                                            </el-dropdown-item>
+                                        </div>
                                     </el-dropdown-menu>
                                     </el-dropdown>
                                 <div style="margin-top: 10px">
@@ -270,7 +277,8 @@ export default {
                     '7': ['湯','']
                 },
             },
-            resultsFull: false
+            resultsFull: false,
+            resultsFilter: ""
         }
     },
     computed: {
@@ -285,8 +293,18 @@ export default {
                 return 'white'
             }
         },
-        resultsFiltered() { 
-            return _.differenceWith(this.resultsFull, this.item.results, _.isEqual);
+        resultsFiltered() {
+            if (this.resultsFull) {
+                let returnArr = JSON.parse(JSON.stringify(this.resultsFull))
+                this.item.results.forEach(element => {
+                    returnArr = returnArr.filter(item => item.JLAC !== element.JLAC)
+                })
+                returnArr = returnArr.filter(item => item.name && item.name.includes(this.resultsFilter))
+                return returnArr                
+            } else {
+                return []
+            }
+            //return _.differenceWith(this.resultsFull, this.item.results, _.isEqual);
         }
     },
     methods: {
@@ -342,6 +360,7 @@ export default {
             })
         },
         fetchResults(open) {
+            this.resultsFilter = ""
             if (!this.resultsFull) {
                 this.doRequest('kensaResults', this.item.analyte).then(result => {
                     this.resultsFull = result.data
