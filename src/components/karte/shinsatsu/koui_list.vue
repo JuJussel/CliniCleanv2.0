@@ -5,6 +5,7 @@
             v-for="(item, index) in items" 
             :key="index" 
             @delete="deleteItem(index)"
+            @shotTypeChange="checkKoui(item, '_re')"
             @changeCalc="checkKoui(item, '_re', ...arguments)"
             :item="item"
             :insurances="display.insurances">

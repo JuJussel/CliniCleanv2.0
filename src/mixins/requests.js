@@ -284,6 +284,14 @@ export default {
           updateTask: {
             url: 'update/task/updateTask',
             method: 'post'
+          },
+          openSRLOrders: {
+            url: 'get/karte/lists/openSRLOrders',
+            method: 'get'
+          },
+          insertSRLOrders: {
+            url: 'insert/karte/insertSRLKensa',
+            method: 'post'
           }
         }
         // End types

@@ -23,9 +23,9 @@
             <el-tooltip content="診療事務" placement="bottom" effect="light">
                 <el-submenu index="3">
                     <template slot="title"><i class="fa fa-notes-medical menu-icon"></i></template>
-                    <el-menu-item index="patientSearchMedical">患者検索</el-menu-item>
-                    <el-menu-item index="kensaInput">検査結果入力</el-menu-item>
-                    <el-menu-item index="order">タスク</el-menu-item>
+                    <el-menu-item index="patientSearchMedical"><i class="fa fa-search sub-menu-icon"></i>患者検索</el-menu-item>
+                    <el-menu-item index="kensa"><i class="fas fa-flask sub-menu-icon"></i>検査結果入力</el-menu-item>
+                    <el-menu-item index="order"><i class="fas fa-tasks sub-menu-icon"></i>タスク</el-menu-item>
                 </el-submenu>
             </el-tooltip>
             <el-tooltip content="カレンダー" placement="bottom" effect="light">
@@ -79,6 +79,9 @@ import patientDetails from '../components/patient/patient_details/patient_detail
 import schedule from '../components/schedule/schedule_main'
 import shinsatsu from '../components/karte/shinsatsu/shinsatsu_main'
 import order from '../components/karte/order/order_main'
+import kensa from '../components/karte/kensa/kensa_main'
+import patientSearchMedical from '../components/karte/patient_search_medical/patient_search_medical_main'
+import patientDetailsMedical from '../components/karte/patient_details_medical/patient_details_medical_main'
 import dashboard from '../components/dashboard/dashboard_main'
 import { setTimeout } from 'timers'
 
@@ -92,7 +95,10 @@ export default {
       'schedule': schedule,
       'shinsatsu': shinsatsu,
       'order': order,
-      'dashboard': dashboard
+      'kensa': kensa,
+      'dashboard': dashboard,
+      'patientSearchMedical': patientSearchMedical,
+      'patientDetailsMedical': patientDetailsMedical,
   },
   data() {
     return {
@@ -110,7 +116,8 @@ export default {
             kensaInput: "検索結果入力",
             karteTasks: "タスク",
             schedule: "スケジュール",
-            shinsatsu: "カルテ"
+            shinsatsu: "カルテ",
+            kensa: "検査結果入力"
         },
         msgOpen: false
     }
@@ -231,6 +238,9 @@ export default {
                 this.pageTitle = '患者受付'
                 setTimeout(function() {this.$refs.childComp.receivePat(meta.data)}.bind(this), 100)
             } else if (meta.mode === "patientDetailsMedical") {
+                this.currentView = 'patientDetailsMedical'
+                this.pageTitle = '患者詳細'
+            } else if (meta.mode === 'gotoPatientDetailsMedical') {
                 this.currentView = 'patientDetailsMedical'
                 this.pageTitle = '患者詳細'
             }

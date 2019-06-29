@@ -29,6 +29,7 @@
                 </div>
             </div>
         </div>
+        <!-- SRL End -->
         <!-- Inhouse --->
         <div v-else-if="task.type === '2'" class="wrapper">
             <div>
@@ -85,18 +86,76 @@
                 </el-button>
             </div>
         </div>
-        <!-- SRL End -->
+        <!-- Inhouse End --->
+        <!-- Prev/Shot --->
+        <div v-if="task.type === '3' || task.type === '4'" class="wrapper">
             <div>
-                <el-button @click="addComment = !addComment" type="text" style="padding: 0"><i class="far fa-comment-alt"></i></el-button>
-                {{ task.order_comment }}
+                <div>
+                    <b> {{ task.title }} </b>
+                </div>
+                <div>
+                    <el-form size="mini" :inline="true">
+                        <el-form-item label="位置">
+                            <el-select v-model="task.sub_3" placeholder="選択又は検索" style="width: 85px">
+                                <el-option
+                                    v-for="item in locations"
+                                    :key="item"
+                                    :label="item"
+                                    :value="item">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="量">
+                            <el-input v-model="task.sub_1" style="width: 70px">
+                                <template slot="append">ml</template>
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item label="LotNo">
+                            <el-input v-model="task.sub_2" style="width: 70px"></el-input>
+                        </el-form-item>
+                    </el-form>
+                </div>
             </div>
-            <div v-if="addComment">
-                <el-form label-width="80" size="mini">
-                    <el-form-item label="コメント">
-                        <el-input v-model="comment" style="max-width: 300px" type="textarea"></el-input>
-                    </el-form-item>
-                </el-form>
+            <div>
+                <el-button
+                    @click="submitTask"
+                    :disabled="task.sub_1 ==='' || task.sub_2 === ''"
+                    size="mini"
+                    type="primary">
+                    済
+                </el-button>
             </div>
+        </div>
+        <!-- Prev/Shot End --->
+        <!-- OP/Treat --->
+        <div v-if="task.type === '7' || task.type === '8'" class="wrapper">
+            <div>
+                <div>
+                    <b> {{ task.title }} </b>
+                </div>
+            </div>
+            <div>
+                <el-button
+                    @click="submitTask"
+                    :disabled="task.sub_1 ==='' || task.sub_2 === ''"
+                    size="mini"
+                    type="primary">
+                    済
+                </el-button>
+            </div>
+        </div>
+        <!-- OP/Treat End --->
+        <div>
+            <el-button @click="addComment = !addComment" type="text" style="padding: 0"><i class="far fa-comment-alt"></i></el-button>
+            {{ task.order_comment }}
+        </div>
+        <div v-if="addComment">
+            <el-form label-width="80" size="mini">
+                <el-form-item label="コメント">
+                    <el-input v-model="comment" style="max-width: 300px" type="textarea"></el-input>
+                </el-form-item>
+            </el-form>
+        </div>
 
     </div>
 </template>
@@ -114,6 +173,15 @@ export default {
             resultsOb: {
                 results: []
             },
+            locations: [
+                '右上腕',
+                '左上腕',
+                '右大腿',
+                '左大腿',
+                '右臀部',
+                '左臀部',
+                '静脈'
+            ],
             resultsFilter: ""
         }
     },
@@ -146,16 +214,6 @@ export default {
                         }
                     })
                     return
-                }
-                if (task.type === "3" || task.type === "4") {
-                    if (this.submitData.lot === "" && task.sub_2 === null) {
-                        task.valid.lot = false;
-                        validated = false;
-                    }
-                    if (this.submitData.amt === "" && task.sub_1 === null) {
-                        task.valid.amt = false;
-                        validated = false;
-                    }
                 }
             }
             this.doRequest('updateTask' , this.task).then(result => {

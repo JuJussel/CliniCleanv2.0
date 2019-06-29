@@ -195,7 +195,7 @@
                     <div v-else-if="item.kouiType === '30' || item.kouiType === '30_prev'">
                         <el-form :inline="true" size="mini" label-width="70px" :disabled="item.orderSent || item.done">
                             <el-form-item label="位置">
-                                <el-select v-model="item.location" placeholder="選択又は検索" style="width: 100px">
+                                <el-select @change="shotTypeChange" v-model="item.location" placeholder="選択又は検索" style="width: 100px">
                                     <el-option
                                         v-for="item in display.locations"
                                         :key="item"
@@ -308,6 +308,14 @@ export default {
         }
     },
     methods: {
+        shotTypeChange(sel) {
+            if(sel === "静脈") {
+                this.item.kouiID = "130003510"
+            } else {
+                this.item.kouiID = "130000510"
+            }
+            this.$emit('shotTypeChange')
+        },
         toggleExpand() {
             this.display.expanded = !this.display.expanded
         },
@@ -333,7 +341,9 @@ export default {
             })
         },
         calcChange(type) {
-            if (type === 'noCalc') {
+            if (!this.item.jihi && !this.item.gai && !this.item.noCalc) {
+                this.$emit('changeCalc')
+            } else if (type === 'noCalc') {
                 this.item.jihi = false
                 this.item.gai = false
                 this.display.calcOpen = false
