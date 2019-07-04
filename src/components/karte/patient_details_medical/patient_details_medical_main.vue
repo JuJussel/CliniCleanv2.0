@@ -6,8 +6,10 @@
             <el-radio-button label="social">ソーシャル</el-radio-button>
             <el-radio-button label="history">履歴</el-radio-button>
         </el-radio-group>
-        <div class="cont">
-            <child-component v-if="!display.loading" :is="activeTab" :data="patientData" @update="getData()" style="width: 100%"></child-component>
+        <div class="cont" style="padding-right: 10px">
+            <dashboard v-if="!display.loading" :data="patientData" @update="getData()" v-bind:class="{'visible': activeTab === 'dashboard'}" class="tabCont112"></dashboard>
+            <basic v-if="!display.loading" :data="patientData" @update="getData()" v-bind:class="{'visible': activeTab === 'basic'}" class="tabCont112"></basic>
+            <history v-if="!display.loading" :data="patientData" @update="getData()" v-bind:class="{'visible': activeTab === 'history'}" class="tabCont112"></history>
         </div>
   </div>
 </template>
@@ -15,11 +17,13 @@
 <script>
 import basic from '../../patient/patient_details/patient_details_main'
 import dashboard from './comps/dashboard'
+import history from './comps/history'
 
 export default {
     components: {
         'basic': basic,
-        'dashboard': dashboard
+        'dashboard': dashboard,
+        'history': history
     },
     created() {
         this.getData()
@@ -46,7 +50,15 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+ .tabCont112 {
+     margin-left: -10000px;
+     position: absolute;
+     height: calc(100% - 65px)!important;
+     width: calc(100% - 20px)
+ }
+ .visible {
+     margin-left: 0px
+ }
 </style>
 

@@ -5,7 +5,7 @@
                 <i class="fas fa-search"></i>
                 <span style="margin-left: 5px">検索項目</span>
             </div>
-            <el-form label-width="130px">
+            <el-form label-width="130px" size="small">
                 <div>基本</div>
                 <el-form-item label="ID">
                     <el-input @keyup.enter.native="enterSearch" autocomplete="new-password" v-model="searchInput.id"></el-input>
@@ -84,7 +84,7 @@
                 <span>{{ searchResults.length }}件見つかりました</span>
             </div>
             <el-table-pag
-                size="small"
+                size="mini"
                 empty-text="該当する項目は見つかりませんでした。"
                 :data="searchResults"
                 row-key="patientID"
@@ -109,7 +109,7 @@
                 <el-table-column
                     width="120">
                     <template slot-scope="scope">
-                        <el-button @click="patientAction(scope.row)">詳細</el-button>
+                        <el-button @click="patientAction(scope.row)" size="small">詳細</el-button>
                     </template>
                 </el-table-column>
             </el-table-pag>

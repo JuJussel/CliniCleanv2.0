@@ -51,7 +51,7 @@ export default {
                     "#512da8",
                     "#ff5349",
                     "#29ab87",
-                    "#5f0f0f",
+                    "#5f0f0f"
                 ],
                 tooltip: {
                     backgroundColor:"rgba(245, 245, 245, 0.8)",

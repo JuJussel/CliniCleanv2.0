@@ -360,6 +360,9 @@ export default {
 div {
     color: rgb(96, 98, 102)
 }
+.cctable th .el-checkbox {
+    display: none
+}
 .hoverButtonTable tr button {
     transition: all .2s ease;
     float: right;
