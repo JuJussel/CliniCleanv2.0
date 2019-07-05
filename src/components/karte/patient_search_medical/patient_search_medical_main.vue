@@ -194,7 +194,7 @@ export default {
         patientAction(pat) {
             let patientID = pat.patientID
             this.$store.commit('SET_PATIENTDETAILS_PATIENT_ID',patientID)           
-            this.$eventHub.$emit('homeTrigger', {mode: 'gotoPatientDetailsMedical'})                
+            this.$eventHub.$emit('homeTrigger', {mode: 'gotoPatientDetailsMedical'})
         }
     }
 }

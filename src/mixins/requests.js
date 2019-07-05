@@ -292,6 +292,14 @@ export default {
           insertSRLOrders: {
             url: 'insert/karte/insertSRLKensa',
             method: 'post'
+          },
+          getNews: {
+            url: 'get/shared/getNews',
+            method: 'get'
+          },
+          markNewsRead: {
+            url: 'update/shared/markNewsRead',
+            method: 'post'
           }
         }
         // End types

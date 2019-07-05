@@ -6,6 +6,7 @@
             menu-trigger="click"
             @select="handleSelect"
             class="menu-bar-main"
+            :unique-opened="true"
             :background-color="toolbarColor.back"
             :text-color="toolbarColor.text"
             :active-text-color="toolbarColor.sel">
@@ -33,12 +34,12 @@
             </el-tooltip>
             <el-submenu index="5" style="float: right; margin-right: 100px">
                 <template slot="title">
-                    <span class="avatar" v-bind:style="{'background-image': avatarUrl}"></span>
+                    <el-avatar size="medium" fit="fill" :src="avatarURL" style="line-height: 33px"></el-avatar>
                     {{$store.state.constants.username}}さん
                 </template>
-                <el-menu-item index="account">アカウント</el-menu-item>
-                <el-menu-item index="settings">設定</el-menu-item>
-                <el-menu-item index="logout">ログアウト</el-menu-item>
+                <el-menu-item index="account"><i class="fas fa-user sub-menu-icon"></i>アカウント</el-menu-item>
+                <el-menu-item index="settings"><i class="fas fa-cog sub-menu-icon"></i>設定</el-menu-item>
+                <el-menu-item index="logout"><i class="fas fa-sign-out-alt sub-menu-icon"></i>ログアウト</el-menu-item>
             </el-submenu>
             <span style="float: right; margin-right: 50px; margin-top: 4px">
                 <el-submenu v-if="currentView === 'shinsatsu'" index="shinsatsu">
@@ -84,6 +85,8 @@ import patientSearchMedical from '../components/karte/patient_search_medical/pat
 import patientDetailsMedical from '../components/karte/patient_details_medical/patient_details_medical_main'
 import dashboard from '../components/dashboard/dashboard_main'
 import { setTimeout } from 'timers'
+import settings from '../components/settings/settings_main_view'
+import account from '../components/settings/account_main_view'
 
 export default {
   name: 'home',
@@ -99,11 +102,12 @@ export default {
       'dashboard': dashboard,
       'patientSearchMedical': patientSearchMedical,
       'patientDetailsMedical': patientDetailsMedical,
+      'settings': settings,
+      'account': account
   },
   data() {
     return {
         childMeta: '', 
-        avatarUrl: "url('" + this.$globals.apiURL + "/profiles/eri.png')",
         currentView: 'dashboard',
         pageTitle: 'クリニクリンホーム',
         taskCount: "",
@@ -123,6 +127,9 @@ export default {
     }
   },
   computed: {
+    avatarURL () {
+        return this.$globals.apiURL + '/profiles/user' + this.$store.state.constants.userID + '.png'
+    },
     toolbarColor() {
         //let string = "url(/static/img/toolbar_gray.jpg)";
         let backgroundColor = '#353c44'
