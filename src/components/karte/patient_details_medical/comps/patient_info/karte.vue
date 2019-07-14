@@ -7,7 +7,6 @@
                 stripe
                 size="mini"
                 @select="selectRow"
-                @row-click="selectRowIndirect"
                 :max-height="tableHeight"
                 class="cctable">
                 <el-table-column
@@ -68,6 +67,7 @@ export default {
         removeTabIndr(row) {
             let row2 = this.data.find(function(item) {return item.ID === row})
             this.$refs.karteList.toggleRowSelection(row2, false)
+            row2.selected = false
             this.$emit('select', {mode: 'remove', data: row})
         },
         selectRowIndirect(row) {

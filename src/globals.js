@@ -1,5 +1,8 @@
+let url = location.host
+url = url.split(':')
+
 export default {
-  apiURL: 'https://192.168.11.99', // Middleware
-  socketIOIP: 'https://192.168.11.99:1337', // Notification Server
+  apiURL: 'https://' + url[0], // Middleware
+  socketIOIP: 'https://' + url[0] + ':1337', // Notification Server
   fileUploadURL: '/ccapi/insert/common/uploadFile.php' // needed fo file upload since cannot use a function
 }

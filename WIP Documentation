@@ -1,0 +1,16 @@
+Production ISO Documentation
+
+Locations:
+
+/var/notifications 
+    Notification server script
+
+/var/www/INCLUDE
+    Include Files
+
+/var/www/html
+    CliniClean Files
+
+/var/www/INCLUDE/FILES
+    Saves all uploaded files (has tree structure)
+    Best to mount a second disk here in production so that data disk can be expaneded if needed

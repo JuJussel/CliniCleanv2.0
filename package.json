@@ -17,6 +17,7 @@
     "moment": "^2.24.0",
     "quill-image-resize": "^3.0.9",
     "vue": "^2.6.6",
+    "vue-croppie": "^2.0.1",
     "vue-echarts-v3": "^2.0.1",
     "vue-full-calendar": "^2.7.0",
     "vue-resize": "^0.4.5",

@@ -30,7 +30,7 @@
                 </el-table-column>
             </el-table>
         </el-card>
-        <el-card style="flex-grow: 1">
+        <el-card style="width: 600px">
             <h3>検査結果入力</h3>
             <div v-if="detailsList.length > 0" class="inputCont">
                 <kensaInput

@@ -16,6 +16,8 @@ import FullCalendar from 'vue-full-calendar'
 import 'fullcalendar/dist/fullcalendar.min.css'
 import 'fullcalendar/dist/locale/ja'
 import tablePag from './components/shared/table_pag'
+import VueCroppie from 'vue-croppie';
+import 'croppie/croppie.css'
 
 require('lodash')
 
@@ -23,6 +25,7 @@ Vue.use(new VueSocketIO({
   connection: SocketIO(globals.socketIOIP)
 }))
 Vue.use(FullCalendar)
+Vue.use(VueCroppie)
 
 Vue.component('dateDisplay', dateDisplay)
 Vue.component('draggable', draggable)

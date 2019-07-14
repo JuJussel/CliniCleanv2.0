@@ -300,6 +300,30 @@ export default {
           markNewsRead: {
             url: 'update/shared/markNewsRead',
             method: 'post'
+          },
+          updateAvatar: {
+            url: 'update/shared/updateAvatar',
+            method: 'post'
+          },
+          getSets: {
+            url: 'get/settings/set/getSets',
+            method: 'get'
+          },
+          removeSet: {
+            url: 'update/settings/set/removeSet',
+            method: 'post'
+          },
+          getSetItems: {
+            url: 'get/settings/set/getSetItems',
+            method: 'get'
+          },
+          editSet: {
+            url: 'update/settings/set/editSet',
+            method: 'post'
+          },
+          moveSet: {
+            url: 'update/settings/set/moveSet',
+            method: 'post'
           }
         }
         // End types

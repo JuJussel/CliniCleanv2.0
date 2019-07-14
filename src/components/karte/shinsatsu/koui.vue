@@ -8,7 +8,8 @@
                     :key="tab.id" 
                     class="tab" 
                     v-bind:class="{'tab-active': display.activeTab === tab.id}"
-                    > 
+                    >
+                    <i :class="kouiTypes[tab.id].icon" style="width: 20px"></i>
                     {{ tab.name }} 
                 </div>
             </div>
@@ -58,7 +59,7 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column width="60" prop="cost"></el-table-column>
+                    <el-table-column width="70" prop="cost"></el-table-column>
                 </el-table-pag>
             </div>
         </div>
@@ -105,7 +106,7 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column width="60" prop="cost"></el-table-column>
+                    <el-table-column width="70" prop="cost"></el-table-column>
                 </el-table-pag>
             </div>
         </div>
@@ -237,7 +238,6 @@
                           <el-popover
                                 v-if="scope.row.content"
                                 placement="left"
-                                title="Title"
                                 width="200"
                                 trigger="hover"
                                 content="this is content, this is content, this is content">
@@ -275,7 +275,7 @@
                         {{ scope.row.name }}
                     </template>
                 </el-table-column>
-                <el-table-column width="60" prop="cost"></el-table-column>
+                <el-table-column width="70" prop="cost"></el-table-column>
             </el-table-pag>
         </div>
 
@@ -302,7 +302,7 @@ export default {
                 [
                     {name: '手術', id: '40'},
                     {name: '処置', id: '50'},
-                    {name: '画像', id: '?'},
+                    {name: '画像', id: 'x'},
                     {name: 'セット', id: 'set'}
                 ]                
             ],
@@ -322,13 +322,16 @@ export default {
             list: [],
             history: [],
             kouiTypes: {
+                'fav': {title: 'お気に入り', icon: 'fas fa-star'},
                 'sh': {title: '処方', icon: 'fas fa-capsules'},
                 '30': {title:'注射', icon: 'fas fa-syringe'},
                 '60': {title:'検査', icon: 'fas fa-microscope'},
                 '71': {title:'健康診断', icon: 'fas fa-file-medical-alt'},
                 '30_prev': {title:'予防接種', icon: 'fas fa-syringe'},
                 '40': {title:'手術', icon: 'fas fa-procedures'},
-                '50': {title:'処置', icon: 'fas fa-band-aid'}
+                '50': {title:'処置', icon: 'fas fa-band-aid'},
+                'x': {title:'画像', icon: 'fas fa-x-ray'},
+                'set': {title:'セット', icon: 'fas fa-tags'}
             }
         }
     },
@@ -481,7 +484,7 @@ export default {
             Object.assign(kouiArray, item)
             Object.assign(kouiArray, addArray)
             this.$emit('addItem', kouiArray)
-            if (kouiType !== 'fav' && !set) {
+            if (kouiType !== 'fav' || !set) {
                 this.doRequest('addKouiHistory', {'item': item, type: kouiType})                     
             }
         },

@@ -121,7 +121,8 @@ export default {
             karteTasks: "タスク",
             schedule: "スケジュール",
             shinsatsu: "カルテ",
-            kensa: "検査結果入力"
+            kensa: "検査結果入力",
+            account: "アカウント設定"
         },
         msgOpen: false
     }
@@ -366,6 +367,9 @@ export default {
 <style>
 div {
     color: rgb(96, 98, 102)
+}
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #e6f6f4
 }
 .cctable th .el-checkbox {
     display: none
