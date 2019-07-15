@@ -1,10 +1,10 @@
 <template>
     <div v-loading ="display.loading" style="height: calc(100% - 50px)">
             <el-radio-group v-model="activeTab" size="medium" style="margin-bottom: 10px">
-                <el-radio-button label="set">セット管理</el-radio-button>
+                <el-radio-button label="set" v-if="acl.set">セット管理</el-radio-button>
             </el-radio-group>
             <div class="cont" style="padding-right: 10px">
-                <set v-if="!display.loading" v-bind:class="{'visible': activeTab === 'set'}" class="tabCont112"></set>
+                <set v-if="acl.set && !display.loading" v-bind:class="{'visible': activeTab === 'set'}" class="tabCont112"></set>
             </div>
     </div>
 </template>
@@ -16,6 +16,27 @@ import set from'./comps/set'
 export default {
     components: {
         set
+    },
+    computed: {
+        acl() {
+            let userRole = this.$store.state.constants.userRole
+            let returnArr = {
+                set: checkACL('set')
+            }
+            function checkACL(view) {
+                if (userRole === '1') { // Admin
+                    return true
+                } else if (userRole === '2') { // Doctor
+                    if (
+                        view === 'set'
+                    ) {
+                        return true
+                    }
+                }
+                return false
+            }
+            return returnArr
+        }
     },
     data() {
         return {

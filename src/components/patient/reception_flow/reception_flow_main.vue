@@ -10,7 +10,14 @@
                     <span style="margin-left: 5px">予定</span>
                 </div>
                 <div>
-                    <draggable v-model="data.reservation" draggable=".ok" :sort="false" :group="{name: 'drop', put: false}" animation="200" style="min-height:300px">
+                    <draggable 
+                        v-model="data.reservation"
+                        draggable=".ok"
+                        :sort="false"
+                        :disabled="!canEdit"
+                        :group="{name: 'drop', put: false}"
+                        animation="200"
+                        style="min-height:300px">
                         <el-card 
                             shadow="hover" 
                             v-for="element in data.reservation" 
@@ -74,14 +81,23 @@
                         title="受付"
                         width="500"
                         trigger="click"
-                        v-model="display.newWalkinOpen">
+                        v-model="display.newWalkinOpen"
+                        v-if="canEdit">
                         <walkin v-if="display.newWalkinOpen" @submit="submitNewWalkin" @close="display.newWalkinOpen = false" :mode="'new'" :meta="false"></walkin>
                         <el-button slot="reference" size="small">受付</el-button>               
                     </el-popover>
 
                 </div>
                 <div>
-                    <draggable draggable=".ok"  @change="submitNewWalkinRes" v-model="data.waiting" :sort="false" group="drop" animation="200" style="min-height:300px">
+                    <draggable
+                        draggable=".ok"
+                        @change="submitNewWalkinRes"
+                        v-model="data.waiting"
+                        :sort="false"
+                        group="drop"
+                        animation="200"
+                        :disabled="!canEdit"
+                        style="min-height:300px">
                         <el-card 
                             shadow="hover" 
                             v-for="element in data.waiting" 
@@ -116,7 +132,13 @@
                 </el-card>
                 <el-card v-for="(doctor, rowIndex) in doctors" :key="rowIndex" style="margin-top: 10px">
                     <div style="text-align: left">{{ doctor.lastname }} {{ doctor.firstname }}</div>
-                    <draggable draggable=".ok" :group="{name: 'drop', pull: false, put: doctor.patients.length < 1}" @change="startShin(doctor.id, ...arguments)" class="frame" v-model="doctor.patients">
+                    <draggable
+                        draggable=".ok"
+                        :disabled="!canEdit"
+                        :group="{name: 'drop', pull: false, put: doctor.patients.length < 1}"
+                        @change="startShin(doctor.id, ...arguments)"
+                        class="frame"
+                        v-model="doctor.patients">
                         <el-card shadow="hover" v-for="element in doctor.patients" :key="element.ID" :body-style="display.cardStyle" class="rec-card">
                             <span style="text-align: start">
                                 <div style="font-size: 18px; font-weight: bold">{{element.name_last}}{{element.name_first}}</div>
@@ -240,6 +262,13 @@ export default {
         }
     },
     computed: {
+        canEdit() {
+            let role = this.$store.state.constants.userRole
+            if (role === '1' || role === '2' || role === '3') {
+                return true
+            }
+            return false
+        },
         doctors() {
             let docs = this.$store.state.constants.userList.filter(item => item.role == 2)
             docs.forEach(item2 => {

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import globals from './globals'
 
 Vue.use(Vuex)
 
@@ -8,11 +9,12 @@ export default new Vuex.Store({
     lists: {},
     message: '',
     constants: {
-      mapUrl: 'https://192.168.11.99/MAPS/tileserver.php',
+      mapUrl: globals.mapUrl, // 'https://192.168.11.99/MAPS/tileserver.php',
       mapName: 'CliniClean',
       userList: [],
       username: '',
       userID: '',
+      userRole: '',
       date: ''
     },
     componentData: {
@@ -78,6 +80,11 @@ export default new Vuex.Store({
     },
     SET_USERID (state, userIDNew) {
       state.constants.userID = userIDNew
+    },
+    SET_USER (state, user) {
+      state.constants.username = user.username
+      state.constants.userID = user.userID
+      state.constants.userRole = user.userRole
     },
     SET_USERLIST (state, userList) {
       state.constants.userList = userList

@@ -1,83 +1,85 @@
 <template>
         <el-card style="max-height: 100%; width: 80%; overflow: auto">
-            <el-popover
-                placement="bottom"
-                title="予約登録"
-                width="350"
-                trigger="click"
-                v-model="display.newEventOpen"
-                >
-                <div>
-                    <el-form :rules="eventRules" :model="newEventData" label-width="100px" v-if="display.newEventOpen" ref="newEventForm">
-                        <el-form-item label="患者選択" prop="patient">
-                            <el-select
-                                v-model="newEventData.patient"
-                                value-key="patientID"
-                                filterable
-                                remote
-                                placeholder="氏名又はIDで検索"
-                                :remote-method="searchPatient"
-                                :loading="display.searchLoading">
-                                <el-option
-                                    v-for="item in searchResults"
-                                    :key="item.patientID"
-                                    :label="item.name_last_kanji + item.name_first_kanji"
-                                    :value="item">
-                                    <span style="display: flex; justify-content: space-between; width: 280px">
-                                        <span style="color: #8492a6; font-size: 13px">ID: {{ item.patientID}}</span>
-                                        <span>{{ item.name_last_kanji + item.name_first_kanji }}</span>
-                                        <span style="color: #8492a6; font-size: 13px">
-                                            {{ item.birthdate_year + "年" + item.birthdate_month + "月" + item.birthdate_day + "日"}}
-                                        </span>
-                                    </span>
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="日付" prop="date">
-                            <el-date-picker
-                                v-model="newEventData.date"
-                                type="date"
-                                format="yyyy年MM月dd日"
-                                value-format="yyyy/MM/dd"
-                                placeholder="選択又は入力">
-                            </el-date-picker>
-                        </el-form-item>
-                        <el-form-item label="時間" prop="start">
-                            <el-time-select
-                                placeholder="から"
-                                v-model="newEventData.start"
-                                value-format="HH:mm:ss"
-                                :picker-options="{
-                                    start: '09:00',
-                                    step: '00:15',
-                                    end: '20:00'
-                                }">
-                            </el-time-select>
-                        </el-form-item>
-                        <el-form-item label="内容" prop="type">
-                            <el-select v-model="newEventData.type" placeholder="選択">
-                                <el-option
-                                v-for="item in display.shinsatsuTypes"
-                                :key="item.ID"
-                                :label="item.name"
-                                :value="item.ID">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="コメント">
-                            <el-input v-model="newEventData.notes" autocomplete="off"></el-input>
-                        </el-form-item>
-                    </el-form>
+            <div style="margin-bottom: -35px" v-if="canEdit">
+                <el-popover
+                    placement="bottom"
+                    title="予約登録"
+                    width="350"
+                    trigger="click"
+                    v-model="display.newEventOpen"
+                    >
                     <div>
-                        <span style="float: right">
-                            <el-button type="text" @click="display.newEventOpen = false">キャンセル</el-button>
-                            <el-button type="primary" @click="newEvent">保存</el-button>
-                        </span>
+                        <el-form :rules="eventRules" :model="newEventData" label-width="100px" v-if="display.newEventOpen" ref="newEventForm">
+                            <el-form-item label="患者選択" prop="patient">
+                                <el-select
+                                    v-model="newEventData.patient"
+                                    value-key="patientID"
+                                    filterable
+                                    remote
+                                    placeholder="氏名又はIDで検索"
+                                    :remote-method="searchPatient"
+                                    :loading="display.searchLoading">
+                                    <el-option
+                                        v-for="item in searchResults"
+                                        :key="item.patientID"
+                                        :label="item.name_last_kanji + item.name_first_kanji"
+                                        :value="item">
+                                        <span style="display: flex; justify-content: space-between; width: 280px">
+                                            <span style="color: #8492a6; font-size: 13px">ID: {{ item.patientID}}</span>
+                                            <span>{{ item.name_last_kanji + item.name_first_kanji }}</span>
+                                            <span style="color: #8492a6; font-size: 13px">
+                                                {{ item.birthdate_year + "年" + item.birthdate_month + "月" + item.birthdate_day + "日"}}
+                                            </span>
+                                        </span>
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="日付" prop="date">
+                                <el-date-picker
+                                    v-model="newEventData.date"
+                                    type="date"
+                                    format="yyyy年MM月dd日"
+                                    value-format="yyyy/MM/dd"
+                                    placeholder="選択又は入力">
+                                </el-date-picker>
+                            </el-form-item>
+                            <el-form-item label="時間" prop="start">
+                                <el-time-select
+                                    placeholder="から"
+                                    v-model="newEventData.start"
+                                    value-format="HH:mm:ss"
+                                    :picker-options="{
+                                        start: '09:00',
+                                        step: '00:15',
+                                        end: '20:00'
+                                    }">
+                                </el-time-select>
+                            </el-form-item>
+                            <el-form-item label="内容" prop="type">
+                                <el-select v-model="newEventData.type" placeholder="選択">
+                                    <el-option
+                                    v-for="item in display.shinsatsuTypes"
+                                    :key="item.ID"
+                                    :label="item.name"
+                                    :value="item.ID">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="コメント">
+                                <el-input v-model="newEventData.notes" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <div>
+                            <span style="float: right">
+                                <el-button type="text" @click="display.newEventOpen = false">キャンセル</el-button>
+                                <el-button type="primary" @click="newEvent">保存</el-button>
+                            </span>
+                        </div>
                     </div>
-                </div>
-                <el-button slot="reference"><i class="el-icon-plus" style="margin-right: 5px"></i>登録</el-button>
-            </el-popover>
-            <calendar @eventClick="eventClick" :config="calConfig" ref="calendar" style="margin-top: -35px"></calendar>
+                    <el-button slot="reference"><i class="el-icon-plus" style="margin-right: 5px"></i>登録</el-button>
+                </el-popover>
+            </div>
+            <calendar @eventClick="eventClick" :config="calConfig" ref="calendar"></calendar>
             <el-popover
                 placement="bottom"
                 :title="eventData.title"
@@ -126,7 +128,7 @@
                         <el-button style="float:left" type="danger" plain @click="deleteEvent">削除</el-button>
                         <span style="float: right">
                             <el-button type="text" @click="display.editEventOpen = false">キャンセル</el-button>
-                            <el-button type="primary" @click="saveEvent">保存</el-button>
+                            <el-button v-if="canEdit" type="primary" @click="saveEvent">保存</el-button>
                         </span>
                     </div>
                     <div v-else style="float: right">
@@ -151,6 +153,15 @@ export default {
         this.doRequest('getShinsatsuType', '').then(result => {
            this.display.shinsatsuTypes = result.data 
         })
+    },
+    computed: {
+        canEdit() {
+            let role = this.$store.state.constants.userRole
+            if (role === '1' || role === '2' || role === '3') {
+                return true
+            }
+            return false
+        }
     },
     data() {
         return {

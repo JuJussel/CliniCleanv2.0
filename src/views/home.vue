@@ -13,15 +13,15 @@
             <el-tooltip content="ホーム" placement="bottom" effect="light">
               <el-menu-item index="dashboard"><i class="fa fa-home menu-icon"></i></el-menu-item>
             </el-tooltip>
-            <el-tooltip content="受付事務" placement="bottom" effect="light">
+            <el-tooltip content="受付事務" placement="bottom" effect="light" v-if="canView.reception">
                 <el-submenu index="2">
                     <template slot="title"><i class="fa fa-users menu-icon"></i></template>
-                    <el-menu-item index="receptionFlow"><i class="fa fa-users sub-menu-icon"></i>受付</el-menu-item>
-                    <el-menu-item index="patientSearch"><i class="fa fa-search sub-menu-icon"></i>患者検索</el-menu-item>
-                    <el-menu-item index="newPatient"><i class="fas fa-file-medical sub-menu-icon"></i>患者登録</el-menu-item>
+                    <el-menu-item index="receptionFlow" v-if="canView.receptionFlow"><i class="fa fa-users sub-menu-icon"></i>受付</el-menu-item>
+                    <el-menu-item index="patientSearch" v-if="canView.patientSearch"><i class="fa fa-search sub-menu-icon"></i>患者検索</el-menu-item>
+                    <el-menu-item index="newPatient" v-if="canView.newPatient"><i class="fas fa-file-medical sub-menu-icon"></i>患者登録</el-menu-item>
                 </el-submenu>
             </el-tooltip>
-            <el-tooltip content="診療事務" placement="bottom" effect="light">
+            <el-tooltip content="診療事務" placement="bottom" effect="light" v-if="canView.medical">
                 <el-submenu index="3">
                     <template slot="title"><i class="fa fa-notes-medical menu-icon"></i></template>
                     <el-menu-item index="patientSearchMedical"><i class="fa fa-search sub-menu-icon"></i>患者検索</el-menu-item>
@@ -128,6 +128,50 @@ export default {
     }
   },
   computed: {
+    canView() {
+        let userRole = this.$store.state.constants.userRole
+        let retrunArray = {
+            reception: checkACL('reception'),
+            receptionFlow: checkACL('receptionFlow'),
+            patientSearch: checkACL('patientSearch'),
+            newPatient: checkACL('newPatient'),
+            medical:  checkACL('medical')
+        }
+        function checkACL(view) {
+            if (userRole === '1') { // Admin
+                return true
+            } else if (userRole === '2') { // Doctor
+                if (
+                    view === 'reception' ||
+                    view === 'receptionFlow' ||
+                    view === 'newPatient' ||
+                    view === 'medical'
+                ) {
+                    return true
+                }
+            } else if (userRole === '3') { // Receptionist
+                if (
+                    view === 'reception' ||
+                    view === 'receptionFlow' ||
+                    view === 'newPatient' ||
+                    view === 'patientSearch'
+                ) {
+                    return true
+                }
+            } else if (userRole === '4') { // Nurse
+                if (
+                    view === 'reception' ||
+                    view === 'receptionFlow' ||
+                    view === 'medical'
+                ) {
+                    return true
+                }
+            }
+            return false
+        }
+        
+        return retrunArray
+    },
     avatarURL () {
         return this.$globals.apiURL + '/profiles/user' + this.$store.state.constants.userID + '.png'
     },
@@ -333,8 +377,7 @@ export default {
     created() {
         this.doRequest('getUsername','').then(result => {
             this.userName = result.username;
-            this.$store.commit('SET_USERNAME', result.username);
-            this.$store.commit('SET_USERID', result.userID);
+            this.$store.commit('SET_USER', result);
         })
         this.doRequest('getLists','').then(result => {
             this.$store.commit('SET_LISTS', result.data)        

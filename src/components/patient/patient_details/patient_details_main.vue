@@ -7,7 +7,7 @@
                     <span style="margin-left: 5px">基本</span>
                 </span>
                 <span v-if="!edit.basic">
-                    <el-button @click="openEdit('basic')" size="small">編集</el-button>
+                    <el-button v-if="canEdit" @click="openEdit('basic')" size="small">編集</el-button>
                 </span>
                 <span v-else>
                     <el-button type="text" @click="closeEdit('basic')" size="small">キャンセル</el-button>
@@ -143,7 +143,7 @@
                         <span style="margin-left: 5px">会社・学校</span>
                     </span>
                     <span v-if="!edit.company">
-                        <el-button @click="openEdit('company')" size="small">編集</el-button>
+                        <el-button v-if="canEdit" @click="openEdit('company')" size="small">編集</el-button>
                     </span>
                     <span v-else>
                         <el-button type="text" @click="closeEdit('company')" size="small">キャンセル</el-button>
@@ -207,7 +207,7 @@
                         <span style="margin-left: 5px">配偶者・保護者</span>
                     </span>
                     <span v-if="!edit.dependents">
-                        <el-button @click="openEdit('dependents')" size="small">編集</el-button>
+                        <el-button v-if="canEdit" @click="openEdit('dependents')" size="small">編集</el-button>
                     </span>
                     <span v-else>
                         <el-button type="text" @click="closeEdit('dependents')" size="small">キャンセル</el-button>
@@ -219,7 +219,7 @@
                             style="margin-left: 5px"
                             v-model="display.dependentOpen">
                             <dependent v-if="display.dependentOpen" @close="display.dependentOpen = false" @add="registerDependent"></dependent>
-                            <el-button size="small" slot="reference">追加</el-button>               
+                            <el-button v-if="canEdit" size="small" slot="reference">追加</el-button>               
                         </el-popover>
                         <el-button :disabled="!changesPresent.dependents" type="primary" @click="saveEdit('dependents')" size="small" style="margin-left: 5px">保存</el-button>
                     </span>
@@ -352,7 +352,7 @@
                                 @noLoading="display.loading = false"
                                 @submited="submitIns">
                             </insurance>
-                            <el-button size="small" slot="reference">追加</el-button>               
+                            <el-button v-if="canEdit" size="small" slot="reference">追加</el-button>               
                         </el-popover>
                     </span>
                 </div>
@@ -423,7 +423,7 @@
                             style="margin-left: 5px"
                             v-model="display.kouhiOpen">
                             <kouhi v-if="display.kouhiOpen" @close="display.kouhiOpen = false" @add="saveEdit('kouhi', ...arguments)"></kouhi>
-                            <el-button size="small" slot="reference">追加</el-button>               
+                            <el-button v-if="canEdit" size="small" slot="reference">追加</el-button>               
                         </el-popover>
                     </span>
                 </div>
@@ -638,6 +638,13 @@ export default {
         this.getpatientData(patientID)
     },
     computed: {
+        canEdit() {
+            let role = this.$store.state.constants.userRole
+            if (role === '1' || role === '2' || role === '3') {
+                return true
+            }
+            return false
+        },
         changebasic() {
             let object = this.clone.basic
             let base = this.patientData.basic

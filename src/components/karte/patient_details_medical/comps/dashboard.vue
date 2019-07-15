@@ -60,8 +60,8 @@
                             placement="top">
                             <div class="note">
                                 <span style="float: right; margin-top: -40px; margin-right: -10px; opacity: 0">
-                                    <el-button v-if="!note.edit" @click="note.edit = true" icon="el-icon-edit" size="mini" ></el-button>
-                                    <span v-else>
+                                    <el-button v-if="canEdit && !note.edit" @click="note.edit = true" icon="el-icon-edit" size="mini" ></el-button>
+                                    <span v-else-if="canEdit">
                                         <el-button @click="saveNote(note, 'remove')" type="danger" size="mini">削除</el-button>
                                         <el-button @click="note.edit = false" type="text" size="mini" >キャンセル</el-button>
                                         <el-button @click="saveNote(note, 'edit')" icon="el-icon-check" type="primary" size="mini"></el-button>
@@ -213,6 +213,15 @@ export default {
     props: [
         'data'
     ],
+    computed: {
+        canEdit() {
+            let role = this.$store.state.constants.userRole
+            if (role === '1' || role === '2' || role === '3') {
+                return true
+            }
+            return false
+        }
+    },
     data() {
         return {
             gradeIcons: ['el-icon-warning','el-icon-warning','el-icon-warning'],
