@@ -165,6 +165,10 @@ export default {
             url: 'insert/common/uploadImage',
             method: 'post'
           },
+          uploadFile: {
+            url: 'insert/common/uploadFile',
+            method: 'post'
+          },
           getSchemas: {
             url: 'get/karte/lists/schema',
             method: 'get'
@@ -323,6 +327,10 @@ export default {
           },
           moveSet: {
             url: 'update/settings/set/moveSet',
+            method: 'post'
+          },
+          updateKenkoushindan: {
+            url: 'update/task/updateKenkoushindan',
             method: 'post'
           }
         }

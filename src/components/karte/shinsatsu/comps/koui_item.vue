@@ -6,7 +6,7 @@
                         <span style="color: #606266; display: flex; align-items: center">
                             <div class="calcInfo" v-bind:style="{'background-color': calcColor}"></div>
                             <i :class="display.kouiTypes[item.kouiType].icon"></i>
-                            <span style="margin-left: 5px; width: 70px; font-size: 14px"> 
+                            <span style="margin-left: 5px; width: 70px; font-size: 14px">
                                 {{ display.kouiTypes[item.kouiType].title }}
                                 <span v-if="item.kouiType === '60' && item.type === '院内'">内</span>
                                 <span v-if="item.kouiType === '60' && item.type === 'SRL'">外</span>
@@ -32,7 +32,7 @@
                             <div>
                                 <el-checkbox @change="calcChange('noCalc')" v-model="item.noCalc" label="算定しない" border size="small"></el-checkbox>
                                 <el-checkbox @change="calcChange('jihi')" v-model="item.jihi" label="自費" border size="small"></el-checkbox>
-                                <el-checkbox @change="calcChange('gai')" v-model="item.gai" label="公費・保険外" border size="small"></el-checkbox>
+                                <el-checkbox @change="calcChange('gai')" v-model="item.gai" label="公費・保険外" border size="small" :disabled="item.kouiType === '71'"></el-checkbox>
                             </div>
                             <el-table
                                 v-if="item.gai"
@@ -94,8 +94,8 @@
                             </div>
                             <el-button :disabled="item.orderSent || item.done" slot="reference" size="mini">オーダー</el-button>
                         </el-popover>
-                        <el-checkbox 
-                            v-model="item.done" 
+                        <el-checkbox
+                            v-model="item.done"
                             label="済"
                             size="mini"
                             :disabled="item.orderSent"
@@ -134,8 +134,8 @@
                                         :value="item.name">
                                         </el-option>
                                     </el-select>
-                                    <el-tag style="cursor:pointer" slot="reference" size="medium" type="info"> 
-                                        {{ display.shohouTypes[item.type][0] }} {{ item.med_timing }} 
+                                    <el-tag style="cursor:pointer" slot="reference" size="medium" type="info">
+                                        {{ display.shohouTypes[item.type][0] }} {{ item.med_timing }}
                                     </el-tag>
                                 </el-popover>
                             </el-form-item>
@@ -174,7 +174,7 @@
                                             <el-dropdown-item
                                                 v-for="result in resultsFiltered"
                                                 :key="result.ID"
-                                                :command="result"> 
+                                                :command="result">
                                                 {{ result.name }}
                                             </el-dropdown-item>
                                         </div>
@@ -189,7 +189,7 @@
                                     </el-form-item>
                                 </div>
                             </div>
-                        </el-form> 
+                        </el-form>
                     </div>
                     <!-- Shot / PrevVac -->
                     <div v-else-if="item.kouiType === '30' || item.kouiType === '30_prev'">
@@ -214,12 +214,16 @@
                             </el-form-item>
                         </el-form>
                     </div>
+                    <!-- Kenkoushindan -->
+                    <div v-else-if="item.kouiType === '71'">
+                      <kenkoushindanEdit :kksdID="item.trackingID"></kenkoushindanEdit>
+                    </div>
                     <div>
                         <el-form :inline="true" size="mini" label-width="70px">
                             <el-form-item label="コメント">
                                 <el-input v-model="item.comment.comm" style="width: 300px" type="textarea" :rows="1"></el-input>
                             </el-form-item>
-                        </el-form>    
+                        </el-form>
                     </div>
                 </div>
             </el-collapse-item>
@@ -227,10 +231,16 @@
 </template>
 
 <script>
+
+import kenkoushindanEdit from './kenkoushindanEdit'
+
 export default {
     props: {
         item: Object,
         insurances: Array
+    },
+    components: {
+      'kenkoushindanEdit': kenkoushindanEdit
     },
     created() {
         if (this.item.kouiType === "sh") {
@@ -300,7 +310,7 @@ export default {
                     returnArr = returnArr.filter(item => item.JLAC !== element.JLAC)
                 })
                 returnArr = returnArr.filter(item => item.name && item.name.includes(this.resultsFilter))
-                return returnArr                
+                return returnArr
             } else {
                 return []
             }
@@ -331,7 +341,7 @@ export default {
                 this.display.fixMargin2 = '1px'
                 setTimeout(function() {this.display.fixMargin = '10px';this.display.fixMargin2 = '0'}.bind(this), 250)
             }
-            
+
         },
         getShohouTiming() {
             this.item.med_timing = ""

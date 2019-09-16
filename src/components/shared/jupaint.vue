@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div @mouseup="upAddTextFloater">
     <span style="display: inline-block">
-      <el-radio-group v-model="drawMode">
+      <el-radio-group v-model="drawMode" size="small">
         <el-radio-button label="pencil">
           <i class="fas fa-pencil-alt"></i>
         </el-radio-button>
@@ -18,7 +18,7 @@
     </span>
 
     <span style="display: inline-block; margin-left: 20px">
-      <el-radio-group v-model="strokeColor">
+      <el-radio-group v-model="strokeColor" size="small">
         <el-radio-button label="black">
           <i class="fas fa-square" style="-webkit-text-fill-color: black"></i>
         </el-radio-button>
@@ -35,11 +35,11 @@
     </span>
 
     <div ref="canvasCont" style="position: relative">
-      <canvas class="canvas temp" id="canvasImg" :width="canvasSize.w" :height="canvasSize.h"></canvas>
-      <canvas class="canvas" id="canvas" :width="canvasSize.w" :height="canvasSize.h"></canvas>
+      <canvas class="canvas" :id="'canvasImg' + id" :width="canvasSize.w" :height="canvasSize.h"></canvas>
+      <canvas class="canvas temp" :id="'canvas' + id" :width="canvasSize.w" :height="canvasSize.h"></canvas>
       <canvas
         class="canvas temp"
-        id="canvasTemp"
+        :id="'canvasTemp' + id"
         v-on:mousedown="handleMouseDown"
         v-on:mouseup="handleMouseUp"
         v-on:mousemove="handleMouseMove"
@@ -52,52 +52,61 @@
         id="addTextFloater"
         @mousemove="moveAddTextFloater"
       >
-        <textarea
-          v-model="textToAdd"
-          v-bind:style="{ color: strokeColor, 'font-size': fontSize + 'px' }"
-          class="addTextFloaterInput"
-          name="name"
-          rows="1"
-          cols="10"
-          @mousemove="moveAddTextFloater"
-        ></textarea>
-        <span
-          style="display: inline-block; width: 92px; vertical-align: top"
+        <div>
+          <textarea
+            id="addTextFloaterTextBox"
+            v-model="textToAdd"
+            v-bind:style="{ color: strokeColor, 'font-size': fontSize + 'px' }"
+            class="addTextFloaterInput"
+            name="name"
+            rows="1"
+            cols="10"
+            @mousemove="moveAddTextFloater"
+          ></textarea>
+        </div>
+        <div
+          style="margin-left: 5px"
           @mousemove="moveAddTextFloater"
         >
-          <el-button
-            class="md-icon-button md-raised md-dense"
-            @click="fontSize=fontSize+4"
-            @mousemove.native="moveAddTextFloater"
-          >
-            <i class="fas fa-font"></i>
-          </el-button>
-          <el-button
-            class="md-icon-button md-raised md-dense"
-            @mousedown.native="downAddTextFloater"
-            @mouseup.native="upAddTextFloater"
-            @mousemove.native="moveAddTextFloater"
-          >
-            <i class="fas fa-pencil-alt"></i>
-          </el-button>
-          <el-button
-            style="margin-top: 10px"
-            class="md-icon-button md-raised md-dense"
-            @click="fontSize=fontSize-4"
-            @mousemove.native="moveAddTextFloater"
-          >
-            <i class="fas fa-pencil-alt"></i>
-          </el-button>
-          <el-button
-            style="margin-top: 10px"
-            class="md-icon-button md-raised md-dense md-accent"
-            @click="drawText"
-            @mousemove.native="moveAddTextFloater"
-          >
-            <i class="fas fa-pencil-alt"></i>
-          </el-button>
-        </span>
-        <resize-observer @notify="onResize"/>
+          <div style="width: 120px">
+            <el-button
+              size="small"
+              @click="fontSize=fontSize+4"
+              @mousemove.native="moveAddTextFloater">
+              <i class="fas fa-font"></i><i class="fas fa-plus"></i>
+            </el-button>
+            <el-button
+              size="small"
+              class="md-icon-button md-raised md-dense"
+              @mousedown.native="downAddTextFloater"
+              @mouseup.native="upAddTextFloater"
+              @mousemove.native="moveAddTextFloater"
+            >
+              <i class="fas fa-arrows-alt"></i>
+            </el-button>
+          </div>
+          <div>
+            <el-button
+              size="small"
+              style="margin-top: 10px"
+              @click="fontSize=fontSize-4" 
+              @mousemove.native="moveAddTextFloater"
+            >
+              <i class="fas fa-font"></i><i class="fas fa-minus"></i>
+            </el-button>
+            <el-button
+              type="primary"
+              size="small"
+              style="margin-top: 10px"
+              class="md-icon-button md-raised md-dense md-accent"
+              @click="drawText"
+              @mousemove.native="moveAddTextFloater"
+            >
+              <i class="fas fa-check"></i>
+            </el-button>
+          </div>
+        </div>
+        <resize-observer style="display: none" @notify="onResize"/>
       </div>
     </div>
   </div>
@@ -109,7 +118,28 @@ export default {
   components: {
     "resize-observer": ResizeObserver
   },
-  props: ["parentWidth", "parentHeight"],
+  props: {
+    parentWidth: {
+      type: Number,
+      default: 0
+    }, 
+    parentHeight: {
+      type: Number,
+      default: 0
+    }, 
+    xRay: {
+      type: Boolean,
+      default: false
+    },
+    schema: {
+      type: String,
+      default: ''
+    },
+    id: {
+      type: String,
+      default: ''
+    }
+  },
   data: function() {
     return {
       mounted: false,
@@ -163,7 +193,7 @@ export default {
     },
     showTextFloater: function() {
       if (this.drawMode === "text") {
-        return "block";
+        return "flex";
       } else {
         return "none";
       }
@@ -176,14 +206,17 @@ export default {
     }
   },
   mounted: function() {
-    this.mainCanvas.c = document.getElementById("canvasTemp");
+    this.mainCanvas.c = document.getElementById("canvasTemp" + this.id);
     this.mainCanvas.ctx = this.mainCanvas.c.getContext("2d");
-    this.imageCanvas.c = document.getElementById("canvasImg");
+    this.imageCanvas.c = document.getElementById("canvasImg" + this.id);
     this.imageCanvas.ctx = this.imageCanvas.c.getContext("2d");
-    this.outputCanvas.c = document.getElementById("canvas");
+    this.outputCanvas.c = document.getElementById("canvas" + this.id);
     this.outputCanvas.ctx = this.outputCanvas.c.getContext("2d");
     this.mainCanvas.w = this.outputCanvas.c.style.width;
     this.mainCanvas.h = this.outputCanvas.c.style.height;
+    if (this.xRay) {
+      this.setFullCanvas(this.schema)
+    }
     this.mounted = true;
   },
   methods: {
@@ -290,7 +323,6 @@ export default {
         this.canvasSize.ha
       );
     },
-
     downAddTextFloater: function(event) {
       this.addTextFloater.mouseDown = true;
       this.addTextFloater.moveStart.x = event.pageX;
@@ -302,31 +334,31 @@ export default {
     moveAddTextFloater: function(event) {
       if (this.addTextFloater.mouseDown) {
         event = event || window.event;
-        var div = document.getElementById("addTextFloater");
-        var y = event.pageY - this.addTextFloater.moveStart.y;
-        var x = event.pageX - this.addTextFloater.moveStart.x;
-
+        var div = document.getElementById("addTextFloater")
+        var textBox = document.getElementById("addTextFloaterTextBox")
+        var y = event.pageY - this.addTextFloater.moveStart.y
+        var x = event.pageX - this.addTextFloater.moveStart.x
+        
         if (div.offsetLeft < 1) {
           div.style.left = "1px";
-          this.upAddTextFloater();
+          //this.upAddTextFloater();
           return;
         } else if (div.offsetTop < 1) {
           div.style.top = "1px";
-          this.upAddTextFloater();
+          //this.upAddTextFloater();
           return;
-        } else if (
-          div.offsetLeft + this.addTextFloater.w >
-          this.canvasSize.wa
-        ) {
+        } else if (div.offsetLeft + textBox.clientWidth > this.canvasSize.wa) {
           div.style.left =
-            this.canvasSize.wa - this.addTextFloater.w - 1 + "px";
-          this.upAddTextFloater();
+            this.canvasSize.wa - textBox.clientWidth - 1 + "px";
+          //this.upAddTextFloater();
           return;
-        } else if (div.offsetTop + this.addTextFloater.h > this.canvasSize.ha) {
-          div.style.top = this.canvasSize.ha - this.addTextFloater.h - 1 + "px";
-          this.upAddTextFloater();
+        } else if (div.offsetTop + textBox.clientHeight > this.canvasSize.ha) {
+          div.style.top = this.canvasSize.ha - textBox.clientHeight - 1 + "px";
+          //this.upAddTextFloater();
           return;
         }
+        
+
         div.style.top = div.offsetTop + y + "px";
         div.style.left = div.offsetLeft + x + "px";
         this.addTextFloater.moveStart.y = event.pageY;
@@ -342,14 +374,8 @@ export default {
       this.outputCanvas.ctx.font = style;
       this.outputCanvas.ctx.fillStyle = this.strokeColor;
       this.outputCanvas.ctx.textBaseline = "hanging";
-      console.log(x);
-      console.log(y);
       this.outputCanvas.ctx.fillText(this.textToAdd, x + 2, y + 4);
       this.drawMode = "pencil";
-      var penc = document.getElementById("pencilTool");
-      penc.classList.add("md-toggle");
-      var text = document.getElementById("textTool");
-      text.classList.remove("md-toggle");
     },
     addImage: function(file) {
       var img = document.createElement("img");
@@ -372,12 +398,12 @@ export default {
     setFullCanvas(data) {
       let that = this;
       var img = new Image();
-      img.setAttribute("crossOrigin", "anonymous");
+      img.setAttribute("crossOrigin", "use-credentials");
       img.onload = function() {
         that.imageCanvas.ctx.drawImage(img, 0, 0);
       };
       img.src =
-        this.$store.state.constants.apiUrl +
+        this.$globals.apiURL +
         "/SCHEMAS/" +
         data +
         ".png?random=" +

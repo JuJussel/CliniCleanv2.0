@@ -30,6 +30,7 @@
                                 <div style="font-size: 12px">ID: {{ element.patient.patientID }}</div>
                                 <div style="font-size: 12px">
                                     <el-popover
+                                        v-if="canEdit"
                                         placement="right"
                                         title="受付"
                                         width="500"
@@ -104,7 +105,7 @@
                             :key="element.ID" 
                             :body-style="display.cardStyle" 
                             class="rec-card" 
-                            v-bind:class="{ok: element.status !== '5' && element.status !== '8'}">
+                            v-bind:class="{ok: element.status !== '5' && element.status !== '7' && element.status !== '8'}">
                             <span style="text-align: start">
                                 <div style="font-size: 18px; font-weight: bold">{{element.name_last}}{{element.name_first}}</div>
                                 <div style="font-size: 12px">ID: {{element.patient}}</div>

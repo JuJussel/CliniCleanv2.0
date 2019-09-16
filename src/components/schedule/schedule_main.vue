@@ -6,12 +6,15 @@
                     title="予約登録"
                     width="350"
                     trigger="click"
+                    @hide="newEventData.trans = false"
                     v-model="display.newEventOpen"
                     >
                     <div>
                         <el-form :rules="eventRules" :model="newEventData" label-width="100px" v-if="display.newEventOpen" ref="newEventForm">
                             <el-form-item label="患者選択" prop="patient">
+                                <el-input v-if="newEventData.trans" disabled v-model="newEventData.patient.name_first_kanji"></el-input>
                                 <el-select
+                                    v-else
                                     v-model="newEventData.patient"
                                     value-key="patientID"
                                     filterable
@@ -182,7 +185,8 @@ export default {
                 start: "",
                 notes: "",
                 type: "1",
-                doctor: ""
+                doctor: "",
+                trans: false
             },
             eventData: {},
             calConfig: {
@@ -281,6 +285,13 @@ export default {
             } else {
                 this.searchResults = []
             }
+        },
+        receivePat(data) {
+            this.newEventData.trans = true
+            this.newEventData.patient.patientID = data.patientID
+            this.newEventData.patient.name_first_kanji = data.name
+            this.newEventData.patient.name_last_kanji = ""
+            this.display.newEventOpen = true
         }
     }
 }

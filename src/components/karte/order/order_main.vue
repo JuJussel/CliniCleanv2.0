@@ -49,8 +49,11 @@
                     <el-table-column prop="cont" label="容器"></el-table-column>
                 </el-table>
             </div>
+            <div style="margin-top: -65px; float: right" v-if="type == '95'" @click="saveKKSD">
+                <el-button type="primary" size="small">保存</el-button>
+            </div>
             <div v-if="tasks.details.length > 0" class="content">
-                <taskView @done="closeTask" @showSRL="showSRLCard" :task="task" v-for="task in tasks.details" :key="task.ID"></taskView>
+                <taskView ref="taskView" @done="closeTask" @showSRL="showSRLCard" :task="task" v-for="task in tasks.details" :key="task.ID"></taskView>
             </div>
         </el-card>
         <el-card v-if="showSRL" style="flex: 1" :body-style="{height: '100%', width: '100%'}" class="card">
@@ -70,8 +73,8 @@ export default {
         this.taskUpdate()
     },
     computed: {
-        specs() {            
-            if (this.type === 1) {                
+        specs() {
+            if (this.type === 1) {
                 let result = {}
                 this.tasks.details.forEach(element => {
                     if (result[element.sub_2]) {
@@ -96,10 +99,10 @@ export default {
                                 cont: element.srlData.container_1
                             }
                         }
-                        
+
                     }
                 })
-                return Object.values(result)                
+                return Object.values(result)
             } else {
                 return []
             }
@@ -129,6 +132,7 @@ export default {
             this.doRequest('getTasks').then(result => {
                 this.tasks.my = result.data.my
                 this.tasks.open = result.data.open
+                this.tasks.details = {}
                 this.loading = false
             })
         },
@@ -154,6 +158,17 @@ export default {
             this.srlLink = "https://test-guide.srl.info/hachioji/test/detail/" + link
             this.showSRL = true
         },
+        saveKKSD() {
+            this.$refs['taskView'][0].$refs['form'].validate((valid) => {
+                if (valid) {
+                    let kssd = this.tasks.details[0].kksdData
+                    let orderID = this.tasks.details[0].ID
+                    this.doRequest('updateKenkoushindan', {kssdData: kssd, mode: "commit", orderID: orderID}).then( result => {
+                        this.taskUpdate
+                    })
+                }
+            })
+        }
     },
     sockets: {
         broadcast(data) {
@@ -180,7 +195,7 @@ export default {
     margin-top: 30px;
     border: solid 1px #ebeef5;
     border-radius: 4px;
-    height: calc(100% - 110px);
+    height: calc(100% - 50px);
     overflow: auto;
 }
 </style>

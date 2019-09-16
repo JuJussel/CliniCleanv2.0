@@ -15,6 +15,16 @@ export default new Router({
       path: '/home',
       name: 'home',
       component: () => import('./views/home.vue')
+    },
+    {
+      path: '/mobile',
+      name: 'mobileLogin',
+      component: () => import('./mobile/views/login_mobile.vue')
+    },
+    {
+      path: '/mobile/home',
+      name: 'mobileHome',
+      component: () => import('./mobile/views/home_mobile.vue')
     }
   ]
 })

@@ -113,7 +113,7 @@
                             詳細
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item :command="['rec', scope]">受付する</el-dropdown-item>
-                                <el-dropdown-item :command="['res', scope]">要約する</el-dropdown-item>
+                                <el-dropdown-item :command="['res', scope]">予約する</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                     </template>
@@ -208,6 +208,12 @@ export default {
                     name: type[1].row.name
                 }
                 this.$eventHub.$emit('homeTrigger', {mode: 'receivePat', data: transferData})
+            } else if (type[0] === 'res') {
+                let transferData = {
+                    patientID: type[1].row.patientID,
+                    name: type[1].row.name
+                }
+                this.$eventHub.$emit('homeTrigger', {mode: 'reservationPat', data: transferData})
             }
         }
     }

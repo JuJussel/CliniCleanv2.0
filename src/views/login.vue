@@ -25,7 +25,8 @@ export default {
             loading: false,
             userData: {
                 user: "",
-                pass: ""
+                pass: "",
+                mobile: false
             },
             err: false
         }

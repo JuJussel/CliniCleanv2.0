@@ -1,7 +1,7 @@
 <template>
     <div class="home">
-        <el-menu 
-            :default-active="currentView" 
+        <el-menu
+            :default-active="currentView"
             mode="horizontal"
             menu-trigger="click"
             @select="handleSelect"
@@ -70,7 +70,7 @@
         </div>
     </div>
 </template>
- 
+
 <script>
 
 import receptionFlow from '../components/patient/reception_flow/reception_flow_main'
@@ -107,7 +107,7 @@ export default {
   },
   data() {
     return {
-        childMeta: '', 
+        childMeta: '',
         currentView: 'dashboard',
         pageTitle: 'クリニクリンホーム',
         taskCount: "",
@@ -169,7 +169,7 @@ export default {
             }
             return false
         }
-        
+
         return retrunArray
     },
     avatarURL () {
@@ -230,7 +230,7 @@ export default {
                 if (!result.err) {
                     if(result.timeRemaining < 1) {
                     if (this.msgOpen) {
-                        this.$msgbox.close()                
+                        this.$msgbox.close()
                     }
                     this.logout()
                     } else {
@@ -243,7 +243,7 @@ export default {
                             timeRemainigDisp = Math.floor(timeRemainigDisp)
                             let deadline = setTimeout(function(){this.checkSession()}.bind(this), 10000)
                             if (this.msgOpen) {
-                            this.$msgbox.close()                
+                            this.$msgbox.close()
                             }
                             this.msgOpen = true
                             this.$confirm('セッションが'+ timeRemainigDisp + '分後無効にります。< /br>セッションを延長しますか？', 'セッションタイムアウト', {
@@ -253,11 +253,11 @@ export default {
                             }).then(() => {
                             clearTimeout(deadline)
                             this.updateTaskCount()
-                            this.checkSession()   
-                            this.msgOpen = false          
+                            this.checkSession()
+                            this.msgOpen = false
                             }).catch(() => {
                             clearTimeout(deadline)
-                            this.logout()                
+                            this.logout()
                             });
                         }
                     }
@@ -268,7 +268,7 @@ export default {
         },
         sessionTimeout() {
             if (this.msgOpen) {
-                this.$msgbox.close()                
+                this.$msgbox.close()
             }
                 this.$alert('セッションがタイムアウトしました。</ br>再ログインしてください。', 'セッションタイムアウト', {
                 dangerouslyUseHTMLString: true,
@@ -278,7 +278,7 @@ export default {
                 }
             });
         },
-        childTriggers( meta) {
+        childTriggers(meta) {
             if (meta.mode === "goToHome") {
                 this.currentView='dashboard'
             } else if (meta.mode === "gotoPatientDetails") {
@@ -295,6 +295,11 @@ export default {
             } else if (meta.mode === 'gotoPatientDetailsMedical') {
                 this.currentView = 'patientDetailsMedical'
                 this.pageTitle = '患者詳細'
+            } else if (meta.mode === 'reservationPat') {
+                console.log(meta);
+                this.currentView = 'schedule'
+                this.pageTitle = 'スケジュール'
+                setTimeout(function() {this.$refs.childComp.receivePat(meta.data)}.bind(this), 500)
             }
         },
         logout() {
@@ -312,7 +317,7 @@ export default {
         },
         updateTaskCount: function() {
             this.doRequest('getTaskNumber','').then(result => {
-                this.taskCount = result.count        
+                this.taskCount = result.count
             })
         },
         endShinsatsu() {
@@ -337,7 +342,7 @@ export default {
                     this.$message({message: '新しい診察：' + this.$store.state.componentData.karteDetails.patient.name, type: 'success'})
                 }
                 this.doRequest('getUserList','').then(result => {
-                    this.$store.commit('SET_USERLIST', result.list)  
+                    this.$store.commit('SET_USERLIST', result.list)
                 })
             }
             //Notification for closing Shinsatsu////////////////////////////////////
@@ -355,7 +360,7 @@ export default {
                         this.$store.commit('SET_SHINSATSU_INFO', nullShinsatsu)
                     })
                     this.doRequest('getUserList','').then(result => {
-                        this.$store.commit('SET_USERLIST', result.list)  
+                        this.$store.commit('SET_USERLIST', result.list)
                     })
                     this.currentView='dashboard'
                 }
@@ -363,8 +368,14 @@ export default {
             //Notification for updated Tasks////////////////////////////////////////
             if (data.action === 'updateTask' && data.target.includes(this.$store.state.constants.userID)) {
                 if (this.currentView !=='karteTasks' ) {
-                    this.snackbarCont = "新しいタスク情報：" + this.$store.state.componentData.karteDetails.patient.name;
-                    this.$message({message: '新しいタスク', type: 'info'})
+                    //this.snackbarCont = "新しいタスク情報：" + this.$store.state.componentData.karteDetails.patient.name;
+                    if (!stopper) {
+                      this.$message({message: '新しいタスク', type: 'info'})
+                      var stopper = true
+                      setTimeout((x) => {
+                        stopper = false
+                      }, 3000);
+                    }
                     this.newTask = true;
                 }
                 this.updateTaskCount();
@@ -380,17 +391,17 @@ export default {
             this.$store.commit('SET_USER', result);
         })
         this.doRequest('getLists','').then(result => {
-            this.$store.commit('SET_LISTS', result.data)        
+            this.$store.commit('SET_LISTS', result.data)
         })
         this.doRequest('getUserList','').then(result => {
-            this.$store.commit('SET_USERLIST', result.list)        
+            this.$store.commit('SET_USERLIST', result.list)
         })
         this.doRequest('getDate','').then(result => {
-            this.$store.commit('SET_DATE', result.date)        
+            this.$store.commit('SET_DATE', result.date)
         })
         this.doRequest('getTasksShinsatsu','').then(result => {
             if (result.data) {
-                this.$store.commit('SET_SHINSATSU_INFO', result.data)                
+                this.$store.commit('SET_SHINSATSU_INFO', result.data)
             }
         })
         this.updateTaskCount();
@@ -492,11 +503,11 @@ a {
 .el-message--info * {
     color: #607D8B!important
 }
-.ql-active, 
-.ql-active *, 
-.ql-snow.ql-toolbar button:hover, 
+.ql-active,
+.ql-active *,
+.ql-snow.ql-toolbar button:hover,
 .ql-snow.ql-toolbar button:hover *,
-.ql-snow.ql-toolbar .ql-picker-label:hover, 
+.ql-snow.ql-toolbar .ql-picker-label:hover,
 .ql-snow.ql-toolbar .ql-picker-label:hover *  {
     color: #33b6a5!important;
     stroke: #33b6a5!important

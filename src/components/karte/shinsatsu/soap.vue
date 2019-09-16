@@ -9,7 +9,7 @@
             <el-popover
                 placement="bottom"
                 title="シェーマ"
-                trigger="click"
+                trigger="manual"
                 v-model="display.schemaOpen">
                 <span style="display: flex">
                     <schemaSelect @select="addImg" style="width: 330px; overflow: auto; height: 500px"></schemaSelect>
@@ -19,10 +19,11 @@
                     <el-button type="text" @click="display.schemaOpen = false">キャンセル</el-button>
                     <el-button type="primary" @click="addSchema">追加</el-button>
                 </span>
-                <button style="width: 82px" slot="reference" class="ql-customBtn"><i class="fas fa-pencil-alt"> シェーマ</i></button>
+                <button @click="display.schemaOpen = true" style="width: 82px" slot="reference" class="ql-customBtn"><i class="fas fa-pencil-alt"> シェーマ</i></button>
             </el-popover>
         </div>
         <vue-editor
+            style="max-height: 770px; overflow: auto"
             ref="editor"
             useCustomImageHandler
             @imageAdded="imageAdd"

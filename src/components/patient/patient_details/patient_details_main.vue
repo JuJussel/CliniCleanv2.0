@@ -1,473 +1,485 @@
 <template>
-    <div style="height: 100%; display: flex; overflow-x: hidden; overflow-y: auto" v-loading="display.loading">
-        <el-card style="width: 540px; flex-shrink: 0" v-bind:class="{edit: edit.basic}">
-            <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
-                <span>
-                    <i class="far fa-id-card"></i>
-                    <span style="margin-left: 5px">基本</span>
-                </span>
-                <span v-if="!edit.basic">
-                    <el-button v-if="canEdit" @click="openEdit('basic')" size="small">編集</el-button>
-                </span>
-                <span v-else>
-                    <el-button type="text" @click="closeEdit('basic')" size="small">キャンセル</el-button>
-                    <el-button :disabled="!changebasic.change" type="primary" @click="saveEdit('basic')" size="small">保存</el-button>
-                </span>
-            </div>
-            <div 
-                class="avatar" 
-                v-bind:style="{ 'background-image': 'url('+ $globals.apiURL +'/profiles/' + patientData.orcaLink + '.png)' }" 
-                style="margin-left: 100px; margin-bottom: 20px">
-            </div>
-            <el-form v-if="edit.basic" :rules="rulesBasic" ref="basic" :model="clone.basic" label-width="100px">
-                <el-form-item label="名前" required>
-                    <el-col :span="12">
-                        <el-form-item prop="nameLastKanji">
-                            <el-input @change="checkDoublePatient()" v-model="clone.basic.nameLastKanji" placeholder="性"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="11">
-                        <el-form-item prop="nameFirstKanji">
-                            <el-input @change="checkDoublePatient()" v-model="clone.basic.nameFirstKanji" placeholder="名" style="margin-left: 10px"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="フリガナ" required>
-                    <el-col :span="12">
-                        <el-form-item prop="nameLastKana">
-                            <el-input v-model="clone.basic.nameLastKana" placeholder="性"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="11">
-                        <el-form-item prop="nameFirstKana">
-                            <el-input v-model="clone.basic.nameFirstKana" placeholder="名" style="margin-left: 10px"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="生年月日" prop="birthDate">
-                    <el-date-picker
-                        @change="checkDoublePatient()"
-                        v-model="clone.basic.birthDate"
-                        type="date"
-                        format="yyyy年MM月dd日"
-                        value-format="yyyy/MM/dd"
-                        placeholder="選択又は入力">
-                    </el-date-picker>
-                    <span style="margin-left: 20px">年齢：wewfef年</span>
-                </el-form-item>
-                <el-form-item label="性別">
-                    <el-radio-group v-model="clone.basic.gender">
-                        <el-radio label="男性">男性</el-radio>
-                        <el-radio style="margin-left: -20px" label="女性">女性</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="職業">
-                    <el-select v-model="clone.basic.occupation" placeholder="選択">
-                        <el-option v-for="item in display.occupations" :label="item.label" :key="item.id" :value="item.label"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="住所">
-                    <el-input autocomplete="new-password" @change="getAddress(clone.basic.address)" v-model="clone.basic.address.zip" placeholder="郵便番号"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-col :span="12">
-                        <el-form-item>
-                            <el-input autocomplete="new-password" v-model="clone.basic.address.addr1" placeholder="都道府県"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="11">
-                        <el-form-item>
-                            <el-input autocomplete="new-password" v-model="clone.basic.address.addr2" placeholder="市区町村" style="margin-left: 16px"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-form-item>
-                <el-form-item>
-                    <el-col :span="9">
-                        <el-form-item>
-                            <el-input autocomplete="new-password" v-model="clone.basic.address.addr3" placeholder="番地など"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="9">
-                        <el-input autocomplete="new-password" v-model="clone.basic.address.buildg" placeholder="ビル名" style="margin-left: 8px"></el-input>
-                    </el-col>
-                    <el-col :span="5">
-                        <el-input v-model="clone.basic.address.room" placeholder="部屋番号" style="margin-left: 16px"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="連絡">
-                    <el-col :span="12">
-                        <el-input autocomplete="new-password" v-model="clone.basic.tel1" placeholder="電話番号１"></el-input>
-                    </el-col>
-                    <el-col :span="11">
-                        <el-input autocomplete="new-password" v-model="clone.basic.tel2" placeholder="電話番号２" style="margin-left: 10px"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item>
-                    <el-col :span="12">
-                        <el-input autocomplete="new-password" v-model="clone.basic.mail1" placeholder="メール１"></el-input>
-                    </el-col>
-                    <el-col :span="11">
-                        <el-input autocomplete="new-password" v-model="clone.basic.mail2" placeholder="メール２" style="margin-left: 10px"></el-input>
-                    </el-col>
-                </el-form-item>
-            </el-form>
-            <div v-else>
-                <div class="line"><span class="label">名前</span><span class="dataBox">{{patientData.basic.nameLastKanji}}{{patientData.basic.nameFirstKanji}}</span></div>
-                <div class="line"><span class="label">フリガナ</span><span class="dataBox">{{patientData.basic.nameLastKana}}{{patientData.basic.nameFirstKana}}</span></div>
-                <div class="line"><span class="label">生年月日</span><dateDisplay class="dataBox" :date="patientData.basic.birthDate"></dateDisplay></div>
-                <div class="line"><span class="label">性別</span><span class="dataBox">{{patientData.basic.gender}}</span></div>
-                <div class="line"><span class="label">職業</span><span class="dataBox">{{patientData.basic.occupation}}</span></div>
-                <div class="line" style="height: auto">
-                    <span class="label" style="margin-top: -76px">住所</span>
-                    <span class="dataBox" style="height: auto">
-                        <div>〒{{patientData.basic.address.zip}}</div>
-                        <div>{{patientData.basic.address.addr1}}{{patientData.basic.address.addr2}}{{patientData.basic.address.addr3}}</div>
-                        <div>{{patientData.basic.address.buildg}} {{patientData.basic.address.room}}</div>
-                    </span>
-                </div>
-                <div class="line"><span class="label">連絡</span>
-                    <span v-if="patientData.basic.tel1 !==''" class="dataBox">{{patientData.basic.tel1}}</span>
-                    <span v-if="patientData.basic.tel2 !==''" class="dataBox" style="margin-left: 20px">{{patientData.basic.tel2}}</span>
-                </div>
-                <div class="line"><span class="label"></span>
-                    <a :href="'mailto:' + patientData.basic.mail1" v-if="patientData.basic.mail1 !==''" class="dataBox">{{patientData.basic.mail1}}</a>
-                    <a :href="'mailto:' + patientData.basic.mail2" v-if="patientData.basic.mail2 !==''" class="dataBox" style="margin-left: 20px">{{patientData.basic.mail2}}</a>
-                </div>
-            </div>
-        </el-card>
-        <div style="margin-left: 10px; flex-shrink: 0">
-            <el-card style="width: 530px" v-bind:class="{edit: edit.company}">
+
+    <div v-loading="display.loading" style="height: 100%">
+        <div>
+            <el-radio-group v-model="activeTab" size="medium" style="margin-bottom: 10px">
+                <el-radio-button label="basic">基本データ</el-radio-button>
+                <el-radio-button label="social">ソーシャル</el-radio-button>
+                <el-radio-button label="files">ファイル</el-radio-button>
+            </el-radio-group>
+        </div>
+        <div style="height: calc(100% - 40px); display: flex; overflow-x: hidden; overflow-y: auto" v-if='activeTab === "basic"'>
+            <el-card style="width: 540px; flex-shrink: 0" v-bind:class="{edit: edit.basic}">
                 <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
                     <span>
                         <i class="far fa-id-card"></i>
-                        <span style="margin-left: 5px">会社・学校</span>
+                        <span style="margin-left: 5px">基本</span>
                     </span>
-                    <span v-if="!edit.company">
-                        <el-button v-if="canEdit" @click="openEdit('company')" size="small">編集</el-button>
+                    <span v-if="!edit.basic">
+                        <el-button v-if="canEdit" @click="openEdit('basic')" size="small">編集</el-button>
                     </span>
                     <span v-else>
-                        <el-button type="text" @click="closeEdit('company')" size="small">キャンセル</el-button>
-                        <el-button :disabled="!changecompany.change" type="primary" @click="saveEdit('company')" size="small">保存</el-button>
+                        <el-button type="text" @click="closeEdit('basic')" size="small">キャンセル</el-button>
+                        <el-button :disabled="!changebasic.change" type="primary" @click="saveEdit('basic')" size="small">保存</el-button>
                     </span>
                 </div>
-                <el-form v-if="edit.company" :rules="rulesCompany" ref="company" :model="clone.company" label-width="100px">
-                    <el-form-item label="名" prop="name">
-                        <el-input v-model="clone.company.name" placeholder="入力"></el-input>
+                <div 
+                    class="avatar" 
+                    v-bind:style="{ 'background-image': 'url('+ $globals.apiURL +'/profiles/' + patientData.orcaLink + '.png)' }" 
+                    style="margin-left: 100px; margin-bottom: 20px">
+                </div>
+                <el-form v-if="edit.basic" :rules="rulesBasic" ref="basic" :model="clone.basic" label-width="100px">
+                    <el-form-item label="名前" required>
+                        <el-col :span="12">
+                            <el-form-item prop="nameLastKanji">
+                                <el-input @change="checkDoublePatient()" v-model="clone.basic.nameLastKanji" placeholder="性"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="11">
+                            <el-form-item prop="nameFirstKanji">
+                                <el-input @change="checkDoublePatient()" v-model="clone.basic.nameFirstKanji" placeholder="名" style="margin-left: 10px"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-form-item>
+                    <el-form-item label="フリガナ" required>
+                        <el-col :span="12">
+                            <el-form-item prop="nameLastKana">
+                                <el-input v-model="clone.basic.nameLastKana" placeholder="性"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="11">
+                            <el-form-item prop="nameFirstKana">
+                                <el-input v-model="clone.basic.nameFirstKana" placeholder="名" style="margin-left: 10px"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-form-item>
+                    <el-form-item label="生年月日" prop="birthDate">
+                        <el-date-picker
+                            @change="checkDoublePatient()"
+                            v-model="clone.basic.birthDate"
+                            type="date"
+                            format="yyyy年MM月dd日"
+                            value-format="yyyy/MM/dd"
+                            placeholder="選択又は入力">
+                        </el-date-picker>
+                        <span style="margin-left: 20px">年齢：wewfef年</span>
+                    </el-form-item>
+                    <el-form-item label="性別">
+                        <el-radio-group v-model="clone.basic.gender">
+                            <el-radio label="男性">男性</el-radio>
+                            <el-radio style="margin-left: -20px" label="女性">女性</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="職業">
+                        <el-select v-model="clone.basic.occupation" placeholder="選択">
+                            <el-option v-for="item in display.occupations" :label="item.label" :key="item.id" :value="item.label"></el-option>
+                        </el-select>
                     </el-form-item>
                     <el-form-item label="住所">
-                        <el-input autocomplete="new-password" @change="getAddress(clone.company.address)" v-model="clone.company.address.zip" placeholder="郵便番号"></el-input>
+                        <el-input autocomplete="new-password" @change="getAddress(clone.basic.address)" v-model="clone.basic.address.zip" placeholder="郵便番号"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-col :span="12">
                             <el-form-item>
-                                <el-input autocomplete="new-password" v-model="clone.company.address.addr1" placeholder="都道府県"></el-input>
+                                <el-input autocomplete="new-password" v-model="clone.basic.address.addr1" placeholder="都道府県"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="11">
                             <el-form-item>
-                                <el-input autocomplete="new-password" v-model="clone.company.address.addr2" placeholder="市区町村" style="margin-left: 16px"></el-input>
+                                <el-input autocomplete="new-password" v-model="clone.basic.address.addr2" placeholder="市区町村" style="margin-left: 16px"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-form-item>
                     <el-form-item>
                         <el-col :span="9">
                             <el-form-item>
-                                <el-input autocomplete="new-password" v-model="clone.company.address.addr3" placeholder="番地など"></el-input>
+                                <el-input autocomplete="new-password" v-model="clone.basic.address.addr3" placeholder="番地など"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="9">
-                            <el-input autocomplete="new-password" v-model="clone.company.building" placeholder="ビル名" style="margin-left: 8px"></el-input>
+                            <el-input autocomplete="new-password" v-model="clone.basic.address.buildg" placeholder="ビル名" style="margin-left: 8px"></el-input>
                         </el-col>
                         <el-col :span="5">
-                            <el-input v-model="clone.company.room" placeholder="部屋番号" style="margin-left: 16px"></el-input>
+                            <el-input v-model="clone.basic.address.room" placeholder="部屋番号" style="margin-left: 16px"></el-input>
                         </el-col>
                     </el-form-item>
                     <el-form-item label="連絡">
-                        <el-input autocomplete="new-password" v-model="clone.company.tel" placeholder="電話番号"></el-input>
+                        <el-col :span="12">
+                            <el-input autocomplete="new-password" v-model="clone.basic.tel1" placeholder="電話番号１"></el-input>
+                        </el-col>
+                        <el-col :span="11">
+                            <el-input autocomplete="new-password" v-model="clone.basic.tel2" placeholder="電話番号２" style="margin-left: 10px"></el-input>
+                        </el-col>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-col :span="12">
+                            <el-input autocomplete="new-password" v-model="clone.basic.mail1" placeholder="メール１"></el-input>
+                        </el-col>
+                        <el-col :span="11">
+                            <el-input autocomplete="new-password" v-model="clone.basic.mail2" placeholder="メール２" style="margin-left: 10px"></el-input>
+                        </el-col>
                     </el-form-item>
                 </el-form>
                 <div v-else>
-                   <div class="line"><span class="label">名</span><span class="dataBox">{{patientData.company.name}}</span></div>
+                    <div class="line"><span class="label">名前</span><span class="dataBox">{{patientData.basic.nameLastKanji}}{{patientData.basic.nameFirstKanji}}</span></div>
+                    <div class="line"><span class="label">フリガナ</span><span class="dataBox">{{patientData.basic.nameLastKana}}{{patientData.basic.nameFirstKana}}</span></div>
+                    <div class="line"><span class="label">生年月日</span><dateDisplay class="dataBox" :date="patientData.basic.birthDate"></dateDisplay></div>
+                    <div class="line"><span class="label">性別</span><span class="dataBox">{{patientData.basic.gender}}</span></div>
+                    <div class="line"><span class="label">職業</span><span class="dataBox">{{patientData.basic.occupation}}</span></div>
                     <div class="line" style="height: auto">
                         <span class="label" style="margin-top: -76px">住所</span>
                         <span class="dataBox" style="height: auto">
-                            <div>〒{{patientData.company.address.zip}}</div>
-                            <div>{{patientData.company.address.addr1}}{{patientData.company.address.addr2}}{{patientData.company.address.addr3}}</div>
-                            <div>{{patientData.company.building}} {{patientData.company.room}}</div>
+                            <div>〒{{patientData.basic.address.zip}}</div>
+                            <div>{{patientData.basic.address.addr1}}{{patientData.basic.address.addr2}}{{patientData.basic.address.addr3}}</div>
+                            <div>{{patientData.basic.address.buildg}} {{patientData.basic.address.room}}</div>
                         </span>
                     </div>
-                    <div class="line"><span class="label">連絡</span><span class="dataBox">{{patientData.company.tel}}</span></div>
-                </div>
-
-            </el-card>
-            <el-card style="width: 530px; margin-top: 10px" v-bind:class="{edit: edit.dependents}">
-                <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
-                    <span>
-                        <i class="far fa-id-card"></i>
-                        <span style="margin-left: 5px">配偶者・保護者</span>
-                    </span>
-                    <span v-if="!edit.dependents">
-                        <el-button v-if="canEdit" @click="openEdit('dependents')" size="small">編集</el-button>
-                    </span>
-                    <span v-else>
-                        <el-button type="text" @click="closeEdit('dependents')" size="small">キャンセル</el-button>
-                        <el-popover
-                            placement="left"
-                            width="500"
-                            popper-class="dep-pop"
-                            trigger="click"
-                            style="margin-left: 5px"
-                            v-model="display.dependentOpen">
-                            <dependent v-if="display.dependentOpen" @close="display.dependentOpen = false" @add="registerDependent"></dependent>
-                            <el-button v-if="canEdit" size="small" slot="reference">追加</el-button>               
-                        </el-popover>
-                        <el-button :disabled="!changesPresent.dependents" type="primary" @click="saveEdit('dependents')" size="small" style="margin-left: 5px">保存</el-button>
-                    </span>
-                </div>
-                <div>
-                    <el-table
-                        size="small"
-                        empty-text="登録なし"
-                        :data="dependentsDisplay"
-                        row-key="patientID"
-                        style="width: 100%; border-radius: 4px; border: solid 1px #dcdfe6;">
-                        <el-table-column
-                            prop="name"
-                            label="名前">
-                        </el-table-column>
-                        <el-table-column
-                            prop="birthdate"
-                            label="誕生日">
-                            <template slot-scope="scope">
-                                <dateDisplay :date="scope.row.birthdate"></dateDisplay>
-                            </template>
-                        </el-table-column>
-                        <el-table-column
-                            prop="rel"
-                            label="関連">
-                            <template slot-scope="scope">
-                                <el-select v-if="edit.dependents" size="mini" v-model="scope.row.rel" placeholder="選択">
-                                    <el-option
-                                        v-for="item in display.rels"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                                <span v-else>{{ scope.row.rel }}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column
-                            v-if="edit.dependents"
-                            width="80">
-                            <template slot-scope="scope">
-                                <el-button
-                                size="mini"
-                                @click="removeDependent(scope.$index, scope.row)" type="danger">削除</el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
+                    <div class="line"><span class="label">連絡</span>
+                        <span v-if="patientData.basic.tel1 !==''" class="dataBox">{{patientData.basic.tel1}}</span>
+                        <span v-if="patientData.basic.tel2 !==''" class="dataBox" style="margin-left: 20px">{{patientData.basic.tel2}}</span>
+                    </div>
+                    <div class="line"><span class="label"></span>
+                        <a :href="'mailto:' + patientData.basic.mail1" v-if="patientData.basic.mail1 !==''" class="dataBox">{{patientData.basic.mail1}}</a>
+                        <a :href="'mailto:' + patientData.basic.mail2" v-if="patientData.basic.mail2 !==''" class="dataBox" style="margin-left: 20px">{{patientData.basic.mail2}}</a>
+                    </div>
                 </div>
             </el-card>
+            <div style="margin-left: 10px; flex-shrink: 0">
+                <el-card style="width: 530px" v-bind:class="{edit: edit.company}">
+                    <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
+                        <span>
+                            <i class="far fa-id-card"></i>
+                            <span style="margin-left: 5px">会社・学校</span>
+                        </span>
+                        <span v-if="!edit.company">
+                            <el-button v-if="canEdit" @click="openEdit('company')" size="small">編集</el-button>
+                        </span>
+                        <span v-else>
+                            <el-button type="text" @click="closeEdit('company')" size="small">キャンセル</el-button>
+                            <el-button :disabled="!changecompany.change" type="primary" @click="saveEdit('company')" size="small">保存</el-button>
+                        </span>
+                    </div>
+                    <el-form v-if="edit.company" :rules="rulesCompany" ref="company" :model="clone.company" label-width="100px">
+                        <el-form-item label="名" prop="name">
+                            <el-input v-model="clone.company.name" placeholder="入力"></el-input>
+                        </el-form-item>
+                        <el-form-item label="住所">
+                            <el-input autocomplete="new-password" @change="getAddress(clone.company.address)" v-model="clone.company.address.zip" placeholder="郵便番号"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-col :span="12">
+                                <el-form-item>
+                                    <el-input autocomplete="new-password" v-model="clone.company.address.addr1" placeholder="都道府県"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="11">
+                                <el-form-item>
+                                    <el-input autocomplete="new-password" v-model="clone.company.address.addr2" placeholder="市区町村" style="margin-left: 16px"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-col :span="9">
+                                <el-form-item>
+                                    <el-input autocomplete="new-password" v-model="clone.company.address.addr3" placeholder="番地など"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="9">
+                                <el-input autocomplete="new-password" v-model="clone.company.building" placeholder="ビル名" style="margin-left: 8px"></el-input>
+                            </el-col>
+                            <el-col :span="5">
+                                <el-input v-model="clone.company.room" placeholder="部屋番号" style="margin-left: 16px"></el-input>
+                            </el-col>
+                        </el-form-item>
+                        <el-form-item label="連絡">
+                            <el-input autocomplete="new-password" v-model="clone.company.tel" placeholder="電話番号"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <div v-else>
+                       <div class="line"><span class="label">名</span><span class="dataBox">{{patientData.company.name}}</span></div>
+                        <div class="line" style="height: auto">
+                            <span class="label" style="margin-top: -76px">住所</span>
+                            <span class="dataBox" style="height: auto">
+                                <div>〒{{patientData.company.address.zip}}</div>
+                                <div>{{patientData.company.address.addr1}}{{patientData.company.address.addr2}}{{patientData.company.address.addr3}}</div>
+                                <div>{{patientData.company.building}} {{patientData.company.room}}</div>
+                            </span>
+                        </div>
+                        <div class="line"><span class="label">連絡</span><span class="dataBox">{{patientData.company.tel}}</span></div>
+                    </div>
+    
+                </el-card>
+                <el-card style="width: 530px; margin-top: 10px" v-bind:class="{edit: edit.dependents}">
+                    <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
+                        <span>
+                            <i class="far fa-id-card"></i>
+                            <span style="margin-left: 5px">配偶者・保護者</span>
+                        </span>
+                        <span v-if="!edit.dependents">
+                            <el-button v-if="canEdit" @click="openEdit('dependents')" size="small">編集</el-button>
+                        </span>
+                        <span v-else>
+                            <el-button type="text" @click="closeEdit('dependents')" size="small">キャンセル</el-button>
+                            <el-popover
+                                placement="left"
+                                width="500"
+                                popper-class="dep-pop"
+                                trigger="click"
+                                style="margin-left: 5px"
+                                v-model="display.dependentOpen">
+                                <dependent v-if="display.dependentOpen" @close="display.dependentOpen = false" @add="registerDependent"></dependent>
+                                <el-button v-if="canEdit" size="small" slot="reference">追加</el-button>               
+                            </el-popover>
+                            <el-button :disabled="!changesPresent.dependents" type="primary" @click="saveEdit('dependents')" size="small" style="margin-left: 5px">保存</el-button>
+                        </span>
+                    </div>
+                    <div>
+                        <el-table
+                            size="small"
+                            empty-text="登録なし"
+                            :data="dependentsDisplay"
+                            row-key="patientID"
+                            style="width: 100%; border-radius: 4px; border: solid 1px #dcdfe6;">
+                            <el-table-column
+                                prop="name"
+                                label="名前">
+                            </el-table-column>
+                            <el-table-column
+                                prop="birthdate"
+                                label="誕生日">
+                                <template slot-scope="scope">
+                                    <dateDisplay :date="scope.row.birthdate"></dateDisplay>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="rel"
+                                label="関連">
+                                <template slot-scope="scope">
+                                    <el-select v-if="edit.dependents" size="mini" v-model="scope.row.rel" placeholder="選択">
+                                        <el-option
+                                            v-for="item in display.rels"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                    <span v-else>{{ scope.row.rel }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                v-if="edit.dependents"
+                                width="80">
+                                <template slot-scope="scope">
+                                    <el-button
+                                    size="mini"
+                                    @click="removeDependent(scope.$index, scope.row)" type="danger">削除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </el-card>
+            </div>
+            <div style="margin-left: 10px; flex: 1; overflow: auto">
+                <el-card>
+                    <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline">
+                        <span>
+                            <i class="far fa-id-card"></i>
+                            <span style="margin-left: 5px">保険組み合わせ履歴</span>
+                        </span>
+                    </div>
+                    <div>
+                        <el-table-pag
+                            size="mini"
+                            empty-text="登録なし"
+                            :data="patientData.insurance.set"
+                            row-key="id"
+                            :page-sizes="[4,10,20]"
+                            style="border-radius: 4px; border: solid 1px #dcdfe6; margin-top: -10px">
+                            <el-table-column
+                                width="50px"
+                                prop="id"
+                                label="番号">
+                            </el-table-column>
+                            <el-table-column
+                                width="50px"
+                                prop="insName"
+                                label="保険">
+                            </el-table-column>
+                            <el-table-column
+                                prop="kh1"
+                                label="公費1">
+                            </el-table-column>
+                            <el-table-column
+                                prop="kh2"
+                                label="公費2">
+                            </el-table-column>
+                            <el-table-column
+                                prop="kh3"
+                                label="公費3">
+                            </el-table-column>
+                            <el-table-column
+                                prop="kh4"
+                                label="公費4">
+                            </el-table-column>
+                            <el-table-column
+                                prop="startDate"
+                                label="適用開始日">
+                                <template slot-scope="scope">
+                                    <dateDisplay :date="scope.row.startDate"></dateDisplay>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="endDate"
+                                label="適用終了日">
+                                <template slot-scope="scope">
+                                    <dateDisplay :date="scope.row.endDate"></dateDisplay>
+                                </template>
+                            </el-table-column>
+                        </el-table-pag>
+                    </div>
+                </el-card>
+                <el-card style="margin-top: 10px">
+                    <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
+                        <span>
+                            <i class="far fa-id-card"></i>
+                            <span style="margin-left: 5px">保険</span>
+                        </span>
+                        <span>
+                            <el-popover
+                                placement="left"
+                                width="500"
+                                popper-class="dep-pop"
+                                trigger="click"
+                                style="margin-left: 5px"
+                                v-model="display.insuranceOpen">
+                                <insurance 
+                                    :dependents="patientData.dependents"
+                                    :patientData="patientData.basic"
+                                    v-if="display.insuranceOpen" 
+                                    @close="display.insuranceOpen = false"
+                                    @loading="display.loading = true"
+                                    @noLoading="display.loading = false"
+                                    @submited="submitIns">
+                                </insurance>
+                                <el-button v-if="canEdit" size="small" slot="reference">追加</el-button>               
+                            </el-popover>
+                        </span>
+                    </div>
+                    <div>
+                        <el-table-pag
+                            size="mini"
+                            empty-text="登録なし"
+                            :data="patientData.insurance.ins"
+                            row-key="id"
+                            :page-sizes="[4,10,20]"
+                            style="border-radius: 4px; border: solid 1px #dcdfe6; margin-top: -10px">
+                            <el-table-column
+                                width="50px"
+                                prop="hokenSha"
+                                label="保険">
+                            </el-table-column>
+                            <el-table-column
+                                prop="hokenShaBangou"
+                                label="保険者番号">
+                            </el-table-column>
+                            <el-table-column
+                                width="50px"
+                                prop="name"
+                                label="本家">
+                            </el-table-column>
+                            <el-table-column
+                                width="50px"
+                                prop="perc"
+                                label="補助">
+                            </el-table-column>
+                            <el-table-column
+                                prop="kigou"
+                                label="記号">
+                            </el-table-column>
+                            <el-table-column
+                                prop="bangou"
+                                label="番号">
+                            </el-table-column>
+                            <el-table-column
+                                prop="startDate"
+                                label="有効開始日">
+                                <template slot-scope="scope">
+                                    <dateDisplay :date="scope.row.startDate"></dateDisplay>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="endDate"
+                                label="有効終了日">
+                                <template slot-scope="scope">
+                                    <dateDisplay :date="scope.row.endDate"></dateDisplay>
+                                </template>
+                            </el-table-column>
+                        </el-table-pag>
+                    </div>
+                </el-card>
+                <el-card style="margin-top: 10px">
+                    <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
+                        <span>
+                            <i class="far fa-id-card"></i>
+                            <span style="margin-left: 5px">公費</span>
+                        </span>
+                        <span>
+                            <el-popover
+                                placement="left"
+                                width="500"
+                                popper-class="dep-pop"
+                                trigger="click"
+                                style="margin-left: 5px"
+                                v-model="display.kouhiOpen">
+                                <kouhi v-if="display.kouhiOpen" @close="display.kouhiOpen = false" @add="saveEdit('kouhi', ...arguments)"></kouhi>
+                                <el-button v-if="canEdit" size="small" slot="reference">追加</el-button>               
+                            </el-popover>
+                        </span>
+                    </div>
+                    <div>
+                        <el-table-pag
+                            size="mini"
+                            empty-text="登録なし"
+                            :data="patientData.insurance.pub"
+                            row-key="id"
+                            :page-sizes="[4,10,20]"
+                            style="border-radius: 4px; border: solid 1px #dcdfe6; margin-top: -10px">
+                            <el-table-column
+                                prop="name"
+                                label="保険">
+                            </el-table-column>
+                            <el-table-column
+                                prop="bangou"
+                                label="担当者番号">
+                            </el-table-column>
+                            <el-table-column
+                                prop="recNr"
+                                label="受給者番号">
+                            </el-table-column>
+                            <el-table-column
+                                prop="startDate"
+                                label="適用開始日">
+                                <template slot-scope="scope">
+                                    <dateDisplay :date="scope.row.startDate"></dateDisplay>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="endDate"
+                                label="適用開始日">
+                                <template slot-scope="scope">
+                                    <dateDisplay :date="scope.row.endDate"></dateDisplay>
+                                </template>
+                            </el-table-column>
+                        </el-table-pag>
+                    </div>
+                </el-card>
+    
+    
+            </div>
         </div>
-        <div style="margin-left: 10px; flex: 1; overflow: auto">
-            <el-card>
-                <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline">
-                    <span>
-                        <i class="far fa-id-card"></i>
-                        <span style="margin-left: 5px">保険組み合わせ履歴</span>
-                    </span>
-                </div>
-                <div>
-                    <el-table-pag
-                        size="mini"
-                        empty-text="登録なし"
-                        :data="patientData.insurance.set"
-                        row-key="id"
-                        :page-sizes="[4,10,20]"
-                        style="border-radius: 4px; border: solid 1px #dcdfe6; margin-top: -10px">
-                        <el-table-column
-                            width="50px"
-                            prop="id"
-                            label="番号">
-                        </el-table-column>
-                        <el-table-column
-                            width="50px"
-                            prop="insName"
-                            label="保険">
-                        </el-table-column>
-                        <el-table-column
-                            prop="kh1"
-                            label="公費1">
-                        </el-table-column>
-                        <el-table-column
-                            prop="kh2"
-                            label="公費2">
-                        </el-table-column>
-                        <el-table-column
-                            prop="kh3"
-                            label="公費3">
-                        </el-table-column>
-                        <el-table-column
-                            prop="kh4"
-                            label="公費4">
-                        </el-table-column>
-                        <el-table-column
-                            prop="startDate"
-                            label="適用開始日">
-                            <template slot-scope="scope">
-                                <dateDisplay :date="scope.row.startDate"></dateDisplay>
-                            </template>
-                        </el-table-column>
-                        <el-table-column
-                            prop="endDate"
-                            label="適用終了日">
-                            <template slot-scope="scope">
-                                <dateDisplay :date="scope.row.endDate"></dateDisplay>
-                            </template>
-                        </el-table-column>
-                    </el-table-pag>
-                </div>
-            </el-card>
-            <el-card style="margin-top: 10px">
-                <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
-                    <span>
-                        <i class="far fa-id-card"></i>
-                        <span style="margin-left: 5px">保険</span>
-                    </span>
-                    <span>
-                        <el-popover
-                            placement="left"
-                            width="500"
-                            popper-class="dep-pop"
-                            trigger="click"
-                            style="margin-left: 5px"
-                            v-model="display.insuranceOpen">
-                            <insurance 
-                                :dependents="patientData.dependents"
-                                :patientData="patientData.basic"
-                                v-if="display.insuranceOpen" 
-                                @close="display.insuranceOpen = false"
-                                @loading="display.loading = true"
-                                @noLoading="display.loading = false"
-                                @submited="submitIns">
-                            </insurance>
-                            <el-button v-if="canEdit" size="small" slot="reference">追加</el-button>               
-                        </el-popover>
-                    </span>
-                </div>
-                <div>
-                    <el-table-pag
-                        size="mini"
-                        empty-text="登録なし"
-                        :data="patientData.insurance.ins"
-                        row-key="id"
-                        :page-sizes="[4,10,20]"
-                        style="border-radius: 4px; border: solid 1px #dcdfe6; margin-top: -10px">
-                        <el-table-column
-                            width="50px"
-                            prop="hokenSha"
-                            label="保険">
-                        </el-table-column>
-                        <el-table-column
-                            prop="hokenShaBangou"
-                            label="保険者番号">
-                        </el-table-column>
-                        <el-table-column
-                            width="50px"
-                            prop="name"
-                            label="本家">
-                        </el-table-column>
-                        <el-table-column
-                            width="50px"
-                            prop="perc"
-                            label="補助">
-                        </el-table-column>
-                        <el-table-column
-                            prop="kigou"
-                            label="記号">
-                        </el-table-column>
-                        <el-table-column
-                            prop="bangou"
-                            label="番号">
-                        </el-table-column>
-                        <el-table-column
-                            prop="startDate"
-                            label="有効開始日">
-                            <template slot-scope="scope">
-                                <dateDisplay :date="scope.row.startDate"></dateDisplay>
-                            </template>
-                        </el-table-column>
-                        <el-table-column
-                            prop="endDate"
-                            label="有効終了日">
-                            <template slot-scope="scope">
-                                <dateDisplay :date="scope.row.endDate"></dateDisplay>
-                            </template>
-                        </el-table-column>
-                    </el-table-pag>
-                </div>
-            </el-card>
-            <el-card style="margin-top: 10px">
-                <div slot="header" style="display: flex; justify-content: space-between; align-items: baseline; height: 24px">
-                    <span>
-                        <i class="far fa-id-card"></i>
-                        <span style="margin-left: 5px">公費</span>
-                    </span>
-                    <span>
-                        <el-popover
-                            placement="left"
-                            width="500"
-                            popper-class="dep-pop"
-                            trigger="click"
-                            style="margin-left: 5px"
-                            v-model="display.kouhiOpen">
-                            <kouhi v-if="display.kouhiOpen" @close="display.kouhiOpen = false" @add="saveEdit('kouhi', ...arguments)"></kouhi>
-                            <el-button v-if="canEdit" size="small" slot="reference">追加</el-button>               
-                        </el-popover>
-                    </span>
-                </div>
-                <div>
-                    <el-table-pag
-                        size="mini"
-                        empty-text="登録なし"
-                        :data="patientData.insurance.pub"
-                        row-key="id"
-                        :page-sizes="[4,10,20]"
-                        style="border-radius: 4px; border: solid 1px #dcdfe6; margin-top: -10px">
-                        <el-table-column
-                            prop="name"
-                            label="保険">
-                        </el-table-column>
-                        <el-table-column
-                            prop="bangou"
-                            label="担当者番号">
-                        </el-table-column>
-                        <el-table-column
-                            prop="recNr"
-                            label="受給者番号">
-                        </el-table-column>
-                        <el-table-column
-                            prop="startDate"
-                            label="適用開始日">
-                            <template slot-scope="scope">
-                                <dateDisplay :date="scope.row.startDate"></dateDisplay>
-                            </template>
-                        </el-table-column>
-                        <el-table-column
-                            prop="endDate"
-                            label="適用開始日">
-                            <template slot-scope="scope">
-                                <dateDisplay :date="scope.row.endDate"></dateDisplay>
-                            </template>
-                        </el-table-column>
-                    </el-table-pag>
-                </div>
-            </el-card>
-
-
+        <div style="height: calc(100% - 40px); overflow-x: hidden; overflow-y: auto" v-if='activeTab === "files"'>
+            <files :data="patientData.files" style="height: 100%"></files>
         </div>
-
     </div>
 </template>
 
@@ -476,15 +488,18 @@
 import dependent from '../new_patient/dependent'
 import insurance from './insurance'
 import kouhi from '../new_patient/kouhi'
+import files from '../../karte/shinsatsu/comps/patient_info/files'
 
 export default {
     components: {
         'dependent': dependent,
         'insurance': insurance,
-        'kouhi': kouhi
+        'kouhi': kouhi,
+        'files': files
     },
     data() {
         return {
+            activeTab: "basic",
             patientData: {
                 basic: {
                     nameLastKana: "",
