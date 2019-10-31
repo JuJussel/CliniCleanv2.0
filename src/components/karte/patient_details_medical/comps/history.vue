@@ -2,41 +2,33 @@
     <div style="display: flex">
         <div style="width: 50%; flex: 1 0 auto; padding-right: 5px">
             <el-card body-style="height: calc(100% - 40px)" style="height: 100%">
-                <el-tabs type="card" style="height: 100%" class="dumy11" v-model="activeTab">
-                    <el-tab-pane name="kartes" label="カルテ" style="height: 100%">
-                        <karte v-if="activeTab === 'kartes'" ref="karte" :data="data.kartes" @select="karteSelect"></karte>
-                    </el-tab-pane>
-                    <el-tab-pane name="kenkoushindan" label="健康診断" style="height: 100%">
-                        <shindan v-if="activeTab === 'kenkoushindan'" ref="shindan" :data="data.kenkoushindan" @select="shindanSelect"></shindan>
-                    </el-tab-pane>
-                    <el-tab-pane name="vital" label="バイタル" style="height: 100%">
-                        <vital :data="data.vital"></vital>
-                    </el-tab-pane>
-                    <el-tab-pane name="kensa" label="検査" style="height: 100%">
-                        <kensa v-if="activeTab === 'kensa'" :data="data.kensa"></kensa>
-                    </el-tab-pane>
-                    <el-tab-pane name="shohou" label="処方" style="height: 100%">
-                        <meds v-if="activeTab === 'shohou'" :data="{meds: data.shohou, shots: data.shot}"></meds>
-                    </el-tab-pane>
-                    <el-tab-pane name="prevVac" label="予防接種" style="height: 100%">
-                        <prevVac v-if="activeTab === 'prevVac'" :data="data.prevVac"></prevVac>
-                    </el-tab-pane>
-                    <el-tab-pane name="oper" label="処置" style="height: 100%">
-                        <op v-if="activeTab === 'oper'" :data="{treat: data.treat, oper: data.oper}"></op>
-                    </el-tab-pane>
-                    <el-tab-pane name="teikiShohou" label="定期" style="height: 100%">
-                        <teiki v-if="activeTab === 'teikiShohou'" :data="data.teikiShohou"></teiki>
-                    </el-tab-pane>
-                    <el-tab-pane name="byoumei" label="病名" style="height: 100%">
-                        <byoumei v-if="activeTab === 'byoumei'" :data="data.byoumei"></byoumei>
-                    </el-tab-pane>
-                    <el-tab-pane name="allergy" label="アレルギー・プロブレム" style="height: 100%">
-                        <apro v-if="activeTab === 'allergy'" :data="{allergy: data.allergy, problem: data.problem}"></apro>
-                    </el-tab-pane>
-                    <el-tab-pane name="files" label="ファイル" style="height: 100%">
-                        <files v-if="activeTab === 'files'" :data="data.files"></files>
-                    </el-tab-pane>
-                </el-tabs>
+                <div>
+                    <div v-for="(row, index) in tabs" :key="index" class="tab-header">
+                        <div
+                            v-for="(tab) in row"
+                            @click="changeTab(tab.id)"
+                            :key="tab.id" 
+                            class="tab" 
+                            v-bind:class="{'tab-active': activeTab === tab.id}"
+                            >
+                            <i :class="tab.icon" style="margin-right: 5px"></i>
+                            <span>{{ tab.name }} </span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; padding:10px; height: calc(100% - 65px); overflow: auto">
+                    <vital v-if="activeTab === 'vital'" :data="data.vital"></vital>
+                    <kensa v-if="activeTab === 'kensa'" :data="data.kensa"></kensa>
+                    <meds v-if="activeTab === 'shohou'" :data="{meds: data.shohou, shots: data.shot}"></meds>
+                    <prevVac v-if="activeTab === 'prevVac'" :data="data.prevVac"></prevVac>
+                    <op v-if="activeTab === 'oper'" :data="{treat: data.treat, oper: data.oper}"></op>
+                    <teiki v-if="activeTab === 'teikiShohou'" :data="data.teikiShohou"></teiki>
+                    <files v-if="activeTab === 'files'" :data="data.files"></files>
+                    <byoumei v-if="activeTab === 'byoumei'" :data="data.byoumei"></byoumei>
+                    <apro v-if="activeTab === 'allergy'" :data="{allergy: data.allergy, problem: data.problem}"></apro>
+                    <karte v-if="activeTab === 'kartes'" :data="data.kartes" @select="karteSelect"  ref="karte" ></karte>
+                    <shindan v-if="activeTab === 'kenkoushindan'" :data="data.kenkoushindan" @select="shindanSelect" ref="shindan"></shindan>
+                </div>
             </el-card>
         </div>
         <div style="width: calc(50% - 10px); flex: 1 0 auto; padding-left: 5px;">
@@ -120,9 +112,29 @@ export default {
                 shindan: []
             },
             varChartsSelect: [],
+            tabs: [
+                [
+                    {name: 'カルテ', id: 'kartes', icon: 'fas fa-notes-medical'},
+                    {name: '健康診断', id: 'kenkoushindan', icon: 'fas fa-file-medical-alt'},
+                    {name: 'バイタル', id: 'vital', icon: 'fas fa-chart-line'},
+                    {name: '病名', id: 'byoumei', icon: 'far fa-sad-tear'},
+                    {name: 'アレルギー・プロブレム', id: 'allergy', icon: 'fas fa-allergies'}
+                ], 
+                [
+                    {name: '検査結果', id: 'kensa', icon: 'fas fa-microscope'},
+                    {name: '投薬履歴', id: 'shohou', icon: 'fas fa-capsules'},
+                    {name: '予防接種', id: 'prevVac', icon: 'fas fa-syringe'},
+                    {name: '手術・処置', id: 'oper', icon: 'fas fa-procedures'},
+                    {name: 'ファイル', id: 'files', icon: 'fas fa-paperclip'},
+                    {name: '定期', id: 'teikiShohou', icon: 'fas fa-redo-alt'}
+                ]                
+            ]
         }
     },
     methods: {
+        changeTab(type) {
+            this.activeTab = type
+        },
         karteSelect(el) {
             if (el.mode === 'add') {
                 el.data.type = 'karte'
@@ -165,5 +177,32 @@ export default {
 <style>
     .dumy11 .el-tabs__content {
         height: calc(100% - 55px)
+    }
+    .tab-header {
+        display: flex;
+        border-top: solid 1px #ebeef5
+    }
+    .tab-header:last-child {
+        border-top: none
+    }
+    .tab {
+        border-right: solid 1px #ebeef5;
+        border-bottom: solid 1px #ebeef5;
+        padding: 5px;
+        flex-grow: 1; cursor: pointer;
+        transition: all .2s ease;
+        font-size: 14px
+    }
+    .tab:first-child {
+        border-left: solid 1px #ebeef5
+    }
+    .tab:hover {
+        background-color: #e0f2f1;
+    }
+    .tab-active {
+        color: #00A48F;
+    }
+    .tab-body {
+        margin: 10px
     }
 </style>

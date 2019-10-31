@@ -1,5 +1,5 @@
 <template>
-    <div class="cont" v-loading="loading">
+    <div class="cont" v-loading="loading" id="cont">
         <el-card style="width: 500px; margin-right: 10px">
             <h3>未済検査</h3>
             <div>
@@ -19,7 +19,7 @@
                 :data="filteredMainList"
                 highlight-current-row
                 :default-sort = "{prop: 'ID', order: 'descending'}"
-                @current-change="selectMain"
+                @row-click="selectMain"
                 size="mini">
                 <el-table-column sortable prop="name" label="患者"></el-table-column>
                 <el-table-column sortable prop="ID" label="カルテID"></el-table-column>
@@ -35,7 +35,7 @@
             <div v-if="detailsList.length > 0" class="inputCont">
                 <kensaInput
                     @insertStart="loading = true"
-                    @insertDone="insertDone"
+                    @insertDone="insertDone(task.ID)"
                     :task="task"
                     v-for="task in detailsList"
                     :key="task.ID">
@@ -69,19 +69,23 @@ export default {
         }
     },
     methods: {
-        getData() {
+        getData(list) {
             this.loading = true
             this.doRequest('openSRLOrders').then(result => {
                 this.mainList = result.data
                 this.detailsList = []
+                if (list) {
+                    this.detailsList = list
+                }
                 this.loading = false
             })
         },
         selectMain(selection) {
             this.detailsList = selection.items
         },
-        insertDone() {
-            this.getData()
+        insertDone(id) {
+            let list = this.detailsList.filter(item => item.ID !== id)
+            this.getData(list)
         }
     }
 }
@@ -96,5 +100,6 @@ export default {
         max-width: 500px;
         border: solid 1px #ebeef5;
         border-radius: 4px;
+        max-height: 560px
     }
 </style>

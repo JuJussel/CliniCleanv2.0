@@ -126,6 +126,7 @@ export default {
                 target.orderDone = true
                 if (data.type === "2") {
                     target.results_raw = data.results_raw
+                    target.results = data.results_raw
                 }
             }
             if (data.type === "3" || data.type === "4") {

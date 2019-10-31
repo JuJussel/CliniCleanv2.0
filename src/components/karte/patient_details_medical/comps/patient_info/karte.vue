@@ -11,11 +11,15 @@
                 class="cctable">
                 <el-table-column
                     type="selection"
-                    width="40"/>
+                    width="42"/>
                 <el-table-column
                     label="日付"
                     prop="dispDate"
+                    width="140"
                     sortable/>
+                <el-table-column
+                    label="番号"
+                    prop="ID"/>
                 <el-table-column
                     label="診察内容"
                     prop="typeName"

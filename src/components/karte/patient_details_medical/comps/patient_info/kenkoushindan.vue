@@ -10,7 +10,7 @@
             class="cctable">
             <el-table-column
                 type="selection"
-                width="40"/>
+                width="42"/>
             <el-table-column
                 label="日付"
                 prop="dispDate"

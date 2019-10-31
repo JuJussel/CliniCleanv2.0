@@ -187,8 +187,6 @@ export default {
                     shinsatsuID: this.$store.state.componentData.home.shinsatsu,
                     jihi: this.$store.state.componentData.karteDetails.jihi
                 }
-            }).then(result => {
-                
             })
         }
     }

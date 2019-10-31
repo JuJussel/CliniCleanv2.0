@@ -1,19 +1,12 @@
 <template>
-    <div class="back">
-        <div class="header"></div>
-        <div class="login">
-            <el-card v-loading="loading" class="box-card login-box" body-style="display: flex; flex-direction: column; align-items: center">
-                <span class="logo"></span>
-                <span class="mobile">Mobile Edition</span>
-                <div class="form">
-                    <el-input @keyup.enter.native="login" placeholder="ユーザー名"  v-model="userData.user" style="margin-bottom: 10px"></el-input>
-                    <el-input @keyup.enter.native="login" placeholder="パスワード"  v-model="userData.pass" type="password" style="margin-bottom: 20px"></el-input>
-                    <el-button @click="login()" type="primary">ログイン</el-button>
-                </div>
-            </el-card>
-        </div>
-        <div class="footer">
-           CliniClean Clinic Management System Version 0.2.0.D. Copyright Jussel Peter 2017.
+    <div>
+        <span class="logo"></span>
+        <div class="loginm">
+            <div class="form">
+                <el-input @keyup.enter.native="login" placeholder="ユーザー名"  v-model="userData.user" style="margin-bottom: 10px"></el-input>
+                <el-input @keyup.enter.native="login" placeholder="パスワード"  v-model="userData.pass" type="password" style="margin-bottom: 20px"></el-input>
+                <el-button @click="login()" type="primary" style="margin-left: calc(50% - 56px)">ログイン</el-button>
+            </div>
         </div>
     </div>
 </template>
@@ -58,25 +51,20 @@ export default {
         min-width: 0;
         width: 80%
     }
-    .login {
+    .loginm {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: calc(100% - 68px);
         width: 100%;
-    }
-    .back {
-        background: url('../../assets/img/login_back_light.jpg');
-        background-size: cover;
-        background-position: center;
-        width: 100%;
-        height: 100%
+        background-color: white;
+        padding-top: 20px;
+        height: 265px
     }
     .logo {
         background: url('../../assets/img/CliniCleanLogo.png');
         background-size: contain;
         background-repeat: no-repeat;
-        height: 120px;
+        height: 125px;
         width: 100%;
         display: block;
         margin-bottom: 0px;
@@ -96,17 +84,6 @@ export default {
         background-color: rgba(55, 71, 79, 0.4);;
         width: 100%;
         height: 48px;
-    }
-    .footer {
-        background-color: white;
-        position: absolute;
-        width: 100%;
-        height: 20px;
-        text-align: center;
-        bottom: 0px;
-        color: #9d9d9d;
-        font-size: 8px;
-        padding: 10px
     }
     .err {
         font-size: 12px;

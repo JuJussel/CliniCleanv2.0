@@ -8,8 +8,9 @@
                     :key="tab.id" 
                     class="tab" 
                     v-bind:class="{'tab-active': activeTab === tab.id}"
-                    > 
-                    {{ tab.name }} 
+                    >
+                    <i :class="tab.icon" style="margin-right: 5px"></i>
+                    <span>{{ tab.name }} </span>
                 </div>
             </div>
         </div>
@@ -68,20 +69,20 @@ export default {
             activeTab: 'info',
             tabs: [
                 [
-                    {name: '患者情報', id: 'info'},
-                    {name: 'カルテ', id: 'karte'},
-                    {name: '健康診断', id: 'shindan'},
-                    {name: 'バイタル', id: 'vital'},
-                    {name: '病名', id: 'byoumei'},
-                    {name: 'アレルギー・プロブレム', id: 'apro'}
+                    {name: '患者情報', id: 'info', icon: 'fas fa-info'},
+                    {name: 'カルテ', id: 'karte', icon: 'fas fa-notes-medical'},
+                    {name: '健康診断', id: 'shindan', icon: 'fas fa-file-medical-alt'},
+                    {name: 'バイタル', id: 'vital', icon: 'fas fa-chart-line'},
+                    {name: '病名', id: 'byoumei', icon: 'far fa-sad-tear'},
+                    {name: 'アレルギー・プロブレム', id: 'apro', icon: 'fas fa-allergies'}
                 ], 
                 [
-                    {name: '検査結果', id: 'kensa'},
-                    {name: '投薬履歴', id: 'meds'},
-                    {name: '予防接種', id: 'prevVac'},
-                    {name: '手術・処置', id: 'op'},
-                    {name: 'ファイル', id: 'files'},
-                    {name: '定期', id: 'teiki'}
+                    {name: '検査結果', id: 'kensa', icon: 'fas fa-microscope'},
+                    {name: '投薬履歴', id: 'meds', icon: 'fas fa-capsules'},
+                    {name: '予防接種', id: 'prevVac', icon: 'fas fa-syringe'},
+                    {name: '手術・処置', id: 'op', icon: 'fas fa-procedures'},
+                    {name: 'ファイル', id: 'files', icon: 'fas fa-paperclip'},
+                    {name: '定期', id: 'teiki', icon: 'fas fa-redo-alt'}
                 ]                
             ]
         }

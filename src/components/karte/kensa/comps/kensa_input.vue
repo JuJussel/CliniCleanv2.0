@@ -83,7 +83,6 @@ export default {
     },
     methods: {
         submitTask() {
-            
             let task = this.task
             this.$refs.resultsForm.validate((valid) => {
                 if(valid) {

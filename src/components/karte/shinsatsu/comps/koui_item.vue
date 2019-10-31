@@ -165,7 +165,7 @@
                                     @visible-change="fetchResults"
                                     @command="addResult"
                                     :disabled="resultsFiltered.length < 1">
-                                    <el-button size="small">結果追加</el-button>
+                                    <el-button size="small" :disabled="resultsFiltered.length < 1">結果追加</el-button>
                                     <el-dropdown-menu slot="dropdown">
                                         <div style="padding: 0 10px" v-if="resultsFull.length >10">
                                             <el-input v-model="resultsFilter" prefix-icon="el-icon-search" size="small"></el-input>
@@ -216,7 +216,7 @@
                     </div>
                     <!-- Kenkoushindan -->
                     <div v-else-if="item.kouiType === '71'">
-                      <kenkoushindanEdit :kksdID="item.trackingID"></kenkoushindanEdit>
+                      <kenkoushindanEdit :data="item.kksdData"></kenkoushindanEdit>
                     </div>
                     <div>
                         <el-form :inline="true" size="mini" label-width="70px">

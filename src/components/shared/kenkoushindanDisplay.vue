@@ -12,19 +12,18 @@
                             <div v-else-if="scope.row.type === 'syn' && scope.row.value === '1'"><b>所見あり</b></div>
                             <div v-else-if="scope.row.type === 'syn' && scope.row.value === '0'">所見なし</div>
                             <div v-else-if="scope.row.type === 'val'"> {{ scope.row.value }} {{ scope.row.unit }} </div>
-                            
                             <div v-if="scope.row.type === 'yn' && scope.row.value === '1'"> {{ scope.row.comment }} </div>
                         </template>
                     </el-table-column>
                 </el-table>
             </div>
             <div style="flex-basis: 49%">
-                <el-table :data="kensa" border :show-header="false" size="small" :span-method="rowSpanMethod">
+                <el-table :data="kensa" border :show-header="false" size="mini" :span-method="rowSpanMethod">
                     <el-table-column width="95" prop="title"></el-table-column>
                     <el-table-column prop="subtitle"></el-table-column>
                     <el-table-column width="90">
                         <template slot-scope="scope">
-                            <div> {{ scope.row.value }} {{ scope.row.unit }} </div>
+                            <div v-if="scope.row.value !==''"> {{ scope.row.value }} {{ scope.row.unit }} </div>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -46,7 +45,20 @@ export default {
         return {
             ecgTypes: {},
             basic: [],
-            kensa: [],
+            kensa: [
+                {title: '貧血検査', subtitle: 'ヘモグロビン', value: '', code: '2A990000001930953', comment: '', type: 'val', unit: 'g/dL', multi: 2},
+                {title: '貧血検査', subtitle: '赤血球数', value: '', code: '2A990000001930951', comment: '', type: 'val', unit: '万/μL', multi: -1},
+                {title: '肝機能検査', subtitle: 'GOT(AST)', value: '', code: '3B035000002327201', comment: '', type: 'val', unit: 'U/L', multi: 3},
+                {title: '肝機能検査', subtitle: 'GPT(ALT)', value: '', code: '3B045000002327201', comment: '', type: 'val', unit: 'U/L', multi: -1},
+                {title: '肝機能検査', subtitle: 'g -GTP', value: '', code: '3B090000002327101', comment: '', type: 'val', unit: 'U/L', multi: -1},
+                {title: '中性脂質検査', subtitle: 'トリグリセリド', value: '', code: '3F015000002327101', comment: '', type: 'val', unit: 'mg/dL', multi: 3},
+                {title: '中性脂質検査', subtitle: 'HDL-コレステロール', value: '', code: '3F070000002327101', comment: '', type: 'val', unit: 'mg/dL', multi: -1},
+                {title: '中性脂質検査', subtitle: 'LDL-コレステロール', value: '', code: '3F077000002327101', comment: '', type: 'val', unit: 'mg/dL', multi: -1},
+                {title: '血糖検査', subtitle: 'グルコース', value: '', code: '3D010000002227201', comment: '', type: 'val', unit: 'mg/dL', multi: 2},
+                {title: '血糖検査', subtitle: 'グリコヘモグロビンA1c', value: '', code: '3D046000001906202', comment: '', type: 'val', unit: '%', multi: -1},
+                {title: '尿検査', subtitle: '糖定性', value: '', code: '1A990000000192054', comment: '', type: 'val', unit: '', multi: 2},
+                {title: '尿検査', subtitle: '蛋白定性', value: '', code: '1A990000000192053', comment: '', type: 'val', unit: '', multi: -1}
+            ],
             xrayURL: '',
             ready: false
         }
@@ -76,7 +88,16 @@ export default {
                 {title: '心電図', subtitle: '番号: ' + this.data.ecg, value: this.ecgTypes[this.data.ecg_result], comment: '', type: 'val', unit: '', multi: 0},
                 {title: 'X線', subtitle: '番号: ' + this.data.x_ray_ID, value: this.data.x_ray_issue, comment: '', type: 'syn', unit: '', multi: 0}
             ]
-            if (Object.keys(this.data.results).length < 12) {
+            for(var key in this.data.results) {
+                let index = this.kensa.findIndex(function(item) { 
+                    return item.code == key
+                })
+                if (index > -1) {
+                    this.kensa[index].value = this.data.results[key].value                    
+                }
+            }
+            /*
+            if (Object.keys(this.data.results).length < 1) {
                 this.kensa = []
             } else {
                 this.kensa = [
@@ -94,6 +115,7 @@ export default {
                     {title: '尿検査', subtitle: '蛋白定性', value: this.data.results['1A990000000192053'].value, comment: '', type: 'val', unit: '', multi: -1},
                 ]            
             }
+            */
             this.xrayURL = 'url("' + this.$globals.apiURL + '/SCHEMAS/' + this.data.x_ray_schema_id + '.png")'
             this.ready = true
         })

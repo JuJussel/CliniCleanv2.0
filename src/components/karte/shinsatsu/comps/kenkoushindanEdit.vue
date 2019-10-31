@@ -76,7 +76,7 @@ export default {
         'xrayPaint': xrayPaint
     },
     props: [
-        'kksdID'
+        'data'
     ],
     data() {
         return {
@@ -84,38 +84,34 @@ export default {
             basic: [],
             kensa: [],
             xrayURL: '',
-            ready: false,
-            data: {}
+            ready: false
         }
     },
     created() {
-        this.doRequest('kenkoushindanDisplay', this.kksdID).then(result => {
-            this.data = result.data
-            this.doRequest('getECGTypes').then(result => {
-                this.ecgTypes = result.data
+        this.doRequest('getECGTypes').then(result => {
+            this.ecgTypes = result.data
             this.basic = [
-                    {title: '薬剤歴', subtitle: '', value: this.data.medication_history, comment: this.data.medication_history_text, type: 'yn', unit: '', multi: 0},
-                    {title: '既往歴', subtitle: '', value: this.data.medical_history, comment: this.data.medical_history_text, type: 'yn', unit: '', multi: 0},
-                    {title: '自覚症状', subtitle: '', value: this.data.subjective_symtoms, comment: this.data.subjective_symtoms_text, type: 'yn', unit: '', multi: 0},
-                    {title: '他覚症状', subtitle: '', value: this.data.objective_symtoms, comment: this.data.objective_symtoms_text, type: 'yn', unit: '', multi: 0},
-                    {title: '身長', subtitle: '', value: this.data.height, comment: '', type: 'val', unit: 'cm', multi: 0},
-                    {title: '体重', subtitle: '', value: this.data.weight, comment: '', type: 'val', unit: 'kg', multi: 0},
-                    {title: 'BMI', subtitle: '', value: this.data.bmi, comment: '', type: 'val', unit: '', multi: 0},
-                    {title: '腹囲', subtitle: '', value: this.data.stomache_width, comment: '', type: 'val', unit: 'cm', multi: 0},
-                    {title: '血圧', subtitle: '最低(D)', value: this.data.blood_pressure_min, comment: '', type: 'val', unit: '', multi: 2},
-                    {title: '血圧', subtitle: '最高(S)', value: this.data.blood_pressure_max, comment: '', type: 'val', unit: '', multi: -1},
-                    {title: '視力', subtitle: '左', value: this.data.sight_left, comment: '', type: 'val', unit: '', multi: 2},
-                    {title: '視力', subtitle: '右', value: this.data.sight_right, comment: '', type: 'val', unit: '', multi: -1},
-                    {title: '聴力左', subtitle: '1000Hz', value: this.data.hearing_left_low, comment: '', type: 'syn', unit: '', multi: 2},
-                    {title: '聴力左', subtitle: '4000Hz', value: this.data.hearing_left_high, comment: '', type: 'syn', unit: '', multi: -1},
-                    {title: '聴力左', subtitle: '1000Hz', value: this.data.hearing_right_low, comment: '', type: 'syn', unit: '', multi: 2},
-                    {title: '聴力右', subtitle: '4000Hz', value: this.data.hearing_right_high, comment: '', type: 'syn', unit: '', multi: -1},
-                    {title: '心電図', subtitle: '番号: ' + this.data.ecg, value: this.ecgTypes[this.data.ecg_result], comment: '', type: 'val', unit: '', multi: 0},
-                    {title: 'X線', subtitle: '番号: ' + this.data.x_ray_ID, value: this.data.x_ray_issue, comment: '', type: 'syn', unit: '', multi: 0}
-                ]
-                this.xrayURL = 'url("' + this.$globals.apiURL + '/SCHEMAS/' + this.data.x_ray_schema_id + '.png")'
-                this.ready = true
-            })
+                {title: '薬剤歴', subtitle: '', value: this.data.medication_history, comment: this.data.medication_history_text, type: 'yn', unit: '', multi: 0},
+                {title: '既往歴', subtitle: '', value: this.data.medical_history, comment: this.data.medical_history_text, type: 'yn', unit: '', multi: 0},
+                {title: '自覚症状', subtitle: '', value: this.data.subjective_symtoms, comment: this.data.subjective_symtoms_text, type: 'yn', unit: '', multi: 0},
+                {title: '他覚症状', subtitle: '', value: this.data.objective_symtoms, comment: this.data.objective_symtoms_text, type: 'yn', unit: '', multi: 0},
+                {title: '身長', subtitle: '', value: this.data.height, comment: '', type: 'val', unit: 'cm', multi: 0},
+                {title: '体重', subtitle: '', value: this.data.weight, comment: '', type: 'val', unit: 'kg', multi: 0},
+                {title: 'BMI', subtitle: '', value: this.data.bmi, comment: '', type: 'val', unit: '', multi: 0},
+                {title: '腹囲', subtitle: '', value: this.data.stomache_width, comment: '', type: 'val', unit: 'cm', multi: 0},
+                {title: '血圧', subtitle: '最低(D)', value: this.data.blood_pressure_min, comment: '', type: 'val', unit: '', multi: 2},
+                {title: '血圧', subtitle: '最高(S)', value: this.data.blood_pressure_max, comment: '', type: 'val', unit: '', multi: -1},
+                {title: '視力', subtitle: '左', value: this.data.sight_left, comment: '', type: 'val', unit: '', multi: 2},
+                {title: '視力', subtitle: '右', value: this.data.sight_right, comment: '', type: 'val', unit: '', multi: -1},
+                {title: '聴力左', subtitle: '1000Hz', value: this.data.hearing_left_low, comment: '', type: 'syn', unit: '', multi: 2},
+                {title: '聴力左', subtitle: '4000Hz', value: this.data.hearing_left_high, comment: '', type: 'syn', unit: '', multi: -1},
+                {title: '聴力左', subtitle: '1000Hz', value: this.data.hearing_right_low, comment: '', type: 'syn', unit: '', multi: 2},
+                {title: '聴力右', subtitle: '4000Hz', value: this.data.hearing_right_high, comment: '', type: 'syn', unit: '', multi: -1},
+                {title: '心電図', subtitle: '番号: ' + this.data.ecg, value: this.ecgTypes[this.data.ecg_result], comment: '', type: 'val', unit: '', multi: 0},
+                {title: 'X線', subtitle: '番号: ' + this.data.x_ray_ID, value: this.data.x_ray_issue, comment: '', type: 'syn', unit: '', multi: 0}
+            ]
+            this.xrayURL = 'url("' + this.$globals.apiURL + '/SCHEMAS/' + this.data.x_ray_schema_id + '.png")'
+            this.ready = true
         })
     },
     methods: {
@@ -136,7 +132,9 @@ export default {
             }
         },
         saveSchema() {
-
+            let img = this.$refs.xrayDraw.getFullCanvas()
+            let shmID = this.data.x_ray_schema_id
+            this.doRequest('schemaUpload', {data: img, schemaID: shmID})
         }
     }
 }
