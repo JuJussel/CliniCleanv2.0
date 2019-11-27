@@ -109,7 +109,14 @@ export default {
             // Koui State
             await this.doRequest('getKouiState', shinsatsuID).then(result => {
                 if (result.haveData) {
-                    this.kouiListItems = JSON.parse(result.data)                    
+                    result.data.forEach(element => {
+                        if (element.kouiType === "71") {
+                            this.doRequest('kenkoushindanDisplay', element.trackingID).then(result => {
+                                element.kksdData = result.data
+                            })
+                        }
+                    })
+                    this.kouiListItems = JSON.parse(result.data)
                 }
             })
             // Shinsatsu State

@@ -29,7 +29,7 @@
                 </div>
             </el-card>
             <el-card body-style="height: calc(100% - 40px)">
-                <div v-if="data.notes.length > 0" style="height: 100%">
+                <div style="height: 100%">
                     <h4 style="margin: 0 0 16px 0">
                         <span>メモ</span>
                         <el-popover v-model="newNoteOpen" @show="newNote = ''">
@@ -51,7 +51,7 @@
                             <el-button slot="reference" style="float: right; margin-right: 10px" size="small">追加</el-button>
                         </el-popover>
                     </h4>                
-                    <el-timeline style="padding-right: 5px; padding-top: 10px; height: calc(100% - 30px); overflow: auto">
+                    <el-timeline v-if="data.notes.length > 0" style="padding-right: 5px; padding-top: 10px; height: calc(100% - 30px); overflow: auto">
                         <el-timeline-item
                             class="noteHover"
                             v-for="note in data.notes"

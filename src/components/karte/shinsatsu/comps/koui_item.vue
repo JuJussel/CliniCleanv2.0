@@ -248,7 +248,7 @@ export default {
             this.doRequest('shohou_timing', type).then(result => {
                 this.display.shohouData = result.list
             })
-        }
+        } 
     },
     data() {
         return {

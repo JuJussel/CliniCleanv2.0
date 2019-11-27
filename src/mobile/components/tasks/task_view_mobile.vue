@@ -1,32 +1,27 @@
 <template>
-    <div class="mainBorder" v-bind:style="{'max-height': height - 40 + 'px'}" style="overflow: auto">
+    <div class="mainBorder">
         <!-- SRL --->
-        <div v-if="task.type === '1'" class="wrapper">
-            <div style="width: 220px">
-                <div>
+        <div>カルテ：{{ task.karte }}　患者ID：{{ task.patientID }}</div>
+        <div v-if="task.type === '1'">
+            <div  class="wrapper">
+                <div style="width: calc(100% - 164px)">
                     <b> {{ task.title }} </b>
                 </div>
+                
                 <div>
+                    <el-button @click="submitTask" type="primary">済</el-button>
+                </div>
+            </div>
+            <div style="margin-top: 10px">
                     <span>検体量(ml)：</span>
                     <span> {{ task.specName }} </span>
                     <span> {{ task.srlData.specimen_amount }} </span>
-                </div>
             </div>
-            <div style="display: flex; flex-direction: column; width: 100px; font-size: 14px">
-                <div>容器</div>
-                <div>
-                    <span> {{ task.srlData.container_1 }} </span>
-                    <span v-if="task.srlData.container_1_b !== '0'">→ {{ task.srlData.container_1_b }} </span>
-                    <span v-if="task.srlData.container_2 !== '0'">→ {{ task.srlData.container_2 }} </span>
-                </div>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: center">
-                <div style="margin-bottom: 5px">
-                    <el-button @click="showSRL" size="mini"><i class="fas fa-info-circle"></i></el-button>
-                </div>
-                <div>
-                    <el-button @click="submitTask" size="mini" type="primary">済</el-button>
-                </div>
+            <div style="margin-bottom: 10px">
+                <span>容器:</span>
+                <span> {{ task.srlData.container_1 }} </span>
+                <span v-if="task.srlData.container_1_b !== '0'">→ {{ task.srlData.container_1_b }} </span>
+                <span v-if="task.srlData.container_2 !== '0'">→ {{ task.srlData.container_2 }} </span>
             </div>
         </div>
         <!-- SRL End -->
@@ -72,163 +67,174 @@
         </div>
         <!-- Inhouse End --->
         <!-- Prev/Shot --->
-        <div v-if="task.type === '3' || task.type === '4'" class="wrapper">
-            <div>
-                <div>
-                    <b> {{ task.title }} </b>
+        <div v-if="task.type === '3' || task.type === '4'">
+            <div class="wrapper">
+                <div style="width: calc(100% - 164px)">
+                    <div>
+                        <b> {{ task.title }} </b>
+                    </div>
                 </div>
                 <div>
-                    <el-form size="mini" :inline="true">
-                        <el-form-item label="位置">
-                            <el-select v-model="task.sub_3" placeholder="選択又は検索" style="width: 85px">
-                                <el-option
-                                    v-for="item in locations"
-                                    :key="item"
-                                    :label="item"
-                                    :value="item">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="量">
-                            <el-input v-model="task.sub_1" style="width: 70px">
-                                <template slot="append">ml</template>
-                            </el-input>
-                        </el-form-item>
-                        <el-form-item label="LotNo">
-                            <el-input v-model="task.sub_2" style="width: 70px"></el-input>
-                        </el-form-item>
-                    </el-form>
+                    <el-button
+                        @click="submitTask"
+                        :disabled="task.sub_1 ==='' || task.sub_2 === ''"
+                        type="primary">
+                        済
+                    </el-button>
                 </div>
             </div>
             <div>
-                <el-button
-                    @click="submitTask"
-                    :disabled="task.sub_1 ==='' || task.sub_2 === ''"
-                    size="mini"
-                    type="primary">
-                    済
-                </el-button>
+                <el-form label-width="50px" style="width: 100%">
+                    <el-form-item label="位置">
+                        <el-button @click="openSelectLocation">{{ task.sub_3 }}</el-button>
+                    </el-form-item>
+                    <el-form-item label="量">
+                        <el-input v-model="task.sub_1" style="width: 120px">
+                            <template slot="append">ml</template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="LotNo">
+                        <el-input v-model="task.sub_2" style="width: 120px"></el-input>
+                    </el-form-item>
+                </el-form>
             </div>
         </div>
         <!-- Prev/Shot End --->
         <!-- OP/Treat --->
-        <div v-if="task.type === '7' || task.type === '8'" class="wrapper">
-            <div>
-                <div>
-                    <b> {{ task.title }} </b>
+        <div v-if="task.type === '7' || task.type === '8'">
+            <div class="wrapper">
+                <div style="width: calc(100% - 164px)">
+                    <div>
+                        <b> {{ task.title }} </b>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <el-button
-                    @click="submitTask"
-                    :disabled="task.sub_1 ==='' || task.sub_2 === ''"
-                    size="mini"
-                    type="primary">
-                    済
-                </el-button>
+                <div>
+                    <el-button
+                        @click="submitTask"
+                        :disabled="task.sub_1 ==='' || task.sub_2 === ''"
+                        type="primary">
+                        済
+                    </el-button>
+                </div>
             </div>
         </div>
         <!-- OP/Treat End --->
         <!-- Kenkoushindan --->
-        <el-form v-if="task.type === '95'" ref="form" :rules="rules" :model="task.kksdData" label-width="100px" size="small">
-            <el-form-item label="薬剤歴" prop="medication_history">
-                <el-radio-group v-model="task.kksdData.medication_history">
-                    <el-radio-button border label="1">あり</el-radio-button >
-                    <el-radio-button border label="0">なし</el-radio-button >
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item v-if="task.kksdData.medication_history === '1'" prop="medication_history_text" :rules="[{ required: true, message: '入力してください', trigger: 'false' }]">              
-                <el-input  
-                    placeholder="入力  " 
-                    v-model="task.kksdData.medication_history_text">
-                </el-input>
-            </el-form-item>
-            <el-form-item label="既往歴" prop="medical_history">
-                <el-radio-group v-model="task.kksdData.medical_history">
-                    <el-radio-button border label="1">あり</el-radio-button >
-                    <el-radio-button border label="0">なし</el-radio-button >
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item v-if="task.kksdData.medical_history === '1'" prop="medical_history_text" :rules="[{ required: true, message: '入力してください', trigger: 'false' }]">
-                <el-input placeholder="入力  " v-model="task.kksdData.medical_history_text"></el-input>
-            </el-form-item>
-            <el-form-item label="自覚症状" prop="subjective_symtoms">
-                <el-radio-group v-model="task.kksdData.subjective_symtoms">
-                    <el-radio-button border label="1">あり</el-radio-button >
-                    <el-radio-button border label="0">なし</el-radio-button >
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item v-if="task.kksdData.subjective_symtoms === '1'" prop="subjective_symtoms_text" :rules="[{ required: true, message: '入力してください', trigger: 'false' }]">
-                <el-input placeholder="入力  " v-model="task.kksdData.subjective_symtoms_text"></el-input>
-            </el-form-item>
-            <el-form-item label="他覚症状" prop="objective_symtoms">
-                <el-radio-group v-model="task.kksdData.objective_symtoms">
-                    <el-radio-button border label="1">あり</el-radio-button >
-                    <el-radio-button border label="0">なし</el-radio-button >
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item v-if="task.kksdData.objective_symtoms === '1'" prop="objective_symtoms_text" :rules="[{ required: true, message: '入力してください', trigger: 'false' }]">
-                <el-input placeholder="入力  " v-model="task.kksdData.objective_symtoms_text"></el-input>
-            </el-form-item>
-            <el-form-item label="身長(cm)" prop="height" style="width: 200px">
-                <el-input type="number" placeholder="入力" v-model.number="task.kksdData.height"></el-input>
-            </el-form-item>
-            <el-form-item label="体重(kg)" prop="weight" style="width: 200px">
-                <el-input type="number" placeholder="入力" v-model.number="task.kksdData.weight"></el-input>
-            </el-form-item>
-            <el-form-item label="BMI" prop="bmi" style="width: 200px">
-                <el-input type="number" placeholder="入力" v-model.number="task.kksdData.bmi"></el-input>
-            </el-form-item>
-            <el-form-item label="腹囲" prop="stomache_width" style="width: 200px">
-                <el-input type="number" placeholder="入力" v-model.number="task.kksdData.stomache_width"></el-input>
-            </el-form-item>
-            <el-form-item label="心電図ID" prop="ecg" style="width: 200px">
-                <el-input placeholder="入力  " v-model="task.kksdData.ecg"></el-input>
-            </el-form-item>
-            <el-form-item label="X線番号" prop="x_ray_ID" style="width: 200px">
-                <el-input placeholder="入力" v-model="task.kksdData.x_ray_ID"></el-input>
-            </el-form-item>
-            <h4>血圧</h4>
-            <el-form-item label="血圧最高(S)" prop="blood_pressure_max" style="width: 200px">
-                <el-input type="number" placeholder="入力  " v-model.number="task.kksdData.blood_pressure_max"></el-input>
-            </el-form-item>
-            <el-form-item label="血圧最低(D)" prop="blood_pressure_min" style="width: 200px">
-                <el-input type="number" placeholder="入力  " v-model.number="task.kksdData.blood_pressure_min"></el-input>
-            </el-form-item>
-            <h4>視力</h4>
-            <el-form-item label="視力左" prop="sight_left" style="width: 200px">
-                <el-input type="number" placeholder="入力  " v-model.number="task.kksdData.sight_left"></el-input>
-            </el-form-item>
-                <el-form-item label="視力右" prop="sight_right" style="width: 200px">
-                <el-input type="number" placeholder="入力  " v-model.number="task.kksdData.sight_right"></el-input>
-            </el-form-item>
-            <h4>聴力左(所見)</h4>
-            <el-form-item label="1000Hz" prop="hearing_left_low">
-                <el-radio-group v-model="task.kksdData.hearing_left_low">
-                    <el-radio-button border label="1">あり</el-radio-button >
-                    <el-radio-button border label="0">なし</el-radio-button >
-                </el-radio-group>
-            </el-form-item>
-                <el-form-item label="4000Hz" prop="hearing_left_high">
-                    <el-radio-group v-model="task.kksdData.hearing_left_high">
+        <div v-if="task.type === '95'">
+            <div  class="wrapper">
+                <div style="width: calc(100% - 164px)">
+                    <b> {{ task.title }} </b>
+                </div>
+                <div>
+                    <el-button @click="saveKKSD" type="primary">済</el-button>
+                </div>
+            </div>
+            <el-form ref="form" :rules="rules" :model="task.kksdData" label-width="100px" style="margin-top: 10px">
+                <el-form-item label="薬剤歴" prop="medication_history">
+                    <el-radio-group v-model="task.kksdData.medication_history">
                         <el-radio-button border label="1">あり</el-radio-button >
                         <el-radio-button border label="0">なし</el-radio-button >
                     </el-radio-group>
-            </el-form-item>
-            <h4>聴力右(所見)</h4>
-            <el-form-item label="1000Hz" prop="hearing_right_low">
-                <el-radio-group v-model="task.kksdData.hearing_right_low">
-                    <el-radio-button border label="1">あり</el-radio-button >
-                    <el-radio-button border label="0">なし</el-radio-button >
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item label="4000Hz" prop="hearing_right_high">
-                <el-radio-group v-model="task.kksdData.hearing_right_high">
-                    <el-radio-button border label="1">あり</el-radio-button >
-                    <el-radio-button border label="0">なし</el-radio-button >
-                </el-radio-group>
-            </el-form-item>
-        </el-form>
+                </el-form-item>
+                <el-form-item v-if="task.kksdData.medication_history === '1'" prop="medication_history_text" :rules="[{ required: true, message: '入力してください', trigger: 'false' }]">              
+                    <el-input  
+                        placeholder="入力  " 
+                        v-model="task.kksdData.medication_history_text">
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="既往歴" prop="medical_history">
+                    <el-radio-group v-model="task.kksdData.medical_history">
+                        <el-radio-button border label="1">あり</el-radio-button >
+                        <el-radio-button border label="0">なし</el-radio-button >
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item v-if="task.kksdData.medical_history === '1'" prop="medical_history_text" :rules="[{ required: true, message: '入力してください', trigger: 'false' }]">
+                    <el-input placeholder="入力  " v-model="task.kksdData.medical_history_text"></el-input>
+                </el-form-item>
+                <el-form-item label="自覚症状" prop="subjective_symtoms">
+                    <el-radio-group v-model="task.kksdData.subjective_symtoms">
+                        <el-radio-button border label="1">あり</el-radio-button >
+                        <el-radio-button border label="0">なし</el-radio-button >
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item v-if="task.kksdData.subjective_symtoms === '1'" prop="subjective_symtoms_text" :rules="[{ required: true, message: '入力してください', trigger: 'false' }]">
+                    <el-input placeholder="入力  " v-model="task.kksdData.subjective_symtoms_text"></el-input>
+                </el-form-item>
+                <el-form-item label="他覚症状" prop="objective_symtoms">
+                    <el-radio-group v-model="task.kksdData.objective_symtoms">
+                        <el-radio-button border label="1">あり</el-radio-button >
+                        <el-radio-button border label="0">なし</el-radio-button >
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item v-if="task.kksdData.objective_symtoms === '1'" prop="objective_symtoms_text" :rules="[{ required: true, message: '入力してください', trigger: 'false' }]">
+                    <el-input placeholder="入力  " v-model="task.kksdData.objective_symtoms_text"></el-input>
+                </el-form-item>
+                <el-form-item label="身長" prop="height" >
+                    <el-input style="width: 140px" type="number" placeholder="入力" v-model.number="task.kksdData.height">
+                        <template slot="append">cm</template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="体重" prop="weight">
+                    <el-input style="width: 140px" type="number" placeholder="入力" v-model.number="task.kksdData.weight">
+                        <template slot="append">kg</template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="BMI" prop="bmi">
+                    <el-input style="width: 140px" type="number" placeholder="入力" v-model.number="task.kksdData.bmi"></el-input>
+                </el-form-item>
+                <el-form-item label="腹囲" prop="stomache_width">
+                    <el-input style="width: 140px" type="number" placeholder="入力" v-model.number="task.kksdData.stomache_width">
+                        <template slot="append">cm</template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="心電図ID" prop="ecg">
+                    <el-input style="width: 140px" placeholder="入力  " v-model="task.kksdData.ecg"></el-input>
+                </el-form-item>
+                <el-form-item label="X線番号" prop="x_ray_ID">
+                    <el-input style="width: 140px" placeholder="入力" v-model="task.kksdData.x_ray_ID"></el-input>
+                </el-form-item>
+                <h4>血圧</h4>
+                <el-form-item label="血圧最高(S)" prop="blood_pressure_max">
+                    <el-input style="width: 140px"  type="number" placeholder="入力  " v-model.number="task.kksdData.blood_pressure_max"></el-input>
+                </el-form-item>
+                <el-form-item label="血圧最低(D)" prop="blood_pressure_min">
+                    <el-input style="width: 140px" type="number" placeholder="入力  " v-model.number="task.kksdData.blood_pressure_min"></el-input>
+                </el-form-item>
+                <h4>視力</h4>
+                <el-form-item label="視力左" prop="sight_left">
+                    <el-input style="width: 140px" type="number" placeholder="入力  " v-model.number="task.kksdData.sight_left"></el-input>
+                </el-form-item>
+                    <el-form-item label="視力右" prop="sight_right">
+                    <el-input style="width: 140px" type="number" placeholder="入力  " v-model.number="task.kksdData.sight_right"></el-input>
+                </el-form-item>
+                <h4>聴力左(所見)</h4>
+                <el-form-item label="1000Hz" prop="hearing_left_low">
+                    <el-radio-group v-model="task.kksdData.hearing_left_low">
+                        <el-radio-button border label="1">あり</el-radio-button >
+                        <el-radio-button border label="0">なし</el-radio-button >
+                    </el-radio-group>
+                </el-form-item>
+                    <el-form-item label="4000Hz" prop="hearing_left_high">
+                        <el-radio-group v-model="task.kksdData.hearing_left_high">
+                            <el-radio-button border label="1">あり</el-radio-button >
+                            <el-radio-button border label="0">なし</el-radio-button >
+                        </el-radio-group>
+                </el-form-item>
+                <h4>聴力右(所見)</h4>
+                <el-form-item label="1000Hz" prop="hearing_right_low">
+                    <el-radio-group v-model="task.kksdData.hearing_right_low">
+                        <el-radio-button border label="1">あり</el-radio-button >
+                        <el-radio-button border label="0">なし</el-radio-button >
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="4000Hz" prop="hearing_right_high">
+                    <el-radio-group v-model="task.kksdData.hearing_right_high">
+                        <el-radio-button border label="1">あり</el-radio-button >
+                        <el-radio-button border label="0">なし</el-radio-button >
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+        </div>
         <!-- Kenkoushindan End -->
         <div>
             <el-button @click="addComment = !addComment">コメント</el-button>
@@ -249,6 +255,13 @@
                 </div>
             </div>
         </el-dialog>
+        <el-dialog title="位置選択" :visible.sync="locationSelectOpen" custom-class="resultSelector" fullscreen>
+            <div v-bind:style="{'max-height': height + 'px'}" style="overflow: auto">
+                <div v-for="(location, key) in locations" :key="key" class="list_item" @click="selectLocation(location)">
+                    <span>{{ location }}</span>
+                </div>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -263,6 +276,7 @@ export default {
             comment: "",
             height: window.innerHeight - 150,
             resultsFull: false,
+            locationSelectOpen: false,
             resultSelectOpen: false,
             resultsLoading: false,
             resultsOb: {
@@ -391,6 +405,24 @@ export default {
             this.doRequest('updateTask' , this.task).then(result => {
                 this.$emit('done', task.ID)
             })
+        },
+        saveKKSD() {
+            this.$refs['form'].validate((valid) => {
+                if (valid) {
+                    let kssd = this.task.kksdData
+                    let orderID = this.task.ID
+                    this.doRequest('updateKenkoushindan', {kssdData: kssd, mode: "commit", orderID: orderID}).then( result => {
+                        this.$emit('done', orderID)
+                    })
+                }
+            })
+        },
+        openSelectLocation() {
+            this.locationSelectOpen = true
+        },
+        selectLocation(loc) {
+            this.task.sub_3 = loc
+            this.locationSelectOpen = false
         },
         fetchResults() {
             this.resultsFilter = ""

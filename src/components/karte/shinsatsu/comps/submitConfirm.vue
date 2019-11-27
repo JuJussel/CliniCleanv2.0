@@ -8,9 +8,9 @@
                 <kouiItemDisplay :item="koui"></kouiItemDisplay>
             </el-checkbox>
         </div>
-        <div style="margin: 10px 0">
+        <div v-if="orderKoui.length > 0" style="margin: 10px 0">
             <h4>タイマー追加　　</h4>
-            <el-checkbox v-if="orderKoui.length > 0" v-model="addOrderTimer">オーダータイマー追加</el-checkbox>
+            <el-checkbox v-model="addOrderTimer">オーダータイマー追加</el-checkbox>
         </div>
         <div v-if="addOrderTimer">
             <div v-for="koui in orderKoui" :key="koui.ID" style="display: flex; align-items: center; margin: 5px 0">

@@ -296,19 +296,21 @@ export default {
                 this.currentView = 'patientDetailsMedical'
                 this.pageTitle = '患者詳細'
             } else if (meta.mode === 'reservationPat') {
-                console.log(meta);
                 this.currentView = 'schedule'
                 this.pageTitle = 'スケジュール'
                 setTimeout(function() {this.$refs.childComp.receivePat(meta.data)}.bind(this), 500)
             }
         },
         logout() {
-            this.doRequest('logout','').then(result => {
+            this.currentView = 'home'
+            let that = this
+            setTimeout(() => {
+                that.doRequest('logout','').then(result => {
                 sessionStorage.removeItem("session_id")
-                console.log(result)
-                this.$router.push(result.data)
+                that.$router.push(result.data)
                 location.reload()
             })
+            }, 1000)
         },
         showKarteDetails: function(mode) {
             this.currentView='karteDetails';

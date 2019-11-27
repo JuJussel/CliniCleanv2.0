@@ -57,10 +57,14 @@ export default {
             return 0
         },
         dataCopy() {
-            if (this.data.length > 0) {
-                return JSON.parse(JSON.stringify(this.data))                 
+            if (this.data) {
+                if (this.data.length > 0) {
+                    return JSON.parse(JSON.stringify(this.data))                 
+                }
+                return []                
+            } else {
+                return []
             }
-            return []
         }
     },
     data() {

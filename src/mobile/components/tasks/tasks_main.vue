@@ -6,8 +6,8 @@
             </div>
             <div v-if="tasks.open.length > 0">
                 <el-divider content-position="left">オーペンタスク</el-divider>
-                <div>
-                    <div v-for="pat in tasks.open" :key="pat.ID" class="list_item" @click="takeTask(scope.row)">
+                <div style="overflow: auto; max-height: calc(50% - 53px)">
+                    <div v-for="pat in tasks.open" :key="pat.ID" class="list_item" @click="showTasks(pat, true)">
                         <span>{{ pat.name }}</span>
                         <span style="float: right"><i class="fas fa-chevron-right"></i></span>
                     </div>
@@ -15,8 +15,8 @@
             </div>
             <div v-if="tasks.my.length > 0">
                 <el-divider content-position="left">マイタスク</el-divider>
-                <div>
-                    <div v-for="pat in tasks.my" :key="pat.ID" class="list_item" @click="showTasks(pat)">
+                <div style="overflow: auto; max-height: calc(50% - 53px)">
+                    <div v-for="pat in tasks.my" :key="pat.ID" class="list_item" @click="showTasks(pat, false)">
                         <span>{{ pat.name }}</span>
                         <span style="float: right"><i class="fas fa-chevron-right"></i></span>
                     </div>
@@ -26,15 +26,27 @@
         <div v-bind:style="{width: width + 'px'}">
             <div class="list_item" @click="--step"><i class="fas fa-chevron-left"></i>　戻る</div>
             <el-divider content-position="left"> {{ patName }}のタスク</el-divider>
-            <div v-for="task in tasks.list" :key="task.ID" class="list_item" @click="openTask(task)" v-loading="detailsLoading">
-                <span>{{ task.name }}</span>
-                <span style="float: right"><i class="fas fa-chevron-right"></i></span>
+            <div style="overflow: auto; max-height: calc(100% - 105px)">
+                <div v-if="isOpen">
+                    <div v-for="task in tasks.list" :key="task.ID" class="list_item" v-loading="detailsLoading">
+                        <span>{{ task.name }}</span>
+                        <el-button style="float: right; margin-top: -8px" @click="takeTask(task)">開始</el-button>
+                    </div>
+                </div>
+                <div v-else>
+                    <div v-for="task in tasks.list" :key="task.ID" class="list_item" @click="openTask(task)" v-loading="detailsLoading">
+                        <span>{{ task.name }}</span>
+                        <span style="float: right"><i class="fas fa-chevron-right"></i></span> 
+                    </div>
+                </div>
             </div>
         </div>
         <div v-bind:style="{width: width + 'px'}" v-if="step == 2">
             <div class="list_item" @click="--step"><i class="fas fa-chevron-left"></i>　戻る</div>
             <el-divider content-position="left"> {{ patName }}のタスク詳細</el-divider>
-            <taskView ref="taskView" @done="closeTask" @showSRL="showSRLCard" :task="task" v-for="task in tasks.details" :key="task.ID"></taskView>
+            <div style="overflow: auto; max-height: calc(100% - 105px); min-height: 200px">
+                <taskView ref="taskView" @done="closeTask" @showSRL="showSRLCard" :task="task" v-for="task in tasks.details" :key="task.ID"></taskView>
+            </div>
         </div>
         <!--
         <el-card class="card" :body-style="{height: 'calc(100% - 100px)'}" v-loading="detailsLoading">
@@ -95,6 +107,7 @@ export default {
                 list: [],
                 details: {}
             },
+            isOpen: false,
             step: 0,
             width: window.innerWidth,
             patName: ""
@@ -121,12 +134,14 @@ export default {
             this.loading = true
             this.doRequest('assignTask',{taskID: task.ID, type: task.type}).then(result => {
                 this.taskUpdate()
+                this.step = 0
             })
         },
-        showTasks(pat) {
+        showTasks(pat, isOpen) {
             this.step = 1
             this.patName = pat.name
             this.tasks.list = pat.children
+            this.isOpen = isOpen
         },
         openTask(task) {
             this.showSRL = false
@@ -181,6 +196,7 @@ export default {
 }
 .stepper {
     display: flex;
-    transition: all .25s ease
+    transition: all .25s ease;
+    height: calc(100% - 65px);
 }
 </style>
