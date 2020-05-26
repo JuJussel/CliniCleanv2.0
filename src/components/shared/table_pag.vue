@@ -17,6 +17,7 @@
             <slot></slot>
         </el-table>
         <el-pagination
+            v-if="pagination"
             :page-sizes="pageSizes"
             :page-size="pageSize"
             :pager-count="5"
@@ -33,6 +34,7 @@
 export default {
     props: {
         data: Array,
+        pagination: {default: false},
         size: String,
         showHeader: Boolean,
         rowKey: String,

@@ -1,7 +1,7 @@
 <template>
     <div style="display: flex">
         <div style="width: 50%; flex: 1 0 auto; padding-right: 5px">
-            <el-card body-style="height: calc(100% - 40px)" style="height: 100%">
+            <el-card body-style="height: calc(100% - 40px); padding: 0" style="height: 100%">
                 <div>
                     <div v-for="(row, index) in tabs" :key="index" class="tab-header">
                         <div
@@ -32,8 +32,8 @@
             </el-card>
         </div>
         <div style="width: calc(50% - 10px); flex: 1 0 auto; padding-left: 5px;">
-            <el-card :body-style="{height: 'calc(100% - 40px)'}" style="height: 100%">
-                <el-tabs @tab-remove="tabClose" v-model="activeTabVar" style="height: 100%; position: relative" type="card" class="dumy11">
+            <el-card :body-style="{height: '100%', padding: 0}" style="height: 100%">
+                <el-tabs @tab-remove="tabClose" v-model="activeTabVar" style="height: 100%; position: relative" type="border-card" class="dumy11">
                     <el-tab-pane
                         label="データ"
                         name="dataExplorer"
@@ -47,8 +47,7 @@
 						:label="item.title"
 						:name="item.name"
 						:closable="true"
-						style="height: 100%"
-					>
+						style="height: 100%">
 						<karteDisplay v-if="item.type === 'karte'" :data="item"></karteDisplay>
                     </el-tab-pane>
                     <el-tab-pane
@@ -57,8 +56,7 @@
 						:label="item.title"
 						:name="item.name"
 						:closable="true"
-						style="height: 100%; overflow: auto"
-					>
+						style="height: 100%; overflow: auto">
 						<kksd v-if="item.type === 'shindan'" :data="item"></kksd>
                     </el-tab-pane>
 				</el-tabs>

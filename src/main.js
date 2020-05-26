@@ -39,6 +39,8 @@ Vue.prototype.$globals = globals
 // Requests Mixin
 Vue.mixin(requests)
 
+//$moment.locale('ja');
+
 new Vue({
   router,
   store,

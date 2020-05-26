@@ -46,6 +46,13 @@
                         <el-button size="mini" @click="gotoItem(scope.row)">詳細見る</el-button>
                     </template>
                 </el-table-column>
+                <el-table-column width="50px">
+                    <template slot-scope="scope">
+                        <el-button size="small" type="text" style="float: right" @click="markAsRead(scope.row)">
+                            <i class="el-icon-delete" style="color: red"></i>
+                        </el-button>
+                    </template>
+                </el-table-column>
             </el-table>
         </el-card>
         <el-card style="width: 550px; height: 380px">

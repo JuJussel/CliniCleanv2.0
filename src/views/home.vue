@@ -528,6 +528,9 @@ a {
     background-color: rgb(230, 246, 244);
     box-shadow: none
 }
+.el-dropdown-menu {
+    border: solid 2px #33b6a5
+}
 </style>
 
 
